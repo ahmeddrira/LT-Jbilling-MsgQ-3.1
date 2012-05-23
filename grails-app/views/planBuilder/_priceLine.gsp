@@ -14,7 +14,8 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.item.db.PlanItemBundleDTO.Customer" %>
 
 
 <%--
@@ -80,7 +81,7 @@
                 <g:applyLayout name="form/select">
                     <content tag="label"><g:message code="plan.bundle.target.customer"/></content>
                     <content tag="label.for">bundle.targetCustomer</content>
-                    <g:select from="${PlanItemBundleDTO.Customer.values()}"
+                    <g:select from="${Customer.values()}"
                               name="bundle.targetCustomer"
                                 valueMessagePrefix="bundle.target.customer"
                               value="${planItem.bundle?.targetCustomer}"/>

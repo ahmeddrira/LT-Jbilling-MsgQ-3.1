@@ -1856,3 +1856,6 @@ table.blacklist tr.odd {
 #timeline li.current a {
     font-weight: bold;
 }
+#mandatory-meta-field{
+    color: #ff0000;
+}

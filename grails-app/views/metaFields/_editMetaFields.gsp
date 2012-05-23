@@ -43,7 +43,7 @@
         <!-- string fields -->
         <g:if test="${field.getDataType() == DataType.STRING}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -54,7 +54,7 @@
 
         <g:if test="${field.getDataType() == DataType.JSON_OBJECT}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -66,7 +66,7 @@
         <!-- integer fields -->
         <g:if test="${field.getDataType() == DataType.INTEGER}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -78,7 +78,7 @@
         <!-- decimal fields -->
         <g:if test="${field.getDataType() == DataType.DECIMAL}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -90,7 +90,7 @@
         <!-- boolean fields -->
         <g:if test="${field.getDataType() ==  DataType.BOOLEAN}">
             <g:applyLayout name="form/checkbox">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:checkBox class="cb checkbox" name="metaField_${field.id}.value" checked="${fieldValue}"/>
             </g:applyLayout>
@@ -99,7 +99,7 @@
         <!-- date fields -->
         <g:if test="${field.getDataType() == DataType.DATE}">
             <g:applyLayout name="form/date">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField class="field"
@@ -120,7 +120,7 @@
                 }
             %>
             <g:applyLayout name="form/select">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:select
                         class="field ${validationRules}"
@@ -144,7 +144,7 @@
                 }
             %>
             <g:applyLayout name="form/select">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label"><g:message code="${field.name}"/><g:if test="${field.mandatory}"><span id="mandatory-meta-field">*</span></g:if></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:select
                         class="field ${validationRules}"

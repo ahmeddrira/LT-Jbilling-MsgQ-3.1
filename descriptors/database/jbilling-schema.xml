@@ -1987,451 +1987,451 @@
         <addUniqueConstraint columnNames="table_name" constraintName="rate_card_table_name_key" deferrable="false" disabled="false" initiallyDeferred="false" tableName="rate_card"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-126">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="ach" baseTableSchemaName="public" constraintName="ach_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="ach" constraintName="ach_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-127">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="ageing_entity_step" baseTableSchemaName="public" constraintName="ageing_entity_step_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="ageing_entity_step" constraintName="ageing_entity_step_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-128">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="base_user" baseTableSchemaName="public" constraintName="base_user_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="base_user" constraintName="base_user_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-129">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="base_user" baseTableSchemaName="public" constraintName="base_user_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="base_user" constraintName="base_user_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-130">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="base_user" baseTableSchemaName="public" constraintName="base_user_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="base_user" constraintName="base_user_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-131">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="billing_process" baseTableSchemaName="public" constraintName="billing_process_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="billing_process" constraintName="billing_process_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-132">
-        <addForeignKeyConstraint baseColumnNames="paper_invoice_batch_id" baseTableName="billing_process" baseTableSchemaName="public" constraintName="billing_process_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paper_invoice_batch" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="paper_invoice_batch_id" baseTableName="billing_process" constraintName="billing_process_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paper_invoice_batch" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-133">
-        <addForeignKeyConstraint baseColumnNames="period_unit_id" baseTableName="billing_process" baseTableSchemaName="public" constraintName="billing_process_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="period_unit_id" baseTableName="billing_process" constraintName="billing_process_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-134">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="billing_process_configuration" baseTableSchemaName="public" constraintName="billing_proc_configtn_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="billing_process_configuration" constraintName="billing_proc_configtn_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-135">
-        <addForeignKeyConstraint baseColumnNames="period_unit_id" baseTableName="billing_process_configuration" baseTableSchemaName="public" constraintName="billing_proc_configtn_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="period_unit_id" baseTableName="billing_process_configuration" constraintName="billing_proc_configtn_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-136">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="blacklist" baseTableSchemaName="public" constraintName="blacklist_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="blacklist" constraintName="blacklist_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-137">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="blacklist" baseTableSchemaName="public" constraintName="blacklist_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="blacklist" constraintName="blacklist_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-138">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="blacklist" baseTableSchemaName="public" constraintName="blacklist_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="blacklist" constraintName="blacklist_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-139">
-        <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="contact_map" baseTableSchemaName="public" constraintName="contact_map_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="contact" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="contact_map" constraintName="contact_map_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="contact" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-140">
-        <addForeignKeyConstraint baseColumnNames="table_id" baseTableName="contact_map" baseTableSchemaName="public" constraintName="contact_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="jbilling_table" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="table_id" baseTableName="contact_map" constraintName="contact_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="jbilling_table" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-141">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="contact_map" baseTableSchemaName="public" constraintName="contact_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="contact_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="contact_map" constraintName="contact_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="contact_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-142">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="contact_type" baseTableSchemaName="public" constraintName="contact_type_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="contact_type" constraintName="contact_type_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-143">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="currency_entity_map" baseTableSchemaName="public" constraintName="currency_entity_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="currency_entity_map" constraintName="currency_entity_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-144">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="currency_entity_map" baseTableSchemaName="public" constraintName="currency_entity_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="currency_entity_map" constraintName="currency_entity_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-145">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="currency_exchange" baseTableSchemaName="public" constraintName="currency_exchange_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="currency_exchange" constraintName="currency_exchange_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-146">
-        <addForeignKeyConstraint baseColumnNames="invoice_delivery_method_id" baseTableName="customer" baseTableSchemaName="public" constraintName="customer_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice_delivery_method" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="invoice_delivery_method_id" baseTableName="customer" constraintName="customer_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice_delivery_method" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-147">
-        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="customer" baseTableSchemaName="public" constraintName="customer_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="partner" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="customer" constraintName="customer_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="partner" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-148">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="customer" baseTableSchemaName="public" constraintName="customer_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="customer" constraintName="customer_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-149">
-        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="customer_meta_field_map" baseTableSchemaName="public" constraintName="customer_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="customer" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="customer_meta_field_map" constraintName="customer_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="customer" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-150">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="customer_meta_field_map" baseTableSchemaName="public" constraintName="customer_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="customer_meta_field_map" constraintName="customer_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-151">
-        <addForeignKeyConstraint baseColumnNames="plan_item_id" baseTableName="customer_price" baseTableSchemaName="public" constraintName="customer_price_plan_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan_item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="plan_item_id" baseTableName="customer_price" constraintName="customer_price_plan_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan_item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-152">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="customer_price" baseTableSchemaName="public" constraintName="customer_price_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="customer_price" constraintName="customer_price_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-153">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="entity" baseTableSchemaName="public" constraintName="entity_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="entity" constraintName="entity_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-154">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="entity" baseTableSchemaName="public" constraintName="entity_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="entity" constraintName="entity_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-155">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="entity_delivery_method_map" baseTableSchemaName="public" constraintName="entity_delivry_methd_map_fk1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="entity_delivery_method_map" constraintName="entity_delivry_methd_map_fk1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-156">
-        <addForeignKeyConstraint baseColumnNames="method_id" baseTableName="entity_delivery_method_map" baseTableSchemaName="public" constraintName="entity_delivry_methd_map_fk2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice_delivery_method" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="method_id" baseTableName="entity_delivery_method_map" constraintName="entity_delivry_methd_map_fk2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice_delivery_method" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-157">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="entity_payment_method_map" baseTableSchemaName="public" constraintName="entity_payment_method_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="entity_payment_method_map" constraintName="entity_payment_method_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-158">
-        <addForeignKeyConstraint baseColumnNames="payment_method_id" baseTableName="entity_payment_method_map" baseTableSchemaName="public" constraintName="entity_payment_method_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_method" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_method_id" baseTableName="entity_payment_method_map" constraintName="entity_payment_method_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_method" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-159">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="entity_report_map" baseTableSchemaName="public" constraintName="report_map_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="entity_report_map" constraintName="report_map_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-160">
-        <addForeignKeyConstraint baseColumnNames="report_id" baseTableName="entity_report_map" baseTableSchemaName="public" constraintName="report_map_report_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="report" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="report_id" baseTableName="entity_report_map" constraintName="report_map_report_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="report" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-161">
-        <addForeignKeyConstraint baseColumnNames="enumeration_id" baseTableName="enumeration_values" baseTableSchemaName="public" constraintName="enumeration_values_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="enumeration" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="enumeration_id" baseTableName="enumeration_values" constraintName="enumeration_values_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="enumeration" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-162">
-        <addForeignKeyConstraint baseColumnNames="affected_user_id" baseTableName="event_log" baseTableSchemaName="public" constraintName="event_log_fk_6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="affected_user_id" baseTableName="event_log" constraintName="event_log_fk_6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-163">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="event_log" baseTableSchemaName="public" constraintName="event_log_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="event_log" constraintName="event_log_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-164">
-        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="event_log" baseTableSchemaName="public" constraintName="event_log_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event_log_message" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="event_log" constraintName="event_log_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event_log_message" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-165">
-        <addForeignKeyConstraint baseColumnNames="module_id" baseTableName="event_log" baseTableSchemaName="public" constraintName="event_log_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event_log_module" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="module_id" baseTableName="event_log" constraintName="event_log_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event_log_module" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-166">
-        <addForeignKeyConstraint baseColumnNames="table_id" baseTableName="event_log" baseTableSchemaName="public" constraintName="event_log_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="jbilling_table" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="table_id" baseTableName="event_log" constraintName="event_log_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="jbilling_table" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-167">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="event_log" baseTableSchemaName="public" constraintName="event_log_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="event_log" constraintName="event_log_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-168">
-        <addForeignKeyConstraint baseColumnNames="dtype" baseTableName="generic_status" baseTableSchemaName="public" constraintName="generic_status_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="generic_status_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="dtype" baseTableName="generic_status" constraintName="generic_status_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="generic_status_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-169">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="international_description" baseTableSchemaName="public" constraintName="international_description_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="international_description" constraintName="international_description_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-170">
-        <addForeignKeyConstraint baseColumnNames="billing_process_id" baseTableName="invoice" baseTableSchemaName="public" constraintName="invoice_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="billing_process" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="billing_process_id" baseTableName="invoice" constraintName="invoice_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="billing_process" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-171">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="invoice" baseTableSchemaName="public" constraintName="invoice_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="invoice" constraintName="invoice_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-172">
-        <addForeignKeyConstraint baseColumnNames="delegated_invoice_id" baseTableName="invoice" baseTableSchemaName="public" constraintName="invoice_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="delegated_invoice_id" baseTableName="invoice" constraintName="invoice_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-173">
-        <addForeignKeyConstraint baseColumnNames="paper_invoice_batch_id" baseTableName="invoice" baseTableSchemaName="public" constraintName="invoice_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paper_invoice_batch" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="paper_invoice_batch_id" baseTableName="invoice" constraintName="invoice_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paper_invoice_batch" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-174">
-        <addForeignKeyConstraint baseColumnNames="invoice_id" baseTableName="invoice_line" baseTableSchemaName="public" constraintName="invoice_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="invoice_id" baseTableName="invoice_line" constraintName="invoice_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-175">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="invoice_line" baseTableSchemaName="public" constraintName="invoice_line_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="invoice_line" constraintName="invoice_line_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-176">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="invoice_line" baseTableSchemaName="public" constraintName="invoice_line_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice_line_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="invoice_line" constraintName="invoice_line_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice_line_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-177">
-        <addForeignKeyConstraint baseColumnNames="invoice_id" baseTableName="invoice_meta_field_map" baseTableSchemaName="public" constraintName="invoice_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="invoice_id" baseTableName="invoice_meta_field_map" constraintName="invoice_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-178">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="invoice_meta_field_map" baseTableSchemaName="public" constraintName="invoice_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="invoice_meta_field_map" constraintName="invoice_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-179">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="item" baseTableSchemaName="public" constraintName="item_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="item" constraintName="item_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-180">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_meta_field_map" baseTableSchemaName="public" constraintName="item_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_meta_field_map" constraintName="item_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-181">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="item_meta_field_map" baseTableSchemaName="public" constraintName="item_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="item_meta_field_map" constraintName="item_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-182">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_price_timeline" baseTableSchemaName="public" constraintName="item_pm_map_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_price_timeline" constraintName="item_pm_map_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-183">
-        <addForeignKeyConstraint baseColumnNames="price_model_id" baseTableName="item_price_timeline" baseTableSchemaName="public" constraintName="item_pm_map_price_model_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="price_model_id" baseTableName="item_price_timeline" constraintName="item_pm_map_price_model_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-184">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="item_type" baseTableSchemaName="public" constraintName="item_type_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="item_type" constraintName="item_type_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-185">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_type_exclude_map" baseTableSchemaName="public" constraintName="item_type_exclude_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_type_exclude_map" constraintName="item_type_exclude_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-186">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="item_type_exclude_map" baseTableSchemaName="public" constraintName="item_type_exclude_type_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="item_type_exclude_map" constraintName="item_type_exclude_type_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-187">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_type_map" baseTableSchemaName="public" constraintName="item_type_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="item_type_map" constraintName="item_type_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-188">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="item_type_map" baseTableSchemaName="public" constraintName="item_type_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="item_type_map" constraintName="item_type_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-189">
-        <addForeignKeyConstraint baseColumnNames="pluggable_task_id" baseTableName="mediation_cfg" baseTableSchemaName="public" constraintName="mediation_cfg_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="pluggable_task_id" baseTableName="mediation_cfg" constraintName="mediation_cfg_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-190">
-        <addForeignKeyConstraint baseColumnNames="mediation_process_id" baseTableName="mediation_order_map" baseTableSchemaName="public" constraintName="mediation_order_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_process" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="mediation_process_id" baseTableName="mediation_order_map" constraintName="mediation_order_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_process" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-191">
-        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="mediation_order_map" baseTableSchemaName="public" constraintName="mediation_order_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="mediation_order_map" constraintName="mediation_order_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-192">
-        <addForeignKeyConstraint baseColumnNames="configuration_id" baseTableName="mediation_process" baseTableSchemaName="public" constraintName="mediation_process_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_cfg" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="configuration_id" baseTableName="mediation_process" constraintName="mediation_process_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_cfg" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-193">
-        <addForeignKeyConstraint baseColumnNames="mediation_process_id" baseTableName="mediation_record" baseTableSchemaName="public" constraintName="mediation_record_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_process" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="mediation_process_id" baseTableName="mediation_record" constraintName="mediation_record_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_process" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-194">
-        <addForeignKeyConstraint baseColumnNames="status_id" baseTableName="mediation_record" baseTableSchemaName="public" constraintName="mediation_record_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="generic_status" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="status_id" baseTableName="mediation_record" constraintName="mediation_record_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="generic_status" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-195">
-        <addForeignKeyConstraint baseColumnNames="mediation_record_id" baseTableName="mediation_record_line" baseTableSchemaName="public" constraintName="mediation_record_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_record" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="mediation_record_id" baseTableName="mediation_record_line" constraintName="mediation_record_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mediation_record" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-196">
-        <addForeignKeyConstraint baseColumnNames="order_line_id" baseTableName="mediation_record_line" baseTableSchemaName="public" constraintName="mediation_record_line_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_line" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="order_line_id" baseTableName="mediation_record_line" constraintName="mediation_record_line_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_line" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-197">
-        <addForeignKeyConstraint baseColumnNames="default_value_id" baseTableName="meta_field_name" baseTableSchemaName="public" constraintName="meta_field_name_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="default_value_id" baseTableName="meta_field_name" constraintName="meta_field_name_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-198">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="meta_field_name" baseTableSchemaName="public" constraintName="meta_field_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="meta_field_name" constraintName="meta_field_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-199">
-        <addForeignKeyConstraint baseColumnNames="meta_field_name_id" baseTableName="meta_field_value" baseTableSchemaName="public" constraintName="meta_field_value_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_name" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_name_id" baseTableName="meta_field_value" constraintName="meta_field_value_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_name" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-200">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="notification_message" baseTableSchemaName="public" constraintName="notification_message_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="notification_message" constraintName="notification_message_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-201">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="notification_message" baseTableSchemaName="public" constraintName="notification_message_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="notification_message" constraintName="notification_message_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="language" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-202">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="notification_message" baseTableSchemaName="public" constraintName="notification_message_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="notification_message" constraintName="notification_message_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-203">
-        <addForeignKeyConstraint baseColumnNames="message_archive_id" baseTableName="notification_message_arch_line" baseTableSchemaName="public" constraintName="notif_mess_arch_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message_arch" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="message_archive_id" baseTableName="notification_message_arch_line" constraintName="notif_mess_arch_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message_arch" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-204">
-        <addForeignKeyConstraint baseColumnNames="message_section_id" baseTableName="notification_message_line" baseTableSchemaName="public" constraintName="notification_message_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message_section" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="message_section_id" baseTableName="notification_message_line" constraintName="notification_message_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message_section" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-205">
-        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="notification_message_section" baseTableSchemaName="public" constraintName="notification_msg_section_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="notification_message_section" constraintName="notification_msg_section_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_message" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-206">
-        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="notification_message_type" baseTableSchemaName="public" constraintName="category_id_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_category" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="notification_message_type" constraintName="category_id_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="notification_category" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-207">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="order_line" baseTableSchemaName="public" constraintName="order_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="order_line" constraintName="order_line_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-208">
-        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_line" baseTableSchemaName="public" constraintName="order_line_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_line" constraintName="order_line_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-209">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="order_line" baseTableSchemaName="public" constraintName="order_line_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_line_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="order_line" constraintName="order_line_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_line_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-210">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="order_meta_field_map" baseTableSchemaName="public" constraintName="order_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="order_meta_field_map" constraintName="order_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-211">
-        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_meta_field_map" baseTableSchemaName="public" constraintName="order_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_meta_field_map" constraintName="order_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-212">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="order_period" baseTableSchemaName="public" constraintName="order_period_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="order_period" constraintName="order_period_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-213">
-        <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="order_period" baseTableSchemaName="public" constraintName="order_period_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="order_period" constraintName="order_period_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-214">
-        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_process" baseTableSchemaName="public" constraintName="order_process_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_process" constraintName="order_process_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="purchase_order" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-215">
-        <addForeignKeyConstraint baseColumnNames="fee_currency_id" baseTableName="partner" baseTableSchemaName="public" constraintName="partner_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="fee_currency_id" baseTableName="partner" constraintName="partner_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-216">
-        <addForeignKeyConstraint baseColumnNames="period_unit_id" baseTableName="partner" baseTableSchemaName="public" constraintName="partner_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="period_unit_id" baseTableName="partner" constraintName="partner_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="period_unit" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-217">
-        <addForeignKeyConstraint baseColumnNames="related_clerk" baseTableName="partner" baseTableSchemaName="public" constraintName="partner_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="related_clerk" baseTableName="partner" constraintName="partner_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-218">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="partner" baseTableSchemaName="public" constraintName="partner_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="partner" constraintName="partner_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-219">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="partner_meta_field_map" baseTableSchemaName="public" constraintName="partner_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="partner_meta_field_map" constraintName="partner_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-220">
-        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="partner_meta_field_map" baseTableSchemaName="public" constraintName="partner_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="partner" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="partner_meta_field_map" constraintName="partner_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="partner" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-221">
-        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="partner_payout" baseTableSchemaName="public" constraintName="partner_payout_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="partner" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="partner_payout" constraintName="partner_payout_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="partner" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-222">
-        <addForeignKeyConstraint baseColumnNames="ach_id" baseTableName="payment" baseTableSchemaName="public" constraintName="payment_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ach" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="ach_id" baseTableName="payment" constraintName="payment_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ach" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-223">
-        <addForeignKeyConstraint baseColumnNames="credit_card_id" baseTableName="payment" baseTableSchemaName="public" constraintName="payment_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="credit_card" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="credit_card_id" baseTableName="payment" constraintName="payment_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="credit_card" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-224">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="payment" baseTableSchemaName="public" constraintName="payment_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="payment" constraintName="payment_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-225">
-        <addForeignKeyConstraint baseColumnNames="method_id" baseTableName="payment" baseTableSchemaName="public" constraintName="payment_fk_6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_method" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="method_id" baseTableName="payment" constraintName="payment_fk_6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_method" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-226">
-        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment" baseTableSchemaName="public" constraintName="payment_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment" constraintName="payment_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-227">
-        <addForeignKeyConstraint baseColumnNames="result_id" baseTableName="payment" baseTableSchemaName="public" constraintName="payment_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_result" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="result_id" baseTableName="payment" constraintName="payment_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_result" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-228">
-        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_authorization" baseTableSchemaName="public" constraintName="payment_authorization_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_authorization" constraintName="payment_authorization_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-229">
-        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_info_cheque" baseTableSchemaName="public" constraintName="payment_info_cheque_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_info_cheque" constraintName="payment_info_cheque_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-230">
-        <addForeignKeyConstraint baseColumnNames="invoice_id" baseTableName="payment_invoice" baseTableSchemaName="public" constraintName="payment_invoice_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="invoice_id" baseTableName="payment_invoice" constraintName="payment_invoice_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="invoice" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-231">
-        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_invoice" baseTableSchemaName="public" constraintName="payment_invoice_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_invoice" constraintName="payment_invoice_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-232">
-        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="payment_meta_field_map" baseTableSchemaName="public" constraintName="payment_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="meta_field_value_id" baseTableName="payment_meta_field_map" constraintName="payment_meta_field_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="meta_field_value" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-233">
-        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_meta_field_map" baseTableSchemaName="public" constraintName="payment_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_id" baseTableName="payment_meta_field_map" constraintName="payment_meta_field_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-234">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="permission" baseTableSchemaName="public" constraintName="permission_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="permission_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="permission" constraintName="permission_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="permission_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-235">
-        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="permission_role_map" baseTableSchemaName="public" constraintName="permission_role_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="permission" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="permission_role_map" constraintName="permission_role_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="permission" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-236">
-        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="permission_role_map" baseTableSchemaName="public" constraintName="permission_role_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="permission_role_map" constraintName="permission_role_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-237">
-        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="permission_user" baseTableSchemaName="public" constraintName="permission_user_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="permission" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="permission_user" constraintName="permission_user_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="permission" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-238">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="permission_user" baseTableSchemaName="public" constraintName="permission_user_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="permission_user" constraintName="permission_user_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-239">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="plan" baseTableSchemaName="public" constraintName="plan_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="plan" constraintName="plan_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-240">
-        <addForeignKeyConstraint baseColumnNames="period_id" baseTableName="plan" baseTableSchemaName="public" constraintName="plan_period_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_period" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="period_id" baseTableName="plan" constraintName="plan_period_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_period" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-241">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="plan_item" baseTableSchemaName="public" constraintName="plan_item_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="plan_item" constraintName="plan_item_item_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-242">
-        <addForeignKeyConstraint baseColumnNames="plan_id" baseTableName="plan_item" baseTableSchemaName="public" constraintName="plan_item_plan_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="plan_id" baseTableName="plan_item" constraintName="plan_item_plan_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-243">
-        <addForeignKeyConstraint baseColumnNames="plan_item_bundle_id" baseTableName="plan_item" baseTableSchemaName="public" constraintName="plan_item_bundle_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan_item_bundle" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="plan_item_bundle_id" baseTableName="plan_item" constraintName="plan_item_bundle_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan_item_bundle" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-244">
-        <addForeignKeyConstraint baseColumnNames="period_id" baseTableName="plan_item_bundle" baseTableSchemaName="public" constraintName="plan_item_bundle_period_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_period" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="period_id" baseTableName="plan_item_bundle" constraintName="plan_item_bundle_period_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_period" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-245">
-        <addForeignKeyConstraint baseColumnNames="plan_item_id" baseTableName="plan_item_price_timeline" baseTableSchemaName="public" constraintName="plan_itm_timelin_plan_itm_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan_item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="plan_item_id" baseTableName="plan_item_price_timeline" constraintName="plan_itm_timelin_plan_itm_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="plan_item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-246">
-        <addForeignKeyConstraint baseColumnNames="price_model_id" baseTableName="plan_item_price_timeline" baseTableSchemaName="public" constraintName="plnitmtimelnprc_mode_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="price_model_id" baseTableName="plan_item_price_timeline" constraintName="plnitmtimelnprc_mode_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-247">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="pluggable_task" baseTableSchemaName="public" constraintName="pluggable_task_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="pluggable_task" constraintName="pluggable_task_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-248">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="pluggable_task" baseTableSchemaName="public" constraintName="pluggable_task_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="pluggable_task" constraintName="pluggable_task_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-249">
-        <addForeignKeyConstraint baseColumnNames="task_id" baseTableName="pluggable_task_parameter" baseTableSchemaName="public" constraintName="pluggable_task_parameter_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="task_id" baseTableName="pluggable_task_parameter" constraintName="pluggable_task_parameter_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-250">
-        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="pluggable_task_type" baseTableSchemaName="public" constraintName="pluggable_task_type_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task_type_category" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="pluggable_task_type" constraintName="pluggable_task_type_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pluggable_task_type_category" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-251">
-        <addForeignKeyConstraint baseColumnNames="table_id" baseTableName="preference" baseTableSchemaName="public" constraintName="preference_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="jbilling_table" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="table_id" baseTableName="preference" constraintName="preference_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="jbilling_table" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-252">
-        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="preference" baseTableSchemaName="public" constraintName="preference_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="preference_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="preference" constraintName="preference_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="preference_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-253">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="price_model" baseTableSchemaName="public" constraintName="price_model_currency_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="price_model" constraintName="price_model_currency_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-254">
-        <addForeignKeyConstraint baseColumnNames="next_model_id" baseTableName="price_model" baseTableSchemaName="public" constraintName="price_model_next_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="next_model_id" baseTableName="price_model" constraintName="price_model_next_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-255">
-        <addForeignKeyConstraint baseColumnNames="price_model_id" baseTableName="price_model_attribute" baseTableSchemaName="public" constraintName="price_model_attr_model_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="price_model_id" baseTableName="price_model_attribute" constraintName="price_model_attr_model_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="price_model" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-256">
-        <addForeignKeyConstraint baseColumnNames="process_id" baseTableName="process_run" baseTableSchemaName="public" constraintName="process_run_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="billing_process" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="process_id" baseTableName="process_run" constraintName="process_run_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="billing_process" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-257">
-        <addForeignKeyConstraint baseColumnNames="status_id" baseTableName="process_run" baseTableSchemaName="public" constraintName="process_run_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="generic_status" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="status_id" baseTableName="process_run" constraintName="process_run_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="generic_status" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-258">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="process_run_total" baseTableSchemaName="public" constraintName="process_run_total_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="process_run_total" constraintName="process_run_total_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-259">
-        <addForeignKeyConstraint baseColumnNames="process_run_id" baseTableName="process_run_total" baseTableSchemaName="public" constraintName="process_run_total_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="process_run" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="process_run_id" baseTableName="process_run_total" constraintName="process_run_total_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="process_run" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-260">
-        <addForeignKeyConstraint baseColumnNames="payment_method_id" baseTableName="process_run_total_pm" baseTableSchemaName="public" constraintName="process_run_total_pm_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_method" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="payment_method_id" baseTableName="process_run_total_pm" constraintName="process_run_total_pm_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_method" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-261">
-        <addForeignKeyConstraint baseColumnNames="process_run_id" baseTableName="process_run_user" baseTableSchemaName="public" constraintName="process_run_user_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="process_run" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="process_run_id" baseTableName="process_run_user" constraintName="process_run_user_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="process_run" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-262">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="process_run_user" baseTableSchemaName="public" constraintName="process_run_user_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="process_run_user" constraintName="process_run_user_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-263">
-        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="promotion" baseTableSchemaName="public" constraintName="promotion_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="promotion" constraintName="promotion_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-264">
-        <addForeignKeyConstraint baseColumnNames="promotion_id" baseTableName="promotion_user_map" baseTableSchemaName="public" constraintName="promotion_user_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="promotion" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="promotion_id" baseTableName="promotion_user_map" constraintName="promotion_user_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="promotion" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-265">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="promotion_user_map" baseTableSchemaName="public" constraintName="promotion_user_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="promotion_user_map" constraintName="promotion_user_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-266">
-        <addForeignKeyConstraint baseColumnNames="billing_type_id" baseTableName="purchase_order" baseTableSchemaName="public" constraintName="purchase_order_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_billing_type" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="billing_type_id" baseTableName="purchase_order" constraintName="purchase_order_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_billing_type" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-267">
-        <addForeignKeyConstraint baseColumnNames="created_by" baseTableName="purchase_order" baseTableSchemaName="public" constraintName="purchase_order_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="created_by" baseTableName="purchase_order" constraintName="purchase_order_fk_5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-268">
-        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="purchase_order" baseTableSchemaName="public" constraintName="purchase_order_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="purchase_order" constraintName="purchase_order_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="currency" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-269">
-        <addForeignKeyConstraint baseColumnNames="period_id" baseTableName="purchase_order" baseTableSchemaName="public" constraintName="purchase_order_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_period" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="period_id" baseTableName="purchase_order" constraintName="purchase_order_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="order_period" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-270">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="purchase_order" baseTableSchemaName="public" constraintName="purchase_order_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="purchase_order" constraintName="purchase_order_fk_4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-271">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="rate_card" baseTableSchemaName="public" constraintName="rate_card_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="rate_card" constraintName="rate_card_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-272">
-        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="role" baseTableSchemaName="public" constraintName="role_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="entity_id" baseTableName="role" constraintName="role_entity_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="entity" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-273">
-        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_role_map" baseTableSchemaName="public" constraintName="user_role_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_role_map" constraintName="user_role_map_fk_1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="FKs" id="1337623084753-274">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role_map" baseTableSchemaName="public" constraintName="user_role_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role_map" constraintName="user_role_map_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="base_user" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-275">
         <createIndex indexName="ix_base_user_un" tableName="base_user" unique="false">

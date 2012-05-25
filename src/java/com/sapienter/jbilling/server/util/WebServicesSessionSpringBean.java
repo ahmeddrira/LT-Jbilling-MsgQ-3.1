@@ -3191,7 +3191,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
        Notifications
      */
 
-    public void createUpdateNofications(Integer messageId, MessageDTO dto) {
+    public void createUpdateNotification(Integer messageId, MessageDTO dto) {
         if (null == messageId) {
             new NotificationBL().createUpdate(getCallerCompanyId(), dto);
         } else {

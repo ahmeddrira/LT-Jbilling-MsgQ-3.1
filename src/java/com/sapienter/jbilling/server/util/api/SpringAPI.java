@@ -784,8 +784,8 @@ public class SpringAPI implements JbillingAPI {
         return session.updateOrCreateOrderPeriod(orderPeriod);
     }
     
-    public void createUpdateNofications(Integer messageId, MessageDTO dto) {
-        session.createUpdateNofications(messageId, dto);
+    public void createUpdateNotification(Integer messageId, MessageDTO dto) {
+        session.createUpdateNotification(messageId, dto);
     }
 
     public void saveCustomerNotes(Integer userId, String notes) {

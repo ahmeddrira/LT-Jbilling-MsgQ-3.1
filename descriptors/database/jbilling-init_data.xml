@@ -2900,7 +2900,7 @@
         </insert>
         <insert tableName="permission">
             <column name="id" valueNumeric="100"/>
-            <column name="type_id" valueNumeric="10"/>
+            <column name="type_id" valueNumeric="9"/>
             <column name="foreign_id"/>
         </insert>
         <insert tableName="permission">

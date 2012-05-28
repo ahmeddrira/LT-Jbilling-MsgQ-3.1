@@ -6940,7 +6940,7 @@ INSERT INTO permission (id,type_id)
 
 
 INSERT INTO permission (id,type_id)
-    VALUES (100,10);
+    VALUES (100,9);
 
 
 INSERT INTO permission (id,type_id)

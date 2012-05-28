@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <changeSet author="emilc-devel (generated)" id="1337626364591-1">
+    <changeSet author="aristokrates (generated)" id="1337972683141-1">
         <insert tableName="order_line_type">
             <column name="id" valueNumeric="1"/>
             <column name="editable" valueNumeric="1"/>
@@ -14,7 +14,7 @@
             <column name="editable" valueNumeric="0"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-2">
+    <changeSet author="aristokrates (generated)" id="1337972683141-2">
         <insert tableName="notification_category">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -28,7 +28,7 @@
             <column name="id" valueNumeric="4"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-3">
+    <changeSet author="aristokrates (generated)" id="1337972683141-3">
         <insert tableName="order_period">
             <column name="id" valueNumeric="1"/>
             <column name="entity_id"/>
@@ -37,7 +37,15 @@
             <column name="optlock" valueNumeric="1"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-4">
+    <changeSet author="aristokrates (generated)" id="1337972683141-4">
+        <insert tableName="jbilling_seqs">
+            <column name="name" value="enumeration"/>
+            <column name="next_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="jbilling_seqs">
+            <column name="name" value="enumeration_values"/>
+            <column name="next_id" valueNumeric="1"/>
+        </insert>
         <insert tableName="jbilling_seqs">
             <column name="name" value="entity_delivery_method_map"/>
             <column name="next_id" valueNumeric="4"/>
@@ -141,6 +149,10 @@
         <insert tableName="jbilling_seqs">
             <column name="name" value="notification_message_type"/>
             <column name="next_id" valueNumeric="20"/>
+        </insert>
+        <insert tableName="jbilling_seqs">
+            <column name="name" value="role"/>
+            <column name="next_id" valueNumeric="6"/>
         </insert>
         <insert tableName="jbilling_seqs">
             <column name="name" value="country"/>
@@ -410,12 +422,30 @@
             <column name="name" value="plan_item_bundle"/>
             <column name="next_id" valueNumeric="0"/>
         </insert>
-        <insert tableName="jbilling_seqs">
-            <column name="name" value="role"/>
-            <column name="next_id" valueNumeric="1"/>
+    </changeSet>
+    <changeSet author="aristokrates (generated)" id="1337972683141-5">
+        <insert tableName="report_type">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="invoice"/>
+            <column name="optlock" valueNumeric="0"/>
+        </insert>
+        <insert tableName="report_type">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="order"/>
+            <column name="optlock" valueNumeric="0"/>
+        </insert>
+        <insert tableName="report_type">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="payment"/>
+            <column name="optlock" valueNumeric="0"/>
+        </insert>
+        <insert tableName="report_type">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="user"/>
+            <column name="optlock" valueNumeric="0"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-5">
+    <changeSet author="aristokrates (generated)" id="1337972683141-6">
         <insert tableName="permission_role_map">
             <column name="permission_id" valueNumeric="10"/>
             <column name="role_id" valueNumeric="2"/>
@@ -442,6 +472,10 @@
         </insert>
         <insert tableName="permission_role_map">
             <column name="permission_id" valueNumeric="16"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="17"/>
             <column name="role_id" valueNumeric="2"/>
         </insert>
         <insert tableName="permission_role_map">
@@ -621,6 +655,30 @@
             <column name="role_id" valueNumeric="2"/>
         </insert>
         <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="100"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="101"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="102"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="103"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="104"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="111"/>
+            <column name="role_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="permission_role_map">
             <column name="permission_id" valueNumeric="120"/>
             <column name="role_id" valueNumeric="2"/>
         </insert>
@@ -646,6 +704,10 @@
         </insert>
         <insert tableName="permission_role_map">
             <column name="permission_id" valueNumeric="15"/>
+            <column name="role_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="17"/>
             <column name="role_id" valueNumeric="3"/>
         </insert>
         <insert tableName="permission_role_map">
@@ -793,7 +855,103 @@
             <column name="role_id" valueNumeric="3"/>
         </insert>
         <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="100"/>
+            <column name="role_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="101"/>
+            <column name="role_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="102"/>
+            <column name="role_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="103"/>
+            <column name="role_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="104"/>
+            <column name="role_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="15"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="10"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="11"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
             <column name="permission_id" valueNumeric="24"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="28"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="20"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="21"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="34"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="36"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="30"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="72"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="74"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="90"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="91"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="92"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="93"/>
+            <column name="role_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="15"/>
+            <column name="role_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="18"/>
+            <column name="role_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="24"/>
+            <column name="role_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="29"/>
             <column name="role_id" valueNumeric="5"/>
         </insert>
         <insert tableName="permission_role_map">
@@ -805,7 +963,19 @@
             <column name="role_id" valueNumeric="5"/>
         </insert>
         <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="37"/>
+            <column name="role_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="permission_role_map">
             <column name="permission_id" valueNumeric="72"/>
+            <column name="role_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="75"/>
+            <column name="role_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="permission_role_map">
+            <column name="permission_id" valueNumeric="90"/>
             <column name="role_id" valueNumeric="5"/>
         </insert>
         <insert tableName="permission_role_map">
@@ -821,29 +991,7 @@
             <column name="role_id" valueNumeric="5"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-6">
-        <insert tableName="report_type">
-            <column name="id" valueNumeric="1"/>
-            <column name="name" value="invoice"/>
-            <column name="optlock" valueNumeric="0"/>
-        </insert>
-        <insert tableName="report_type">
-            <column name="id" valueNumeric="2"/>
-            <column name="name" value="order"/>
-            <column name="optlock" valueNumeric="0"/>
-        </insert>
-        <insert tableName="report_type">
-            <column name="id" valueNumeric="3"/>
-            <column name="name" value="payment"/>
-            <column name="optlock" valueNumeric="0"/>
-        </insert>
-        <insert tableName="report_type">
-            <column name="id" valueNumeric="4"/>
-            <column name="name" value="user"/>
-            <column name="optlock" valueNumeric="0"/>
-        </insert>
-    </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-7">
+    <changeSet author="aristokrates (generated)" id="1337972683141-7">
         <insert tableName="permission_type">
             <column name="id" valueNumeric="1"/>
             <column name="description" value="Customer"/>
@@ -882,10 +1030,18 @@
         </insert>
         <insert tableName="permission_type">
             <column name="id" valueNumeric="10"/>
+            <column name="description" value="Partner"/>
+        </insert>
+        <insert tableName="permission_type">
+            <column name="id" valueNumeric="11"/>
+            <column name="description" value="User Switching"/>
+        </insert>
+        <insert tableName="permission_type">
+            <column name="id" valueNumeric="12"/>
             <column name="description" value="API"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-8">
+    <changeSet author="aristokrates (generated)" id="1337972683141-8">
         <insert tableName="generic_status_type">
             <column name="id" value="order_line_provisioning_status"/>
         </insert>
@@ -908,7 +1064,7 @@
             <column name="id" value="process_run_status"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-9">
+    <changeSet author="aristokrates (generated)" id="1337972683141-9">
         <insert tableName="pluggable_task_type_category">
             <column name="id" valueNumeric="1"/>
             <column name="interface_name" value="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
@@ -1006,29 +1162,29 @@
             <column name="interface_name" value="com.sapienter.jbilling.server.process.task.IAgeingTask"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-10">
+    <changeSet author="aristokrates (generated)" id="1337972683141-10">
         <insert tableName="role">
             <column name="id" valueNumeric="2"/>
-            <column name="entity_id"/>
             <column name="role_type_id" valueNumeric="2"/>
+            <column name="entity_id"/>
         </insert>
         <insert tableName="role">
             <column name="id" valueNumeric="3"/>
-            <column name="entity_id"/>
             <column name="role_type_id" valueNumeric="3"/>
+            <column name="entity_id"/>
         </insert>
         <insert tableName="role">
             <column name="id" valueNumeric="4"/>
-            <column name="entity_id"/>
             <column name="role_type_id" valueNumeric="4"/>
+            <column name="entity_id"/>
         </insert>
         <insert tableName="role">
             <column name="id" valueNumeric="5"/>
-            <column name="entity_id"/>
             <column name="role_type_id" valueNumeric="5"/>
+            <column name="entity_id"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-11">
+    <changeSet author="aristokrates (generated)" id="1337972683141-11">
         <insert tableName="jbilling_table">
             <column name="id" valueNumeric="8"/>
             <column name="name" value="entity_delivery_method_map"/>
@@ -1389,8 +1545,16 @@
             <column name="id" valueNumeric="104"/>
             <column name="name" value="notification_category"/>
         </insert>
+        <insert tableName="jbilling_table">
+            <column name="id" valueNumeric="105"/>
+            <column name="name" value="enumeration"/>
+        </insert>
+        <insert tableName="jbilling_table">
+            <column name="id" valueNumeric="106"/>
+            <column name="name" value="enumeration_values"/>
+        </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-12">
+    <changeSet author="aristokrates (generated)" id="1337972683141-12">
         <insert tableName="order_billing_type">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -1398,7 +1562,7 @@
             <column name="id" valueNumeric="2"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-13">
+    <changeSet author="aristokrates (generated)" id="1337972683141-13">
         <insert tableName="language">
             <column name="id" valueNumeric="1"/>
             <column name="code" value="en"/>
@@ -1410,7 +1574,7 @@
             <column name="description" value="Portugu�s"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-14">
+    <changeSet author="aristokrates (generated)" id="1337972683141-14">
         <insert tableName="country">
             <column name="id" valueNumeric="1"/>
             <column name="code" value="AF"/>
@@ -2360,7 +2524,7 @@
             <column name="code" value="ZW"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-15">
+    <changeSet author="aristokrates (generated)" id="1337972683141-15">
         <insert tableName="payment_result">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -2374,7 +2538,7 @@
             <column name="id" valueNumeric="4"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-16">
+    <changeSet author="aristokrates (generated)" id="1337972683141-16">
         <insert tableName="currency">
             <column name="id" valueNumeric="1"/>
             <column name="symbol" value="US$"/>
@@ -2453,7 +2617,7 @@
             <column name="optlock" valueNumeric="0"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-17">
+    <changeSet author="aristokrates (generated)" id="1337972683141-17">
         <insert tableName="permission">
             <column name="id" valueNumeric="10"/>
             <column name="type_id" valueNumeric="1"/>
@@ -2486,6 +2650,16 @@
         </insert>
         <insert tableName="permission">
             <column name="id" valueNumeric="16"/>
+            <column name="type_id" valueNumeric="1"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="17"/>
+            <column name="type_id" valueNumeric="1"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="18"/>
             <column name="type_id" valueNumeric="1"/>
             <column name="foreign_id"/>
         </insert>
@@ -2535,6 +2709,11 @@
             <column name="foreign_id"/>
         </insert>
         <insert tableName="permission">
+            <column name="id" valueNumeric="29"/>
+            <column name="type_id" valueNumeric="2"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
             <column name="id" valueNumeric="30"/>
             <column name="type_id" valueNumeric="3"/>
             <column name="foreign_id"/>
@@ -2566,6 +2745,11 @@
         </insert>
         <insert tableName="permission">
             <column name="id" valueNumeric="36"/>
+            <column name="type_id" valueNumeric="3"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="37"/>
             <column name="type_id" valueNumeric="3"/>
             <column name="foreign_id"/>
         </insert>
@@ -2655,6 +2839,11 @@
             <column name="foreign_id"/>
         </insert>
         <insert tableName="permission">
+            <column name="id" valueNumeric="75"/>
+            <column name="type_id" valueNumeric="7"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
             <column name="id" valueNumeric="80"/>
             <column name="type_id" valueNumeric="8"/>
             <column name="foreign_id"/>
@@ -2710,12 +2899,47 @@
             <column name="foreign_id"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" valueNumeric="120"/>
+            <column name="id" valueNumeric="100"/>
+            <column name="type_id" valueNumeric="9"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="101"/>
             <column name="type_id" valueNumeric="10"/>
             <column name="foreign_id"/>
         </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="102"/>
+            <column name="type_id" valueNumeric="10"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="103"/>
+            <column name="type_id" valueNumeric="10"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="104"/>
+            <column name="type_id" valueNumeric="10"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="110"/>
+            <column name="type_id" valueNumeric="11"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="111"/>
+            <column name="type_id" valueNumeric="11"/>
+            <column name="foreign_id"/>
+        </insert>
+        <insert tableName="permission">
+            <column name="id" valueNumeric="120"/>
+            <column name="type_id" valueNumeric="12"/>
+            <column name="foreign_id"/>
+        </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-18">
+    <changeSet author="aristokrates (generated)" id="1337972683141-18">
         <insert tableName="report">
             <column name="id" valueNumeric="1"/>
             <column name="type_id" valueNumeric="1"/>
@@ -2779,8 +3003,29 @@
             <column name="file_name" value="gl_summary.jasper"/>
             <column name="optlock" valueNumeric="0"/>
         </insert>
+        <insert tableName="report">
+            <column name="id" valueNumeric="10"/>
+            <column name="type_id" valueNumeric="4"/>
+            <column name="name" value="plan_history"/>
+            <column name="file_name" value="plan_history.jasper"/>
+            <column name="optlock" valueNumeric="0"/>
+        </insert>
+        <insert tableName="report">
+            <column name="id" valueNumeric="11"/>
+            <column name="type_id" valueNumeric="4"/>
+            <column name="name" value="total_invoiced_per_customer"/>
+            <column name="file_name" value="total_invoiced_per_customer.jasper"/>
+            <column name="optlock" valueNumeric="0"/>
+        </insert>
+        <insert tableName="report">
+            <column name="id" valueNumeric="12"/>
+            <column name="type_id" valueNumeric="4"/>
+            <column name="name" value="total_invoiced_per_customer_over_years"/>
+            <column name="file_name" value="total_invoiced_per_customer_over_years.jasper"/>
+            <column name="optlock" valueNumeric="0"/>
+        </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-19">
+    <changeSet author="aristokrates (generated)" id="1337972683141-19">
         <insert tableName="invoice_line_type">
             <column name="id" valueNumeric="1"/>
             <column name="description" value="item recurring"/>
@@ -2812,7 +3057,7 @@
             <column name="order_position" valueNumeric="3"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-20">
+    <changeSet author="aristokrates (generated)" id="1337972683141-20">
         <insert tableName="event_log_message">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -2916,7 +3161,7 @@
             <column name="id" valueNumeric="34"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-21">
+    <changeSet author="aristokrates (generated)" id="1337972683141-21">
         <insert tableName="pluggable_task_type">
             <column name="id" valueNumeric="1"/>
             <column name="category_id" valueNumeric="1"/>
@@ -3368,12 +3613,6 @@
             <column name="min_parameters" valueNumeric="0"/>
         </insert>
         <insert tableName="pluggable_task_type">
-            <column name="id" valueNumeric="80"/>
-            <column name="category_id" valueNumeric="14"/>
-            <column name="class_name" value="com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask"/>
-            <column name="min_parameters" valueNumeric="0"/>
-        </insert>
-        <insert tableName="pluggable_task_type">
             <column name="id" valueNumeric="81"/>
             <column name="category_id" valueNumeric="22"/>
             <column name="class_name" value="com.sapienter.jbilling.server.mediation.task.MediationProcessTask"/>
@@ -3433,8 +3672,26 @@
             <column name="class_name" value="com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask"/>
             <column name="min_parameters" valueNumeric="1"/>
         </insert>
+        <insert tableName="pluggable_task_type">
+            <column name="id" valueNumeric="91"/>
+            <column name="category_id" valueNumeric="4"/>
+            <column name="class_name" value="com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask"/>
+            <column name="min_parameters" valueNumeric="2"/>
+        </insert>
+        <insert tableName="pluggable_task_type">
+            <column name="id" valueNumeric="92"/>
+            <column name="category_id" valueNumeric="4"/>
+            <column name="class_name" value="com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask"/>
+            <column name="min_parameters" valueNumeric="2"/>
+        </insert>
+        <insert tableName="pluggable_task_type">
+            <column name="id" valueNumeric="93"/>
+            <column name="category_id" valueNumeric="17"/>
+            <column name="class_name" value="com.sapienter.jbilling.server.order.task.CancellationFeeTask"/>
+            <column name="min_parameters" valueNumeric="2"/>
+        </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-22">
+    <changeSet author="aristokrates (generated)" id="1337972683141-22">
         <insert tableName="payment_method">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -3463,7 +3720,7 @@
             <column name="id" valueNumeric="9"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-23">
+    <changeSet author="aristokrates (generated)" id="1337972683141-23">
         <insert tableName="invoice_delivery_method">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -3474,7 +3731,7 @@
             <column name="id" valueNumeric="3"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-24">
+    <changeSet author="aristokrates (generated)" id="1337972683141-24">
         <insert tableName="contact_type">
             <column name="id" valueNumeric="1"/>
             <column name="entity_id"/>
@@ -3482,7 +3739,7 @@
             <column name="optlock" valueNumeric="0"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-25">
+    <changeSet author="aristokrates (generated)" id="1337972683141-25">
         <insert tableName="period_unit">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -3496,7 +3753,7 @@
             <column name="id" valueNumeric="4"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-26">
+    <changeSet author="aristokrates (generated)" id="1337972683141-26">
         <insert tableName="report_parameter">
             <column name="id" valueNumeric="1"/>
             <column name="report_id" valueNumeric="1"/>
@@ -3581,8 +3838,50 @@
             <column name="dtype" value="date"/>
             <column name="name" value="date"/>
         </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="15"/>
+            <column name="report_id" valueNumeric="10"/>
+            <column name="dtype" value="integer"/>
+            <column name="name" value="plan_id"/>
+        </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="16"/>
+            <column name="report_id" valueNumeric="10"/>
+            <column name="dtype" value="string"/>
+            <column name="name" value="plan_code"/>
+        </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="17"/>
+            <column name="report_id" valueNumeric="10"/>
+            <column name="dtype" value="string"/>
+            <column name="name" value="plan_description"/>
+        </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="18"/>
+            <column name="report_id" valueNumeric="11"/>
+            <column name="dtype" value="date"/>
+            <column name="name" value="start_date"/>
+        </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="19"/>
+            <column name="report_id" valueNumeric="11"/>
+            <column name="dtype" value="date"/>
+            <column name="name" value="end_date"/>
+        </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="20"/>
+            <column name="report_id" valueNumeric="12"/>
+            <column name="dtype" value="string"/>
+            <column name="name" value="start_year"/>
+        </insert>
+        <insert tableName="report_parameter">
+            <column name="id" valueNumeric="21"/>
+            <column name="report_id" valueNumeric="12"/>
+            <column name="dtype" value="string"/>
+            <column name="name" value="end_year"/>
+        </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-27">
+    <changeSet author="aristokrates (generated)" id="1337972683141-27">
         <insert tableName="preference_type">
             <column name="id" valueNumeric="4"/>
             <column name="def_value"/>
@@ -3764,13 +4063,14 @@
             <column name="def_value" value="2"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-28">
+    <changeSet author="aristokrates (generated)" id="1337972683141-28">
         <insert tableName="currency_exchange">
             <column name="id" valueNumeric="1"/>
             <column name="entity_id" valueNumeric="0"/>
             <column name="currency_id" valueNumeric="2"/>
             <column name="rate" valueNumeric="1.3250000000"/>
             <column name="create_datetime" valueDate="2004-03-09T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3779,6 +4079,7 @@
             <column name="currency_id" valueNumeric="3"/>
             <column name="rate" valueNumeric="0.8118000000"/>
             <column name="create_datetime" valueDate="2004-03-09T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3787,6 +4088,7 @@
             <column name="currency_id" valueNumeric="4"/>
             <column name="rate" valueNumeric="111.4000000000"/>
             <column name="create_datetime" valueDate="2004-03-09T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3795,6 +4097,7 @@
             <column name="currency_id" valueNumeric="5"/>
             <column name="rate" valueNumeric="0.5479000000"/>
             <column name="create_datetime" valueDate="2004-03-09T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3803,6 +4106,7 @@
             <column name="currency_id" valueNumeric="6"/>
             <column name="rate" valueNumeric="1171.0000000000"/>
             <column name="create_datetime" valueDate="2004-03-09T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3811,6 +4115,7 @@
             <column name="currency_id" valueNumeric="7"/>
             <column name="rate" valueNumeric="1.2300000000"/>
             <column name="create_datetime" valueDate="2004-07-06T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3819,6 +4124,7 @@
             <column name="currency_id" valueNumeric="8"/>
             <column name="rate" valueNumeric="7.4700000000"/>
             <column name="create_datetime" valueDate="2004-07-06T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3827,6 +4133,7 @@
             <column name="currency_id" valueNumeric="9"/>
             <column name="rate" valueNumeric="1.6800000000"/>
             <column name="create_datetime" valueDate="2004-10-12T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3835,6 +4142,7 @@
             <column name="currency_id" valueNumeric="10"/>
             <column name="rate" valueNumeric="3.8000000000"/>
             <column name="create_datetime" valueDate="2004-10-12T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
         <insert tableName="currency_exchange">
@@ -3843,10 +4151,11 @@
             <column name="currency_id" valueNumeric="11"/>
             <column name="rate" valueNumeric="1.2880000000"/>
             <column name="create_datetime" valueDate="2007-01-25T00:00:00.0"/>
+            <column name="valid_since" valueDate="1970-01-01"/>
             <column name="optlock" valueNumeric="1"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-29">
+    <changeSet author="aristokrates (generated)" id="1337972683141-29">
         <insert tableName="event_log_module">
             <column name="id" valueNumeric="1"/>
         </insert>
@@ -3893,7 +4202,7 @@
             <column name="id" valueNumeric="15"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-30">
+    <changeSet author="aristokrates (generated)" id="1337972683141-30">
         <insert tableName="notification_message_type">
             <column name="id" valueNumeric="1"/>
             <column name="category_id" valueNumeric="1"/>
@@ -3995,7 +4304,7 @@
             <column name="optlock" valueNumeric="1"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-31">
+    <changeSet author="aristokrates (generated)" id="1337972683141-31">
         <insert tableName="generic_status">
             <column name="id" valueNumeric="1"/>
             <column name="dtype" value="user_status"/>
@@ -4207,7 +4516,7 @@
             <column name="can_login"/>
         </insert>
     </changeSet>
-    <changeSet author="emilc-devel (generated)" id="1337626364591-32">
+    <changeSet author="aristokrates (generated)" id="1337972683141-32">
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="50"/>
             <column name="foreign_id" valueNumeric="20"/>
@@ -9712,13 +10021,6 @@
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="24"/>
-            <column name="foreign_id" valueNumeric="39"/>
-            <column name="psudo_column" value="title"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="content" value="Payment process for the Intraanuity payment gateway"/>
-        </insert>
-        <insert tableName="international_description">
-            <column name="table_id" valueNumeric="24"/>
             <column name="foreign_id" valueNumeric="6"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
@@ -10129,6 +10431,13 @@
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
             <column name="content" value="When creating an invoice from an order, this plug-in will pro-rate any fraction of a period taking a day as the smallest billable unit."/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="39"/>
+            <column name="psudo_column" value="title"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Payment process for the Intraanuity payment gateway"/>
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="24"/>
@@ -10712,25 +11021,60 @@
             <column name="content" value="Ages a user based on the number of business days (excluding holidays) that the account is overdue."/>
         </insert>
         <insert tableName="international_description">
-            <column name="table_id" valueNumeric="99"/>
-            <column name="foreign_id" valueNumeric="1"/>
-            <column name="psudo_column" value="description"/>
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="90"/>
+            <column name="psudo_column" value="title"/>
             <column name="language_id" valueNumeric="1"/>
-            <column name="content" value="Referral Fee"/>
+            <column name="content" value="Simple Tax Composition Task"/>
         </insert>
         <insert tableName="international_description">
-            <column name="table_id" valueNumeric="99"/>
-            <column name="foreign_id" valueNumeric="2"/>
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="90"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
-            <column name="content" value="Payment Processor"/>
+            <column name="content" value="A pluggable task of the type AbstractChargeTask to apply tax item to an Invoice with a facility of exempting an exempt item or an exemp customer."/>
         </insert>
         <insert tableName="international_description">
-            <column name="table_id" valueNumeric="99"/>
-            <column name="foreign_id" valueNumeric="3"/>
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="91"/>
+            <column name="psudo_column" value="title"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Country Tax Invoice Composition Task"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="91"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
-            <column name="content" value="IP Address"/>
+            <column name="content" value="A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching."/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="92"/>
+            <column name="psudo_column" value="title"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Payment Terms Penalty Task"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="92"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period."/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="93"/>
+            <column name="psudo_column" value="title"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Fees for early cancellation of a subscription"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="93"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="This plug-in will create a new order with a fee if a recurring order is cancelled too early"/>
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="47"/>
@@ -10884,7 +11228,7 @@
             <column name="foreign_id" valueNumeric="4"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
-            <column name="content" value="User Reports"/>
+            <column name="content" value="Customer Reports"/>
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="100"/>
@@ -10948,6 +11292,27 @@
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
             <column name="content" value="General ledger summary of all invoiced charges for the given day, grouped by item type."/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="100"/>
+            <column name="foreign_id" valueNumeric="10"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Plan pricing history for all plan products and start dates."/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="100"/>
+            <column name="foreign_id" valueNumeric="11"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Total invoiced per customer grouped by product category."/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="100"/>
+            <column name="foreign_id" valueNumeric="12"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Total invoiced per customer over years grouped by year."/>
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="104"/>
@@ -11518,6 +11883,20 @@
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="17"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="View all customers"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="18"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="View customer sub-accounts"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
             <column name="foreign_id" valueNumeric="20"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
@@ -11581,6 +11960,13 @@
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="29"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="View customer sub-accounts"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
             <column name="foreign_id" valueNumeric="30"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
@@ -11627,6 +12013,13 @@
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
             <column name="content" value="View all customers"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="37"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="View customer sub-accounts"/>
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="59"/>
@@ -11749,6 +12142,13 @@
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="75"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="View customer sub-accounts"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
             <column name="foreign_id" valueNumeric="80"/>
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
@@ -11823,6 +12223,55 @@
             <column name="psudo_column" value="description"/>
             <column name="language_id" valueNumeric="1"/>
             <column name="content" value="Show configuration menu"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="100"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Show partner menu"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="101"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Create partner"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="102"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Edit partner"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="103"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Delete partner"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="104"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="View partner details"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="110"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Switch to sub-account"/>
+        </insert>
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="59"/>
+            <column name="foreign_id" valueNumeric="111"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Switch to any user"/>
         </insert>
         <insert tableName="international_description">
             <column name="table_id" valueNumeric="59"/>

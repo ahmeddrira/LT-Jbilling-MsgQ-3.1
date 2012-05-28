@@ -326,7 +326,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         return message;
     }
 
-    public MessageDTO getInvoiceRemainderMessage(Integer entityId,
+    public MessageDTO getInvoiceReminderMessage(Integer entityId,
             Integer userId, Integer days, Date dueDate, String number,
             BigDecimal total, Date date, Integer currencyId)
             throws SessionInternalError, NotificationNotFoundException {

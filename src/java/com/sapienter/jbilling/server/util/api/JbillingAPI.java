@@ -353,7 +353,7 @@ public interface JbillingAPI {
     public boolean deleteOrderPeriod(Integer periodId);
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
     public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod);
-    public void createUpdateNofications(Integer messageId, MessageDTO dto);
+    public void createUpdateNotification(Integer messageId, MessageDTO dto);
     public void saveCustomerNotes(Integer userId, String notes);
     public void updateCompany(CompanyWS companyWS);
     

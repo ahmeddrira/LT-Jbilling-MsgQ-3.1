@@ -209,7 +209,7 @@ h2. Preference API Methods
 @createCurrency(CurrencyWS currency)@ | @CurrencyWS@ | @Integer@ | Saves a new currency type and returns the new ID.
 @getCompany()@ | - | @CompanyWS@ | Returns the company contact details for the API users company.
 @updateCompany(CompanyWS companyWS)@ | @CompanyWS@ | - | Updates the company contact details for the API users company.
-@createUpdateNofications(Integer messageId, MessageDTO dto)@ | Mesage ID , @MessageDTO@ | - | Saves or updates an existing notification message.
+@createUpdateNotification(Integer messageId, MessageDTO dto)@ | Mesage ID , @MessageDTO@ | - | Saves or updates an existing notification message.
 {table}
 
 

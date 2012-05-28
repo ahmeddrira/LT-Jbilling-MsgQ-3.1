@@ -60,7 +60,9 @@ public class PartnerWS implements WSSecured, Serializable {
     private String totalPayments;
     private String totalRefunds;
     private String totalPayouts;
+    @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String percentageRate;
+    @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String referralFee;
     private Boolean oneTime;
     private Integer periodValue;

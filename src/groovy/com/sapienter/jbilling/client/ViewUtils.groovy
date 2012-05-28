@@ -50,6 +50,7 @@ class ViewUtils {
 				String errorMessage = messageSource.getMessage(fields[2], restOfFields as Object[] , locale);
 				String finalMessage = messageSource.getMessage("validation.message", 
 					[type, property, errorMessage] as Object[], locale);
+                finalMessage = type.equals("Meta Field") ? errorMessage : finalMessage
 				messages.add finalMessage;
 			}
 			flash.errorMessages = messages;

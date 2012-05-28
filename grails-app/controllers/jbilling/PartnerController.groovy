@@ -88,7 +88,7 @@ class PartnerController {
                 }
                 baseUser {
                     roles {
-                        eq('id', Constants.TYPE_PARTNER)
+                        eq('roleTypeId', Constants.TYPE_PARTNER)
                     }
                     eq('deleted', 0)
                     eq('company', company)

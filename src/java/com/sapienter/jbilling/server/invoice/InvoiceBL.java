@@ -174,10 +174,10 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         int decimals = Constants.BIGDECIMAL_SCALE;
         try {
         	pref.set(entityId, Constants.PREFERENCE_INVOICE_DECIMALS);
+        	decimals = pref.getInt();
         } catch (EmptyResultDataAccessException e) {
             // not interested, ignore
         }
-       	decimals = pref.getInt();
 
        	LOG.debug("Rounding " + newInvoice.getTotal() + " to " + decimals + " decimals");
         if (newInvoice.getTotal() != null) {
@@ -781,7 +781,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                     int days = Math.round(mils / 1000 / 60 / 60 / 24);
 
                     try {
-                        MessageDTO message = notif.getInvoiceRemainderMessage(
+                        MessageDTO message = notif.getInvoiceReminderMessage(
                                 entityId, invoice.getBaseUser().getUserId(),
                                 new Integer(days), invoice.getDueDate(),
                                 invoice.getPublicNumber(), invoice.getTotal(),

@@ -336,7 +336,7 @@ class NotificationsController {
 		if (entityId?.intValue() == webServicesSession.getCallerCompanyId()?.intValue()) {
             log.debug "Calling createUpdateNotifications..."
             try {
-                webServicesSession.createUpdateNofications(messageId, messageDTO)
+                webServicesSession.createUpdateNotification(messageId, messageDTO)
                 flash.message = 'notification.save.success'
             } catch (Exception e) {
                 log.error("ERROR: " + e.getMessage())

@@ -698,8 +698,8 @@ class ApiService implements IWebServicesSessionBean {
         Notification
     */
 
-    public void createUpdateNofications(Integer messageId, MessageDTO dto) {
-       webServicesSession.createUpdateNofications(messageId, dto)
+    public void createUpdateNotification(Integer messageId, MessageDTO dto) {
+       webServicesSession.createUpdateNotification(messageId, dto)
     }
 
 	public void saveCustomerNotes(Integer userId, String notes) {

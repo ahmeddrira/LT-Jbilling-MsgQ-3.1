@@ -333,6 +333,12 @@ class PaymentController {
         // validate before showing the confirmation page
         try {
             webServicesValidationAdvice.validateObject(payment)
+            // validate before showing the confirmation page
+            if(payment.amountAsDecimal == BigDecimal.ZERO) {
+                String [] errors = ["PaymentWS,amount,validation.error.payment.amount.cannot.be.zero"]
+                    throw new SessionInternalError("Payment Amount Cannot Be Zero",
+                        errors);
+            }
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)

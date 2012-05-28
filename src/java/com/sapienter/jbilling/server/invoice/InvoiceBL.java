@@ -781,7 +781,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                     int days = Math.round(mils / 1000 / 60 / 60 / 24);
 
                     try {
-                        MessageDTO message = notif.getInvoiceRemainderMessage(
+                        MessageDTO message = notif.getInvoiceReminderMessage(
                                 entityId, invoice.getBaseUser().getUserId(),
                                 new Integer(days), invoice.getDueDate(),
                                 invoice.getPublicNumber(), invoice.getTotal(),

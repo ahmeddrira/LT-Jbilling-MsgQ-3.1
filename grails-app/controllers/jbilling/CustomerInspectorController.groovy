@@ -158,7 +158,7 @@ class CustomerInspectorController {
         } else {
             // copy default product price model as a starting point
             def priceModel = PriceModelBL.getWsPriceForDate(product.defaultPrices, new Date());
-            priceModel.id = null;
+            priceModel?.id = null;
 
             def price = new PlanItemWS()
             price.addModel(CommonConstants.EPOCH_DATE, priceModel);
@@ -168,7 +168,7 @@ class CustomerInspectorController {
     }
 
     def PlanItemWS getCustomerPrice(userId, priceId) {
-        return webServiecsSession.getCustomerPrices(userId).find{ it.id == priceId }
+        return webServicesSession.getCustomerPrices(userId).find{ it.id == priceId }
     }
 
     def updateStrategy = {

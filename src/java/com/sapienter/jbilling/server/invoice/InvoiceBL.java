@@ -174,10 +174,10 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         int decimals = Constants.BIGDECIMAL_SCALE;
         try {
         	pref.set(entityId, Constants.PREFERENCE_INVOICE_DECIMALS);
+        	decimals = pref.getInt();
         } catch (EmptyResultDataAccessException e) {
             // not interested, ignore
         }
-       	decimals = pref.getInt();
 
        	LOG.debug("Rounding " + newInvoice.getTotal() + " to " + decimals + " decimals");
         if (newInvoice.getTotal() != null) {

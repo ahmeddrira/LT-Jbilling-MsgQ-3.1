@@ -24,7 +24,7 @@ import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
-
+import org.hibernate.ObjectNotFoundException;
 import java.math.BigDecimal;
 
 public class PreferenceBL {
@@ -57,18 +57,24 @@ public class PreferenceBL {
     }
 
     public void set(Integer entityId, Integer typeId) throws EmptyResultDataAccessException {
+        
         LOG.debug("Looking for preference " + typeId + ", for entity " + entityId
                   + " and table '" + Constants.TABLE_ENTITY + "'");
 
-        preference = preferenceDas.findByType_Row( typeId, entityId, Constants.TABLE_ENTITY);
-        type = typeDas.find(typeId);
+        try {
+            preference = preferenceDas.findByType_Row( typeId, entityId, Constants.TABLE_ENTITY);
+            type = typeDas.find(typeId);
 
-        // throw exception if there is no preference, or if the type does not have a
-        // default value that can be returned.
-        if (preference == null) {
-            if (type == null || type.getDefaultValue() == null) {
-                throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
+            // throw exception if there is no preference, or if the type does not have a
+            // default value that can be returned.
+            if (preference == null) {
+                if (type == null || type.getDefaultValue() == null) {
+                    throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
+                }
             }
+        } catch (ObjectNotFoundException e) {
+            // do nothing
+            throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
         }
     }
 

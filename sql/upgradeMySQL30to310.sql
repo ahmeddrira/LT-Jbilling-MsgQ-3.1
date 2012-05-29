@@ -883,5 +883,5 @@ alter table plan_item_price_timeline modify column start_date datetime not null 
 -- plan table
 		ALTER TABLE plan ADD period_id INT NOT NULL AFTER item_id;
     
-    
+    update permission set type_id=9 where id=100;
     

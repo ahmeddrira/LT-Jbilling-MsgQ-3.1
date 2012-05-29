@@ -561,6 +561,10 @@ class PlanBuilderController {
                     def plan = conversation.plan
                     def product = conversation.product
 
+                    //to avoid spaces or tabs
+                    product.number = product?.number?.trim()
+                    product.description = product?.description?.trim()
+
                     if (!plan.id || plan.id == 0) {
                         if (SpringSecurityUtils.ifAllGranted("PLAN_60")) {
 

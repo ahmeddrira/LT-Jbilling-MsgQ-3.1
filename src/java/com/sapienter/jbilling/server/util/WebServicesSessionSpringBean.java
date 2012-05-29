@@ -31,11 +31,7 @@ import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.*;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.item.db.PlanDAS;
-import com.sapienter.jbilling.server.item.db.PlanDTO;
-import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.item.db.*;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationBL;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
@@ -93,6 +89,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.pricing.RateCardBL;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.pricing.db.RateCardWS;
 import com.sapienter.jbilling.server.process.*;
@@ -3114,8 +3111,36 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void updateCurrencies(CurrencyWS[] currencies) {
+        UserDAS userDAS = new UserDAS();
+        PriceModelDAS priceModelDAS = new PriceModelDAS();
+        String inUSeCurrencies = "";
+        Long inUseCount;
+        Boolean currencyInUse = false;
         for (CurrencyWS currency : currencies) {
-            updateCurrency(currency);
+            if(!currency.getInUse()){
+                inUseCount = 0l;
+
+                //currency in use for users
+                inUseCount += userDAS.findUserCountByCurrency(currency.getId());
+
+                //currency in use for products
+                inUseCount += priceModelDAS.findPriceCountByCurrency(currency.getId());
+
+                if(inUseCount > 0){
+                    currencyInUse = true;
+                    LOG.debug("Currency "+currency.getCode()+" is in use.");
+                    inUSeCurrencies += currency.getCode()+", ";
+                } else{
+                    updateCurrency(currency);
+                }
+            }
+
+        }
+
+        if(currencyInUse){
+            inUSeCurrencies = inUSeCurrencies.substring(0,inUSeCurrencies.lastIndexOf(','));
+            LOG.debug("Currency(s) "+inUSeCurrencies+" is in use.");
+            throw new SessionInternalError("Currency(s) "+inUSeCurrencies+" is in use.");
         }
     }
 

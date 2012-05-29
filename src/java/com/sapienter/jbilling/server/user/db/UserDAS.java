@@ -17,6 +17,7 @@ package com.sapienter.jbilling.server.user.db;
 
 import java.util.List;
 
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -52,6 +53,12 @@ public class UserDAS extends AbstractDAS<UserDTO> {
          "   AND a.customer.excludeAging = 0 " +
          "   AND a.company.id = :entity " +
          "   AND a.deleted = 0";
+
+    private static final String findCurrencySQL =
+          "SELECT count(*) " +
+          "  FROM UserDTO a " +
+          " WHERE a.currency.id = :currency "+
+          "   AND a.deleted = 0";
 
     public UserDTO findRoot(String username) {
         if (username == null || username.length() == 0) {
@@ -128,5 +135,11 @@ public class UserDAS extends AbstractDAS<UserDTO> {
                 .setProjection(Projections.rowCount());
 
         return (criteria.uniqueResult() != null && ((Integer) criteria.uniqueResult()) > 0);
+    }
+
+    public Long findUserCountByCurrency(Integer currencyId){
+        Query query = getSession().createQuery(findCurrencySQL);
+        query.setParameter("currency", currencyId);
+        return (Long) query.uniqueResult();
     }
 }

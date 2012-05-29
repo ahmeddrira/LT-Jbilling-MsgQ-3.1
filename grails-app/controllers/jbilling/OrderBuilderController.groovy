@@ -294,9 +294,6 @@ class OrderBuilderController {
                 def product = conversation.products?.find{ it.id == line.itemId }
                 if (!product) product = conversation.plans?.find{ it.id == line.itemId }
 
-                if (product?.hasDecimals == 0) {
-                    line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
-                }
 
                 // existing line that's stored in the database will be deleted when quantity == 0
                 if (line.quantityAsDecimal == BigDecimal.ZERO) {

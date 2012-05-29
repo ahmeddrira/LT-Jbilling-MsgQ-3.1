@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author Emil
@@ -36,8 +37,9 @@ public class OrderLineWS implements Serializable {
     private int id;
     private Integer orderId;
     private String amount; // use strings instead of BigDecimal for WS compatibility
-    @NotNull(message = "validation.error.null.quantity")
+    @NotNull(message = "validation.error.notnull")
     @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
+    @Pattern(regexp = "^[0-9]{1,12}(\\.[0]{1,10})?$", message="validation.message.error.non.fractional.quantity" )
     private String quantity;
     @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String price;

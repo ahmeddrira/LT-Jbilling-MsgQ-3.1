@@ -45,22 +45,10 @@ target(prepareTestDb: "Import the test postgresql database.") {
         println "Done."
     }
 
-    println "Importing file test database into the ${database} database (user: ${username})"
-    // call liquibase to load the database base schema
-    exec(executable: "lb-schema.bat", failonerror: false) {
-        arg(line: "--contexts=base update")
-    }
-
-    println "Importing data to database: ${database}."
-    // call liquibase to load the database data
-    exec(executable: "liquidbase-2.0.5/liquibase.bat", failonerror: false) {
-        arg(line: "--driver=org.postgresql.Driver --classpath=lib/postgresql-8.4-702.jdbc4.jar --changeLogFile=descriptors/database/jbilling-test_data.xml --url=\"jdbc:postgresql://localhost:5432/jbilling_test\" --username=jbilling update")
-    }
-
-    println "Importing FK to database: ${database}."
-    // call liquibase to load the database foreign keys
-    exec(executable: "lb-fk.bat", failonerror: false) {
-        arg(line: "--contexts=FKs update")
+    println "Importing file '${file.name}' into the ${database} database (user: ${username})"
+    // call postgresl to load the database
+    exec(executable: "psql", failonerror: false) {
+        arg(line: "-U ${username} -f ${file.path} ${database}")
     }
 
     println "Done."

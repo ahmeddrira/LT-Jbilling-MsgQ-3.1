@@ -359,6 +359,7 @@ public class OrderBL extends ResultList
             }
 
             order = orderDas.save(orderDto);
+            this.recalculate(entityId);
 
             // link the lines to the new order
             for (OrderLineDTO line : order.getLines()) {
@@ -732,6 +733,8 @@ public class OrderBL extends ResultList
 
         // map of orders keyed by user & period
         Map<String, OrderDTO> orders = new HashMap<String, OrderDTO>();
+        //List of items that have a period of All Orders. These will be added to all created orders.
+        List<PlanItemDTO> allOrdersPlanItems = new ArrayList();
 
         String currentOrderKey = baseUser.getId() + "_" + order.getPeriodId();
         orders.put(currentOrderKey, order);
@@ -740,36 +743,58 @@ public class OrderBL extends ResultList
         for (PlanItemDTO planItem : PlanItemBL.collectPlanItems(lines)) {
             if (planItem.getBundle() != null && planItem.getBundle().getQuantity().compareTo(BigDecimal.ZERO) > 0) {
                 PlanItemBundleDTO bundle = planItem.getBundle();
-                UserDTO user = PlanItemBundleBL.getTargetUser(bundle.getTargetCustomer(), baseUser.getCustomer());
+                if(bundle.getPeriod().getId() != Constants.ORDER_PERIOD_ALL_ORDERS) {
+                    UserDTO user = PlanItemBundleBL.getTargetUser(bundle.getTargetCustomer(), baseUser.getCustomer());
+                    String mapKey = user.getId() + "_" + bundle.getPeriod().getId();
 
-                String mapKey = user.getId() + "_" + bundle.getPeriod().getId();
+                    // fetch the bundled order, or create a new one as necessary
+                    if (!orders.containsKey(mapKey)) {
+                        LOG.debug("Getting bundle order for user " + user.getId() + " and period " + bundle.getPeriod().getId());
+                        orders.put(mapKey, getBundleOrder(user, bundle.getPeriod(), order));
+                    }
 
-                // fetch the bundled order, or create a new one as necessary
-                if (!orders.containsKey(mapKey)) {
-                    LOG.debug("Getting bundle order for user " + user.getId() + " and period " + bundle.getPeriod().getId());
-                    orders.put(mapKey, getBundleOrder(user, bundle.getPeriod(), order));
+                    /*
+                       ALWAYS add the item if bundle addIfExists is true
+                       if addIfExists is false, check to see if the line already exists before adding
+                    */
+                    OrderDTO bundledOrder = orders.get(mapKey);
+                    if (bundle.addIfExists()
+                            || (!bundle.addIfExists() && bundledOrder.getLine(planItem.getItem().getId()) == null)) {
+
+                        LOG.debug("Adding " + bundle.getQuantity() + " units of item " + planItem.getItem().getId()
+                                + " to order for user " + user.getId() + " and period " + bundle.getPeriod().getId());
+
+                        addItem(bundledOrder,
+                                planItem.getItem().getId(),
+                                bundle.getQuantity(),
+                                user.getLanguage().getId(),
+                                user.getId(),
+                                user.getEntity().getId(),
+                                user.getCurrency().getId(),
+                                null);
+                    }
+                } else {
+                    allOrdersPlanItems.add(planItem);
                 }
+            }
+        }
 
-                /*
-                    ALWAYS add the item if bundle addIfExists is true
-                    if addIfExists is false, check to see if the line already exists before adding
-                 */
-                OrderDTO bundledOrder = orders.get(mapKey);
-                if (bundle.addIfExists()
-                        || (!bundle.addIfExists() && bundledOrder.getLine(planItem.getItem().getId()) == null)) {
+        // Add the All Order items to all the created orders.
+        for (PlanItemDTO planItem : allOrdersPlanItems) {
+            UserDTO user = PlanItemBundleBL.getTargetUser(planItem.getBundle().getTargetCustomer(), baseUser.getCustomer());
 
-                    LOG.debug("Adding " + bundle.getQuantity() + " units of item " + planItem.getItem().getId()
-                              + " to order for user " + user.getId() + " and period " + bundle.getPeriod().getId());
+            for (OrderDTO bundledOrder : orders.values()) {
+                LOG.debug("Adding All Order item " + planItem.getItem().getId()
+                        + " to order for user " + user.getId() + " and period " + planItem.getBundle().getPeriod().getId());
 
-                    addItem(bundledOrder,
-                            planItem.getItem().getId(),
-                            bundle.getQuantity(),
-                            user.getLanguage().getId(),
-                            user.getId(),
-                            user.getEntity().getId(),
-                            user.getCurrency().getId(),
-                            null);
-                }
+                addItem(bundledOrder,
+                        planItem.getItem().getId(),
+                        planItem.getBundle().getQuantity(),
+                        user.getLanguage().getId(),
+                        user.getId(),
+                        user.getEntity().getId(),
+                        user.getCurrency().getId(),
+                        null);
             }
         }
 

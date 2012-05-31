@@ -416,14 +416,14 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -3231,13 +3231,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
-8	1	customer	edit	create	\N	0	\N
-9	1	customer	list	\N	10790	0	ageing-test-01
-10	1	config	index	\N	\N	0	\N
-11	1	plugin	listCategories	\N	\N	0	\N
 12	1	plugin	plugins	\N	18	0	\N
 13	1	plugin	show	\N	530	0	\N
 14	1	plugin	edit	\N	530	0	\N
+15	1	plan	list	\N	\N	0	\N
+16	1	planBuilder	edit	create	\N	0	\N
+17	1	plan	list	\N	100	0	percentageLineTest
+18	1	customer	list	\N	\N	0	\N
 \.
 
 
@@ -11408,6 +11408,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 60	8	description	1	A billing clerk
 60	8	title	1	Clerk
 17	5	description	1	All Orders
+14	3100	description	1	precentage_line_test
 \.
 
 
@@ -11507,6 +11508,7 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 2900	CALL-LD-GEN	1	\N	0	0	2	1900	\N
 3000	PL-02	1	\N	0	0	4	2001	\N
 240	DP-4	1	\N	0	0	2	2003	\N
+3100	percentageLineTest	1	\N	0	0	1	2100	\N
 \.
 
 
@@ -11560,6 +11562,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 2801	2201
 2900	2201
 3000	2301
+3100	2301
 \.
 
 
@@ -11570,9 +11573,6 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 COPY jbilling_seqs (name, next_id) FROM stdin;
 price_model_attribute	1
 customer_price	1
-price_model	21
-plan	1
-plan_item	1
 permission_type	1
 period_unit	1
 invoice_delivery_method	1
@@ -11619,7 +11619,6 @@ notification_message_section	1
 notification_message_line	1
 ageing_entity_step	1
 item_type	24
-item	31
 purchase_order	1079
 order_line	2081
 invoice	86
@@ -11654,8 +11653,6 @@ customer	1071
 contact_map	7911
 contact	1132
 contact_field	2027
-breadcrumb	15
-recent_item	2
 pluggable_task_parameter	8314
 event_log	470
 permission_user	10
@@ -11663,6 +11660,13 @@ permission_user	1
 permission_user	1
 permission_user	1
 role	1
+recent_item	3
+price_model	22
+item	32
+plan	2
+plan_item_bundle	1
+plan_item	2
+breadcrumb	19
 \.
 
 
@@ -14548,6 +14552,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 COPY plan (id, item_id, description, period_id) FROM stdin;
 1	3000	Discount lemonade	2
 2	4	Saurons discount plan.	2
+100	3100		2
 \.
 
 
@@ -14557,6 +14562,10 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 
 COPY plan_item (id, plan_id, item_id, price_model_id, precedence, plan_item_bundle_id) FROM stdin;
 1	1	2602	2004	-1	\N
+100	100	14	\N	-1	1
+101	100	2602	2101	-1	2
+102	100	2700	2102	-1	3
+103	100	2701	2103	-1	4
 \.
 
 
@@ -14565,6 +14574,10 @@ COPY plan_item (id, plan_id, item_id, price_model_id, precedence, plan_item_bund
 --
 
 COPY plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) FROM stdin;
+1	1.0000000000	2	SELF	t
+2	1.0000000000	5	SELF	t
+3	1.0000000000	1	SELF	t
+4	1.0000000000	2	SELF	t
 \.
 
 
@@ -14960,6 +14973,10 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2001	METERED	99.9900000000	\N	1	\N
 2003	METERED	15.0000000000	\N	11	\N
 2004	METERED	0.5000000000	\N	1	\N
+2100	METERED	0.0000000000	\N	1	\N
+2101	METERED	3.5000000000	\N	1	\N
+2102	METERED	25.0000000000	\N	1	\N
+2103	METERED	40.0000000000	\N	1	\N
 \.
 
 
@@ -16065,6 +16082,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 1	PLUGIN	530	1	0
+2	PLUGIN	530	1	0
 \.
 
 

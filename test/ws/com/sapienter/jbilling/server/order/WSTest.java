@@ -831,7 +831,7 @@ public class WSTest  extends TestCase {
         api.deleteOrder(orders[0]);
         api.deleteOrder(orders[1]);
 
-        // create an order with the plan item
+        // Test Bug fix and new All Orders feature.
         mainOrder = createMockOrder(USER_ID, 1, new BigDecimal("10.00"));
         mainOrder.setPeriod(2);
         mainOrder.getOrderLines()[0].setItemId(3100);

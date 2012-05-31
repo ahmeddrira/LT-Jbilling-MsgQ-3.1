@@ -203,7 +203,7 @@ class PlanBuilderController {
 
                 // build a new plan item, using the default item price model
                 // as the new objects starting values
-                def priceModel = new PriceModelWS(product.defaultPrice)
+                def priceModel = product.defaultPrice ? new PriceModelWS(product.defaultPrice) : new PriceModelWS()
                 priceModel.id = null
 
                 // empty bundle

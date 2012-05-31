@@ -1529,7 +1529,6 @@ Ch8: no applicable orders
         assertEquals("Status was changed", 2, api.getUserWS(USER_ID).getStatusId().intValue());
         assertEquals("No new order was created", ORDER_ID, api.getLatestOrder(USER_ID).getId());
 
-
         // new order will be created with the penalty item when status id = 6
         user.setStatusId(6);
         api.updateUser(user);

@@ -310,7 +310,7 @@ public class WSTest extends PricingTestCase {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
         Integer[] planIds = api.getPlansByAffectedItem(PLAN_AFFECTED_ITEM_ID);
-        assertEquals("Should only be 1 plan.", 1, planIds.length);
+        assertEquals("Should only be 2 plans.", 2, planIds.length);
         assertEquals("Should be 'crazy brian's discount plan'", PLAN_ID, planIds[0]);
     }
 

@@ -212,9 +212,11 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
 
         OrderLineDTO line = new OrderLineDTO();
         line.setAmount(fee);
+        line.setPrice(fee);
         line.setDescription(description);
         line.setItemId(getPenaltyItemId());
         line.setTypeId(Constants.ORDER_LINE_TYPE_PENALTY);
+        line.setQuantity(1);
         summary.getLines().add(line);
 
         // create the db record

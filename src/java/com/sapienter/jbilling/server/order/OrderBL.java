@@ -358,8 +358,9 @@ public class OrderBL extends ResultList
                 addBundledItems(orderDto, lines, baseUser);
             }
 
+            order = orderDto;
+            recalculate(entityId);
             order = orderDas.save(orderDto);
-            this.recalculate(entityId);
 
             // link the lines to the new order
             for (OrderLineDTO line : order.getLines()) {

@@ -215,7 +215,16 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
             if (dto.getCustomer().getParent() != null) {
                 // the API accepts the user ID of the parent instead of the customer ID
-                user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                try {
+                    if (dto.getCustomer().getParent() != null && dto.getCustomer().getParent().getBaseUser().getEntity() != null) {
+                        user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                    } else {
+                        user.getCustomer().setParent(null);
+                    }
+                } catch (Exception ex) {
+                    throw new SessionInternalError("It doesn't exist a parent with the supplied id.",
+                            new String[]{"UserWS,parentId,validation.error.parent.does.not.exist"});
+                }
 
                 // use parent pricing flag
                 user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());

@@ -373,7 +373,7 @@ class CustomerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, availableFields: availableMetaFields ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, availableFields: availableMetaFields, periodUnits: PeriodUnitDTO.list(),currencies: currencies ]
             return
         }
 
@@ -391,10 +391,10 @@ class CustomerController {
                         subAccountService.addSubAccountUserId(user)
                         
                     } else {
-                        user.userName = StringUtils.EMPTY
+                        user.userName = ''
                         flash.error = message(code: 'customer.error.name.blank')
 
-                        render view: "edit", model: [user: user, contacts: contacts, parent: null, company: company, currencies: currencies, periodUnits: PeriodUnitDTO.list()]
+                        render view: "edit", model: [user: user, contacts: contacts, parent: null, company: company, currencies: currencies, periodUnits: PeriodUnitDTO.list(), availableFields: availableMetaFields]
                         return
                     }
                 } else {
@@ -442,7 +442,7 @@ class CustomerController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies, availableFields: availableMetaFields ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies, availableFields: availableMetaFields ,periodUnits : PeriodUnitDTO.list()]
             return
         }
 

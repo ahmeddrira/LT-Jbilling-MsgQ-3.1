@@ -625,52 +625,32 @@ class ProductController {
         bindProduct(product, oldProduct, params)
 
         try {
+			
+			if (StringUtils.isEmpty(product.description?.trim())) {
+				//if blank description
+				product.description = ''
+				String[] errmsgs= new String[1];
+				errmsgs[0]= "ItemDTOEx,description,product.error.name.blank"
+				throw new SessionInternalError("There is an error in product data.", errmsgs );
+			}
+			
             // save or update
             if (!product.id || product.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_40")) {
-
-                    if (product.description.trim()) {
-                        log.debug("creating product ${product}")
-
-                        product.id = webServicesSession.createItem(product)
-
-                        flash.message = 'product.created'
-                        flash.args = [product.id]
-                    } else {
-                        log.debug("there was an error in the product data.")
-
-                        product.description = StringUtils.EMPTY
-
-                        flash.error = message(code: 'product.error.name.blank')
-
-                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
-                        return
-                    }
+                    log.debug("creating product ${product}")
+                    product.id = webServicesSession.createItem(product)
+                    flash.message = 'product.created'
+                    flash.args = [product.id]
                 } else {
                     render view: '/login/denied'
                     return;
                 }
-
             } else {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_41")) {
-                    if (product.description.trim()) {
-                        log.debug("saving changes to product ${product.id}")
-
-                        webServicesSession.updateItem(product)
-
-                        flash.message = 'product.updated'
-                        flash.args = [product.id]
-                    } else {
-                        log.debug("there was an error in the product data.")
-
-                        product.description = StringUtils.EMPTY
-
-                        flash.error = message(code: 'product.error.name.blank')
-
-                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
-                        return
-                    }
-
+                    log.debug("saving changes to product ${product.id}")
+                    webServicesSession.updateItem(product)
+                    flash.message = 'product.updated'
+                    flash.args = [product.id]
                 } else {
                     render view: '/login/denied'
                     return;
@@ -689,7 +669,7 @@ class ProductController {
                     product.percentage = null
                 }
             }
-            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies, availableFields: availableMetaFields ]
+            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies, category: params?.selectedCategoryId, availableFields: availableMetaFields ]
             return
         }
 

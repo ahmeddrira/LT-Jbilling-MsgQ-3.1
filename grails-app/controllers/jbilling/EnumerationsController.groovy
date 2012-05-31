@@ -9,6 +9,8 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO
 import com.sapienter.jbilling.server.util.db.EnumerationDTO
 import com.sapienter.jbilling.server.util.db.EnumerationValueDTO
 import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS
+import com.sapienter.jbilling.server.metafields.db.DataType
 
 class EnumerationsController {
 
@@ -60,8 +62,14 @@ class EnumerationsController {
        if (params.id) {
            def enumer= EnumerationDTO.get(params.int('id'))
            log.debug "found enumeration ${enumer}"
-           enumer?.delete()
-           log.debug("Deleted Enumeration ${params.id}.")
+           if (new MetaFieldDAS().getFieldCountByDataTypeAndName(DataType.ENUMERATION,enumer.getName()) > 0){
+               log.debug('Can not delete enumeration '+enumer.getId()+', it is in use.')
+              flash.error = 'Can not delete enumeration '+enumer.getId()+', it is in use.'
+              return
+           } else{
+               enumer?.delete()
+               log.debug("Deleted Enumeration ${params.id}.")
+           }
        }
 
        flash.message = 'enumeration.deleted'

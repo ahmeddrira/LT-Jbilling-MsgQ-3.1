@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.metafields.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -34,6 +35,11 @@ import java.util.List;
  * @since 03-Oct-2011
  */
 public class MetaFieldDAS extends AbstractDAS<MetaField> {
+    private static final String findCurrencySQL =
+            "SELECT count(*) " +
+                    "  FROM MetaField a " +
+                    " WHERE a.dataType = :dataType "+
+                    " AND a.name = :name";
 
     @SuppressWarnings("unchecked")
     public List<MetaField> getAvailableFields(Integer entityId, EntityType entityType) {
@@ -91,4 +97,12 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         String deleteValuesHql = "delete from " + MetaFieldValue.class.getSimpleName() + " where field.id = ?";
         getHibernateTemplate().bulkUpdate(deleteValuesHql, metaFieldId);
     }
+
+    public Long getFieldCountByDataTypeAndName(DataType dataType, String name){
+        Query query = getSession().createQuery(findCurrencySQL);
+        query.setParameter("dataType", dataType);
+        query.setParameter("name", name);
+        return (Long) query.uniqueResult();
+    }
+
 }

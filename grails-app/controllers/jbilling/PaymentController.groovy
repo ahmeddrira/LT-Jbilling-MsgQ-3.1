@@ -460,8 +460,9 @@ class PaymentController {
             def user = webServicesSession.getUserWS(payment.userId)
             def invoices = getUnpaidInvoices(user.userId)
             def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
+            List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
 
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields, refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId')]
             return
         } finally {
             session.removeAttribute("user_payment")

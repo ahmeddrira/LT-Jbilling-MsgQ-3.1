@@ -381,6 +381,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             } else {
                 payment.setBalance(BigDecimal.ZERO);
             }
+        } catch (SessionInternalError e) {
+            throw new SessionInternalError(e);
         } catch (Exception e) {
             LOG.fatal("Problems handling payment task.", e);
             throw new SessionInternalError("Problems handling payment task.");

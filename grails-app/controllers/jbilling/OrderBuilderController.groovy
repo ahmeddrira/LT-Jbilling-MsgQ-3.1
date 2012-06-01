@@ -291,10 +291,21 @@ class OrderBuilderController {
                 }
 
                 // if product does not support decimals, drop scale of the given quantity
+                boolean isPlan = false;
                 def product = conversation.products?.find{ it.id == line.itemId }
-                if (!product) product = conversation.plans?.find{ it.id == line.itemId }
-
-                if (product?.hasDecimals == 0) {
+                if (!product) {
+                    product = conversation.plans?.find{ it.id == line.itemId }
+                    isPlan = true;
+                }
+                if(isPlan && line.quantityAsDecimal.remainder(BigDecimal.ONE) > 0){
+                    try {
+                        String [] errors = ["OrderLineWS,planQuantity,bean.OrderLineWS.validation.error.partial.quantity"]
+                        throw new SessionInternalError("Partial quantity is not allowed for a plan.",
+                                errors);
+                    } catch (SessionInternalError e) {
+                        viewUtils.resolveException(flash, session.local, e)
+                    }
+                } else if (product?.hasDecimals == 0) {
                     line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
                 }
 

@@ -63,9 +63,9 @@ class EnumerationsController {
            def enumer= EnumerationDTO.get(params.int('id'))
            log.debug "found enumeration ${enumer}"
            if (new MetaFieldDAS().getFieldCountByDataTypeAndName(DataType.ENUMERATION,enumer.getName()) > 0){
-               log.debug('Can not delete enumeration '+enumer.getId()+', it is in use.')
-              flash.error = 'Can not delete enumeration '+enumer.getId()+', it is in use.'
-              return
+               log.debug('Can not delete enumeration ' + enumer.getName() + ', it is in use.')
+               flash.error = 'Can not delete enumeration ' + enumer.getName() + ', it is in use.'
+               return
            } else{
                enumer?.delete()
                log.debug("Deleted Enumeration ${params.id}.")

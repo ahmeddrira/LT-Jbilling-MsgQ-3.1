@@ -100,14 +100,14 @@ class EnumerationsController {
        }
 
        // validate duplicate enum
-       if (!enumeration.id || enumeration.id == 0 ) {
+       
            def var = EnumerationDTO.findByName(enumeration.name)
            if (var) {
                flash.error = 'enumeration.name.exists'
                render view: 'edit', model: [enumeration: enumeration]
                return
            }
-       }
+       
 
        // validate enumeration values
        Set<String> values = new HashSet<String>()

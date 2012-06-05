@@ -141,8 +141,6 @@
                 </g:applyLayout>
             </g:preferenceEquals>
 
-            <!-- meta fields -->
-            <g:render template="/metaFields/editMetaFields" model="[ availableFields: availableFields, fieldValues: order?.metaFields ]"/>
         </div>
 
         <hr/>

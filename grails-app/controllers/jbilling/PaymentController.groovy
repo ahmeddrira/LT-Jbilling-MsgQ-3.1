@@ -355,11 +355,18 @@ class PaymentController {
         // validate before showing the confirmation page
         try {
             webServicesValidationAdvice.validateObject(payment)
+            
+            if(payment.amountAsDecimal == BigDecimal.ZERO) {
+                String [] errors = ["PaymentWS,amount,validation.error.payment.amount.cannot.be.zero"]
+                    throw new SessionInternalError("Payment Amount Cannot Be Zero",
+                        errors);
+            }
+
             if(payment.isRefund) {
                 if(!PaymentBL.validateRefund(payment)){
-                String [] errors = ["PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"]
-                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
-                        errors);
+                    String [] errors = ["PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"]
+                    throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                            errors);
                 }
             }
         } catch (SessionInternalError e) {

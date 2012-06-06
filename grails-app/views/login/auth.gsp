@@ -24,6 +24,15 @@
     <script type='text/javascript'>
         $(document).ready(function() {
             $('#login input[name="j_username"]').focus();
+
+            $(document).keypress(function(e) {
+                    if(e.which == 13) {
+
+                        $(this).blur();
+                        $('#login form').submit();
+                    }
+                });
+
         });
     </script>
 </head>

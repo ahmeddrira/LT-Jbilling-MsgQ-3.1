@@ -72,7 +72,7 @@
                 <g:applyLayout name="form/select">
                     <content tag="label"><g:message code="plan.bundle.period"/></content>
                     <content tag="label.for">bundle.periodId</content>
-                    <g:select from="${orderPeriods}"
+                    <g:select from="${itemOrderPeriods}"
                               optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
                               name="bundle.periodId"
                               value="${planItem?.bundle?.periodId}"/>

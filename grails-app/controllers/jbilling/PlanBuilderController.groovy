@@ -113,7 +113,7 @@ class PlanBuilderController {
                     log.error("Could not fetch WS object", e)
 
                     session.error = 'plan.not.found'
-                    session.args = [ params.id ]
+                    session.args = [params.id]
 
                     redirect controller: 'plan', action: 'list'
                     return
@@ -124,21 +124,24 @@ class PlanBuilderController {
                 def internalPlansType = productService.getInternalPlansType()
 
                 def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
-                currencies = currencies.findAll{ it.inUse }
+                currencies = currencies.findAll { it.inUse }
 
-                def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
+                def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) }
+                def itemOrderPeriods = orderPeriods.clone()
+                itemOrderPeriods << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE) << new OrderPeriodDTO(Constants.ORDER_PERIOD_ALL_ORDERS)
                 orderPeriods.sort { it.id }
+                itemOrderPeriods.sort {it.id}
 
                 // subscription product defaults for new plans
                 if (!product.id || product.id == 0) {
                     product.hasDecimals = 0
-                    product.types = [ internalPlansType.id ]
+                    product.types = [internalPlansType.id]
                     product.entityId = company.id
 
                     def priceModel = new PriceModelWS()
                     priceModel.type = PriceModelStrategy.METERED
                     priceModel.rate = BigDecimal.ZERO
-                    priceModel.currencyId = (currencies.find{ it.id == session['currency_id']} ?: company.currency).id
+                    priceModel.currencyId = (currencies.find { it.id == session['currency_id']} ?: company.currency).id
 
                     product.defaultPrices.put(CommonConstants.EPOCH_DATE, priceModel)
                 }
@@ -152,7 +155,7 @@ class PlanBuilderController {
 
                 // defaults for new plans
                 if (!plan.id || plan.id == 0) {
-                    plan.periodId = orderPeriods.find{ it.id != Constants.ORDER_PERIOD_ONCE }?.id
+                    plan.periodId = orderPeriods.first().id
                 }
 
                 log.debug("plan ${plan}")
@@ -180,6 +183,7 @@ class PlanBuilderController {
                 flow.itemTypes = itemTypes
                 flow.currencies = currencies
                 flow.orderPeriods = orderPeriods
+                flow.itemOrderPeriods = itemOrderPeriods
 
                 // conversation scope
                 conversation.pricingDates = pricingDates

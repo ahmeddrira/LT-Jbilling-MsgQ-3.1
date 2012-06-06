@@ -60,7 +60,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
             // calculate line total
             ItemDTO item = itemDas.find(line.getItemId());
 
-            if (item != null && item.getPercentage() == null) {
+            if (item != null && line.getQuantity() != null && item.getPercentage() == null) {
                 line.setAmount(line.getQuantity().multiply(line.getPrice()));
 
                 LOG.debug("normal line total: "
@@ -247,7 +247,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
             if (line.getDeleted() == 1) continue;
 
             // validate line quantity
-            if (line.getItem() != null
+            if (line.getItem() != null && line.getQuantity() != null
                     && line.getQuantity().remainder(Constants.BIGDECIMAL_ONE).compareTo(BigDecimal.ZERO) != 0.0
                     && line.getItem().getHasDecimals() == 0) {
 

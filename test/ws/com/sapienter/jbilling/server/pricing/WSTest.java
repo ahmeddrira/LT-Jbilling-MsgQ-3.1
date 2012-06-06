@@ -75,7 +75,7 @@ public class WSTest extends PricingTestCase {
 
         List<PlanWS> plans = api.getAllPlans();
         assertNotNull("plans is not null", plans);
-        assertEquals("only one plan in the list", 1, plans.size());
+        assertEquals("only two plans in the list", 2, plans.size());
 
         PlanWS plan = plans.get(0);
         assertEquals(PLAN_ID, plan.getId());

@@ -788,8 +788,9 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         try {
             BillingProcessBL process = new BillingProcessBL();
             InvoiceDTO invoice = process.generateInvoice(orderId, invoiceId);
-            invoice.touch();
-            
+	    if (null != invoice) {
+	        invoice.touch();
+            } 
             return invoice;
         } catch (Exception e) {
             throw new SessionInternalError(e);

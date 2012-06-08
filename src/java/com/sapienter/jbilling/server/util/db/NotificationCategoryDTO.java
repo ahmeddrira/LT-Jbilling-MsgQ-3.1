@@ -35,8 +35,15 @@ import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 @Entity
+@TableGenerator(
+    name = "notification_category_GEN",
+            table = "jbilling_seqs",
+            pkColumnName = "name",
+            valueColumnName = "next_id",
+            pkColumnValue = "notification_category",
+            allocationSize = 10)
 @Table(name="notification_category")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationCategoryDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;

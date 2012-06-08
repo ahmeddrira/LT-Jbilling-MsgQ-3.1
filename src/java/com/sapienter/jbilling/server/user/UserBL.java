@@ -207,7 +207,10 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
-
+            if(!ifValidNotes(dto.getCustomer().getNotes())) {
+                LOG.error("Customer Notes Cannot Be Greater Than 1000 Characters");
+                throw new SessionInternalError("Customer notes cannot be more than 1000 characters long", new String[] {"CustomerWS,notes,customer.error.notes.length.exceeded"});
+            }
             user.getCustomer().setNotes(dto.getCustomer().getNotes());
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
 
@@ -397,6 +400,11 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
             
             //additional customer fields
+            // validate customer notes
+            if(!ifValidNotes(dto.getCustomer().getNotes())) {
+                LOG.error("Customer Notes Cannot Be Greater Than 1000 Characters");
+                throw new SessionInternalError("Customer notes cannot be more than 1000 characters long", new String[] {"CustomerWS,notes,customer.error.notes.length.exceeded"});
+            }
             user.getCustomer().setNotes(dto.getCustomer().getNotes());
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
 
@@ -1416,5 +1424,14 @@ public class UserBL extends ResultList implements UserSQL {
 
     public Integer getLanguage() {
         return user.getLanguageIdField();
+    }
+
+    /**
+     * Checks if the string passed is less than 1000 characters
+     * @param notes
+     * @return boolean
+     */
+    public static boolean ifValidNotes(String notes) {
+        return notes==null || notes.length()<=1000;
     }
 }

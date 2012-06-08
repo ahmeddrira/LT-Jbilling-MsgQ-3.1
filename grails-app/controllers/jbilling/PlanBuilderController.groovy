@@ -290,7 +290,8 @@ class PlanBuilderController {
 
                 // build a new plan item, using the default item price model
                 // as the new objects starting values
-                def priceModel = new PriceModelWS(productPrice)
+
+                def priceModel = productPrice ? new PriceModelWS(productPrice) : new PriceModelWS()
                 priceModel.id = null
 
                 if (!priceModel.type) priceModel.type = PriceModelStrategy.FLAT.name()

@@ -18,10 +18,43 @@ includeTargets << grailsScript("Init")
 
 target(prepareTestDb: "Import the test postgresql database.") {
 
-    // optionally accept database name and user name arguments
+    // optionally accept user defined arguments:
+    // user - jbilling database username : default: jbilling
+    // db - jbilling database table only for postgres Db, for other databases use dbUrl parameter : default : jbilling_test
+    // dbUrl - jbilling database url : default : jdbc:postgresql://localhost:5432/${database}
+    // dbDriver - jbilling database driver : default: org.postgresql.Driver
+    // dbClasspath - jbilling database driver classpath default : lib/postgresql-8.4-702.jdbc4.jar
+
+    // version - jbilling branch version: default: 3.2
+    // skipTest - if skipTest is true create init database; otherwise load test database : default : false
+
     parseArguments();
     def username = argsMap.user ? argsMap.user : "jbilling"
     def database = argsMap.db ? argsMap.db : "jbilling_test"
+    def dbUrl = argsMap.dbUrl ? argsMap.dbUrl : "jdbc:postgresql://localhost:5432/${database}"
+    def driver = argsMap.dbDriver ? argsMap.dbDriver : "org.postgresql.Driver"
+    def classpath = argsMap.dbClasspath ? argsMap.dbClasspath : "lib/postgresql-8.4-702.jdbc4.jar"
+
+    def version = argsMap.version ? argsMap.version : "3.1"
+    def skipTest = argsMap.skipTest ? argsMap.skipTest : false
+
+    condition(property: "liquibaseExecutable", value: "liquidbase-2.0.5/liquibase.bat")
+    {
+        os("family": "windows")
+    }
+
+    condition(property: "liquibaseExecutable", value: "liquidbase-2.0.5/liquibase")
+    {
+        os("family": "unix")
+    }
+
+    println "Using liquibase: ${liquibaseExecutable}"
+
+    def jbillingSchema="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-schema.xml --url=${dbUrl} --username=${username} --password= "
+    def jbillingInit="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-init_data.xml --url=${dbUrl} --username=${username} --password= "
+    def jbillingTest="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-test_data.xml --url=${dbUrl} --username=${username} --password= "
+    def jbillingUpgrade="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-upgrade-${version}.xml --url=${dbUrl} --username=${username} --password= "
+
 
     println "Dropping a database: ${database}..."
     // call postgresl to drop database
@@ -37,20 +70,53 @@ target(prepareTestDb: "Import the test postgresql database.") {
     }
     println "Done."
 
-    println "Importing file test database into the ${database} database (user: ${username})"
+    println "Loading jbilling database schema"
     // call liquibase to load the database base schema
-    exec(executable: "./lb.sh", failonerror: false) {
-        arg(line: "--contexts=base update")
+    exec(executable: "${liquibaseExecutable}", failonerror: false) {
+        arg(line: "${jbillingSchema} --contexts=base update")
+    }
+    println "Done."
+
+    if (skipTest) {
+
+        println "Initializing jbilling database: ${database}"
+        // skip test db load init db data
+        exec(executable: "${liquibaseExecutable}", failonerror: false) {
+            arg(line: "${jbillingInit}  update")
+        }
+        println "Done."
+
+    } else {
+
+        println "Loading test data into database: ${database}"
+        // call liquibase to load test db data
+        exec(executable: "${liquibaseExecutable}", failonerror: false) {
+            arg(line: "${jbillingTest}  update")
+        }
+        println "Done."
     }
 
-    // call liquibase to load the database data
-    exec(executable: "liquidbase-2.0.5/liquibase", failonerror: false) {
-        arg(line: "--driver=org.postgresql.Driver --classpath=lib/postgresql-8.4-702.jdbc4.jar --changeLogFile=descriptors/database/jbilling-test_data.xml --url=\"jdbc:postgresql://localhost:5432/jbilling_test\" --username=jbilling --password= update")
-    }
-
+    println "Settings database foreign keys"
     // call liquibase to load the database foreign keys
-    exec(executable: "./lb.sh", failonerror: false) {
-        arg(line: "--contexts=FKs update")
+    exec(executable: "${liquibaseExecutable}", failonerror: false) {
+        arg(line: "${jbillingSchema} --contexts=FKs update")
+    }
+    println "Done"
+
+    println "Upgrading jbilling database schema to the latest version ${version}"
+    // call liquibase to upgrade DB to the latest version
+    exec(executable: "${liquibaseExecutable}", failonerror: false) {
+        arg(line: "${jbillingUpgrade} --contexts=base update")
+    }
+    println "Done"
+
+    if (!skipTest) {
+        println "Upgrading test data to the latest version: ${version}"
+        // call liquibase to upgrade test data
+        exec(executable: "${liquibaseExecutable}", failonerror: false) {
+            arg(line: "${jbillingUpgrade} --contexts=test update")
+        }
+        println "Done"
     }
 
     println "Done."

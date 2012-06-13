@@ -616,6 +616,39 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'title',1, 'Alternative Payment Info Task');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'description', 1, 'A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods');
 
+alter table order_line add column use_item boolean;
+update order_line set use_item = false where use_item is null;
+alter table order_line alter column use_item set not null;
+
+alter table price_model alter column strategy_type type varchar(40); -- postgresql
+-- alter table price_model modify strategy_type varchar(40); -- mysql
+
+insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
+
+-- Sept 10
+-- Redmine issue #1302
+-- Description: Round invoices total and balance to 2 digits
+insert into preference_type values (50, 2);
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'description', 1, 'Invoice decimal rounding.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on the invoice. Defaults to 2.');
+
+
+-- 01-Nov-2011
+-- Redmine Issue: #1404
+-- Description: Credit Card that expires in the same month does not process automatically
+
+update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 month' - INTERVAL '1 day'; -- postgresql
+-- update credit_card set cc_expiry = last_day(cc_expiry); -- mysql
+
+-- Date: 29-Nov-2011
+-- Redmine Issue: #1575
+-- Description: Cannot add Line Percentage to a Plan
+alter table plan_item alter column price_model_id drop not null;
+
 -- Date 18-May-2012
 -- Replace timestamp columns with date for timelines
 alter table currency_exchange alter valid_since type date;

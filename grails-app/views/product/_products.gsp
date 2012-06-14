@@ -131,6 +131,7 @@
                   'update':'column1',
                   'onYes': 'closePanel(\'#column2\')'
                  ]"/>
+
 <script type="text/javascript">
 $(function(){
     $('div#paginate a').click(function(){

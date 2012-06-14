@@ -91,7 +91,7 @@
                 buttons: {
                     '<g:message code="prompt.yes"/>': function() {
                         ${onYes};
-                        if(!${doNotSubmitPopup}){
+                        if(${!doNotSubmitPopup}){
                             $("#confirm-command-form-${name}").submit();
                         }
                         $(this).dialog('close');

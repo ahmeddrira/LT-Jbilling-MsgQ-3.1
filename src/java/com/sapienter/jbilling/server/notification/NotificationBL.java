@@ -719,6 +719,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             // invoice data
             parameters.put("invoice_id", invoice.getId());
+            parameters.put("invoice_number", invoice.getPublicNumber());
             parameters.put("invoice_create_datetime", Util.formatDate(invoice.getCreateDatetime(), invoice.getUserId()));
             parameters.put("invoice_due_date", Util.formatDate(invoice.getDueDate(), invoice.getUserId()));
 
@@ -742,8 +743,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("receiver_phone", getPhoneNumber(to));
             parameters.put("receiver_email", printable(to.getEmail()));
 
-            // customer message
-            parameters.put("customer_notes", "");
+            // text coming from the notification parameters
+            parameters.put("message1", message1);
+            parameters.put("message2", message2);
 
             // invoice notes stripped of html line breaks
             String notes = invoice.getCustomerNotes();
@@ -776,7 +778,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("invoice_line_tax_id", Constants.INVOICE_LINE_TYPE_TAX);
 
             //payment term calculated
-            parameters.put("payment_terms",((invoice.getDueDate().getTime()-invoice.getCreateDatetime().getTime())/(24*60*60*1000))+" days from invoice date");
+            parameters.put("payment_terms",new Long(((invoice.getDueDate().getTime()-invoice.getCreateDatetime().getTime())/(24*60*60*1000))).toString());
 
             // set report locale
             parameters.put(JRParameter.REPORT_LOCALE, locale);

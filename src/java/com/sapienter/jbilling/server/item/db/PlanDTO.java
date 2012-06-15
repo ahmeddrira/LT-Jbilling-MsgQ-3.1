@@ -44,7 +44,7 @@ import java.util.List;
  * @since 26-08-2010
  */
 @Entity
-@Table(name = "plan")
+@Table(name = "`plan`")
 @TableGenerator(
         name = "plan_GEN",
         table = "jbilling_seqs",

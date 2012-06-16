@@ -2622,9 +2622,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 if (creditCard.getNumber() == null || creditCard.getNumber().contains("*")) {
                     LOG.debug("number was not updated");
                     CreditCardDTO dbCard= new CreditCardDAS().find(creditCard.getId());
+                    Calendar newExp= Calendar.getInstance();
+                    	newExp.setTime(creditCard.getExpiry());
+                    Calendar oldExp= Calendar.getInstance();
+                    	oldExp.setTime(dbCard.getExpiry());
                     LOG.debug("New Expiry: " + creditCard.getExpiry() + " VS. old Expiry: " + dbCard.getExpiry());
+                    
                     if ( creditCard.getName().equals( dbCard.getName() ) 
-                            && creditCard.getExpiry().compareTo( dbCard.getExpiry() ) == 0 ) {
+                            && newExp.get(Calendar.MONTH) == oldExp.get(Calendar.MONTH)
+                            && newExp.get(Calendar.YEAR) == oldExp.get(Calendar.YEAR) ) {
                         LOG.debug("Nothing changed in this credit card, will return");
                         creditCard.setHasChanged(false);
                         return;

@@ -2620,13 +2620,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (creditCard.getId() != null && creditCard.getId().intValue() !=0 ) {
                 creditCard.setHasChanged(true);
                 if (creditCard.getNumber() == null || creditCard.getNumber().contains("*")) {
-                    //number was not updated
+                    LOG.debug("number was not updated");
                     CreditCardDTO dbCard= new CreditCardDAS().find(creditCard.getId());
+                    LOG.debug("New Expiry: " + creditCard.getExpiry() + " VS. old Expiry: " + dbCard.getExpiry());
                     if ( creditCard.getName().equals( dbCard.getName() ) 
                             && creditCard.getExpiry().compareTo( dbCard.getExpiry() ) == 0 ) {
-                        LOG.debug("Nothing changed in this credit card.");
+                        LOG.debug("Nothing changed in this credit card, will return");
                         creditCard.setHasChanged(false);
-                        //we can practically return from here.
+                        return;
                     } else {
                         creditCard.setNumber(dbCard.getNumber());
                     }
@@ -2634,7 +2635,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 }
             }
         }
-
+        //go ahead update the card.
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
         userSession.updateCreditCard(getCallerId(), userId, creditCard != null ? new CreditCardDTO(creditCard) : null);
     }

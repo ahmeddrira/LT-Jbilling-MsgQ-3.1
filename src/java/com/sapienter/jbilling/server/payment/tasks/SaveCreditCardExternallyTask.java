@@ -156,8 +156,13 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                         data? We'll leave it open ended so we don't restrict possible client implementations.
                      */
                     LOG.warn("Cannot determine credit card for storage, invoking external store with contact only");
-                    String gateWayKey = externalCCStorage.storeCreditCard(contact, null, null);
-                    updateCreditCard(creditCard, gateWayKey);
+                    /*
+                     * This is a dark-horse bug, the below commented lines should only be enabled 
+                     * if a known payment gateway is used and the same supports updating contact 
+                     * information without credit card. Refer: Bugs #2013 - Edit account bug. 
+                     */
+                    //String gateWayKey = externalCCStorage.storeCreditCard(contact, null, null);
+                    //updateCreditCard(creditCard, gateWayKey);
                 }
             }
         } else {

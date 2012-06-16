@@ -1640,7 +1640,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 					&& (null == payment.getCreditCard().getId() || 0 == payment
 							.getCreditCard().getId().intValue())) {
 				LOG.debug("Payment is being made with a new Credit Card. This must be updated first.");
-				updateCreditCard(payment.getUserId(), payment.getCreditCard());
+
+                IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+                Integer ccId = userSession.createCreditCard(payment.getUserId(), new CreditCardDTO(payment.getCreditCard()));
+                CreditCardDTO cc = new CreditCardDAS().find(ccId);
+                //this step re-initializes the Payment object with saved gateway key if involved.
+                payment.setCreditCard(cc.getOldDTO());
+                LOG.debug("CreditCard gateway key : "+payment.getCreditCard().getGatewayKey());
 			}
 		}
         

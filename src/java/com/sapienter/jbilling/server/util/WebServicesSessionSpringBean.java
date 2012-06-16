@@ -1625,6 +1625,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return payment authorization from the payment processor
      */
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+    	LOG.debug("In process payment");
+
+        if (payment == null && invoiceId != null) {
+        	return payInvoice(invoiceId);
+        }
+        
+		if (payment.getCreditCard() != null) {
+			LOG.debug("\n Are they sending the correct value in payment gateway field which should be Pares value the client got from the URL ??? >>>>>>>>> "
+					+ payment.getCreditCard().getGatewayKey());
+			
+			// if its a new credit card, it must be saved first
+			if (null != payment.getCreditCard()
+					&& (null == payment.getCreditCard().getId() || 0 == payment
+							.getCreditCard().getId().intValue())) {
+				LOG.debug("Payment is being made with a new Credit Card. This must be updated first.");
+				updateCreditCard(payment.getUserId(), payment.getCreditCard());
+			}
+		}
+        
         // apply validations for refund payment
         if(payment.getIsRefund() == 1) {
             // check for validations
@@ -1633,9 +1652,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
             }
         }
-        if (payment == null && invoiceId != null)
-            return payInvoice(invoiceId);
-
+        
         Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 

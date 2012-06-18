@@ -3163,8 +3163,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 } else{
                     updateCurrency(currency);
                 }
+            } else{
+                updateCurrency(currency);
             }
-
         }
 
         if(currencyInUse){

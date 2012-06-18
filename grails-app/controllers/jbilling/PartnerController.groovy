@@ -91,7 +91,7 @@ class PartnerController {
                         eq('roleTypeId', Constants.TYPE_PARTNER)
                     }
                     eq('deleted', 0)
-                    eq('company', company)
+                    eq('company', retrieveCompany())
                 }
             }
             // apply sorting
@@ -151,7 +151,7 @@ class PartnerController {
             return
         }
 
-        [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks: clerks, availableFields: availableMetaFields ]
+        [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks: clerks, availableFields: retrieveAvailableMetaFields() ]
     }
 
     /**
@@ -165,19 +165,19 @@ class PartnerController {
         bindData(partner, params)
         UserHelper.bindUser(user, params)
 
-        def availableMetaFields = getAvailableMetaFields()
+        def availableMetaFields = retrieveAvailableMetaFields()
         UserHelper.bindMetaFields(user, availableMetaFields, params)
 
         log.debug("bound fields: ${user.getMetaFields()}")
 
         def contacts = []
-        UserHelper.bindContacts(user, contacts, company, params)
+        UserHelper.bindContacts(user, contacts, retrieveCompany(), params)
 
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks, availableFields: availableMetaFields ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks:clerks, availableFields: availableMetaFields ]
             return
         }
 
@@ -222,7 +222,7 @@ class PartnerController {
             
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks: clerks, availableFields: availableMetaFields ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks: clerks, availableFields: availableMetaFields ]
             return
         }
 
@@ -255,23 +255,23 @@ class PartnerController {
                     }
                 }
 
-                eq('company', company)
+                eq('company', retrieveCompany())
                 eq('deleted', 0)
             }
             order('id', 'desc')
         }
     }
     
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }
     
-    def getCompany() {
+    def retrieveCompany() {
         CompanyDTO.get(session['company_id'])
     }
 
-    def getAvailableMetaFields() {
+    def retrieveAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.CUSTOMER);
     }
 }

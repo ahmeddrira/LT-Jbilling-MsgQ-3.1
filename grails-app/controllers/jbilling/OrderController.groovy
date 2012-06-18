@@ -128,9 +128,9 @@ class OrderController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id)
 
         if (params.applyFilter || params.partial) {
-            render template: 'orders', model: [ orders: orders, order: selected, user: user, currencies: currencies, filters: filters ]
+            render template: 'orders', model: [ orders: orders, order: selected, user: user, currencies: retrieveCurrencies(), filters: filters ]
         } else {
-            [ orders: orders, order: selected, user: user, currencies: currencies, filters: filters ]
+            [ orders: orders, order: selected, user: user, currencies: retrieveCurrencies(), filters: filters ]
         }
     }
 
@@ -142,7 +142,7 @@ class OrderController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, order.id)
         recentItemService.addRecentItem(order.id, RecentItemType.ORDER)
 
-        render template:'show', model: [order: order, user: user, currencies: currencies]
+        render template:'show', model: [order: order, user: user, currencies: retrieveCurrencies()]
     }
 
     /**
@@ -214,7 +214,7 @@ class OrderController {
         }
 
         session.applyToInvoiceOrderId = params.int('id')
-        [ invoices:invoices, currencies: currencies, orderId: params.id ]
+        [ invoices:invoices, currencies: retrieveCurrencies(), orderId: params.id ]
     }
 
     @Secured(["ORDER_23"])
@@ -228,7 +228,7 @@ class OrderController {
         def invoiceTemplate = new InvoiceWS()
         bindData(invoiceTemplate, params, 'invoice')
 
-        def invoiceMetaFields = getInvoiceMetaFields();
+        def invoiceMetaFields = retrieveInvoiceMetaFields();
         def fieldsArray = MetaFieldUtils.bindMetaFields(invoiceMetaFields, params);
         invoiceTemplate.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
 
@@ -237,7 +237,7 @@ class OrderController {
             def invoice = webServicesSession.applyOrderToInvoice(order.getId(), invoiceTemplate)
             if (!invoice) {
                 flash.error = 'order.error.apply.invoice'
-                render view: 'applyToInvoice', model: [ invoice: invoice, invoices: getApplicableInvoices(params.int('userId')), currencies:currencies, availableMetaFields: invoiceMetaFields ]
+                render view: 'applyToInvoice', model: [ invoice: invoice, invoices: getApplicableInvoices(params.int('userId')), currencies:retrieveCurrencies(), availableMetaFields: invoiceMetaFields ]
                 return
             }
 
@@ -249,7 +249,7 @@ class OrderController {
 
             def invoice = webServicesSession.getInvoiceWS(params.int('invoice.id'))
             def invoices = getApplicableInvoices(params.int('userId'))
-            render view: 'applyToInvoice', model: [ invoice: invoice, invoices: invoices, currencies:currencies, availableMetaFields: invoiceMetaFields ]
+            render view: 'applyToInvoice', model: [ invoice: invoice, invoices: invoices, currencies:retrieveCurrencies(), availableMetaFields: invoiceMetaFields ]
             return
         }
 
@@ -279,11 +279,11 @@ class OrderController {
     }
 
 
-    def getInvoiceMetaFields() {
+    def retrieveInvoiceMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.INVOICE);
     }
 
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll{ it.inUse }
     }

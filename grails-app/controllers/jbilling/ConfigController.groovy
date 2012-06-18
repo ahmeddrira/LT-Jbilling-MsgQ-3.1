@@ -286,7 +286,7 @@ class ConfigController {
 
     def removeDatePoint = {
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
-        CurrencyBL.removeExchangeRatesForDate(session['company_id'], startDate)
+        new CurrencyBL().removeExchangeRatesForDate(session['company_id'], startDate)
 
         render template: 'currency/form', model:  generateCurrenciesFormModel(getLastTimePointDate())
     }

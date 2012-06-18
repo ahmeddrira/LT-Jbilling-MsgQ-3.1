@@ -73,9 +73,9 @@ class InvoiceController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter || params.partial) {
-            render template: 'invoices', model: [invoices: invoices, filters: filters, selected: selected, currencies: currencies]
+            render template: 'invoices', model: [invoices: invoices, filters: filters, selected: selected, currencies: retrieveCurrencies()]
         } else {
-            [invoices: invoices, filters: filters, selected: selected, currencies: currencies]
+            [invoices: invoices, filters: filters, selected: selected, currencies: retrieveCurrencies()]
         }
     }
 
@@ -170,14 +170,14 @@ class InvoiceController {
         recentItemService.addRecentItem(invoice.id, RecentItemType.INVOICE)
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, invoice.id, invoice.number)
 
-        render template: params.template ?: 'show', model: [selected: invoice, currencies: currencies]
+        render template: params.template ?: 'show', model: [selected: invoice, currencies: retrieveCurrencies()]
     }
 
     def snapshot = {
         def invoiceId = params.int('id')
         if (invoiceId) {
             InvoiceWS invoice = webServicesSession.getInvoiceWS(invoiceId)
-            render template: 'snapshot', model: [ invoice: invoice, currencies: currencies, availableMetaFields: availableMetaFields ]
+            render template: 'snapshot', model: [ invoice: invoice, currencies: retrieveCurrencies(), availableMetaFields: retrieveAvailableMetaFields() ]
         }
     }
 
@@ -280,13 +280,13 @@ class InvoiceController {
         redirect action: list
     }
 
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }
 
 
-    def getAvailableMetaFields() {
+    def retrieveAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.INVOICE);
     }
 }

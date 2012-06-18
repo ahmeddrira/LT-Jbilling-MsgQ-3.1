@@ -23,12 +23,16 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO;
 import org.apache.log4j.Logger;
+import org.springmodules.cache.CachingModel;
+import org.springmodules.cache.FlushingModel;
+import org.springmodules.cache.provider.CacheProviderFacade;
 
 import javax.naming.NamingException;
 import java.math.BigDecimal;
@@ -56,11 +60,20 @@ public class CurrencyBL {
     private CurrencyDAS currencyDas = null;
     private CurrencyExchangeDAS exchangeDas = null;
 
+    // cache management
+    private CacheProviderFacade cache;
+    private CachingModel cacheModel;
+    private FlushingModel flushModel;
+
     private CurrencyDTO currency = null;
 
     public CurrencyBL() {
         currencyDas = new CurrencyDAS();
         exchangeDas = new CurrencyExchangeDAS();
+
+        cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
+        cacheModel = (CachingModel) Context.getBean(Context.Name.CURRENCY_CACHE_MODEL);
+        flushModel = (FlushingModel) Context.getBean(Context.Name.CURRENCY_FLUSH_MODEL);
     }
 
     public CurrencyBL(Integer currencyId) {
@@ -106,6 +119,8 @@ public class CurrencyBL {
                 company.getCurrencies().add(this.currency);
             }
 
+            invalidateCache();
+
             return this.currency.getId();
         }
 
@@ -132,6 +147,9 @@ public class CurrencyBL {
             } else {
                 company.getCurrencies().remove(currency);
             }
+
+            invalidateCache();;
+
         } else {
             LOG.error("Cannot update, CurrencyDTO not found or not set!");
         }
@@ -141,6 +159,7 @@ public class CurrencyBL {
         if (currency != null && currency.isDeletable()) {
         	currency.getEntities_1().clear();
         	currencyDas.delete(currency);
+            invalidateCache();
         	return true;
         } else {
             LOG.error("Cannot delete, CurrencyDTO not found or not deletable!");
@@ -171,6 +190,7 @@ public class CurrencyBL {
         }
 
         exchangeRate.setRate(amount);
+        invalidateCache();;
         return exchangeRate;
     }
 
@@ -181,6 +201,15 @@ public class CurrencyBL {
     }
 
     public List<CurrencyDTO> getCurrenciesToDate(Integer languageId, Integer entityId, Date to) throws NamingException, SQLException {
+
+        String cacheKey = getCacheKey(languageId, entityId, to);
+        List<CurrencyDTO> cachedCurrencies = (List<CurrencyDTO>)cache.getFromCache(cacheKey, cacheModel);
+
+        if (cachedCurrencies != null && !cachedCurrencies.isEmpty()) {
+            LOG.debug("Cache hit for " + cacheKey);
+            return cachedCurrencies;
+        }
+
         List<CurrencyDTO> currencies = new CurrencyDAS().findAll();
 
         for (CurrencyDTO currency : currencies) {
@@ -205,6 +234,8 @@ public class CurrencyBL {
             currency.setInUse(entityHasCurrency(entityId, currency.getId()));
         }
 
+        cache.putInCache(cacheKey, cacheModel, currencies);
+
         return currencies;
     }
 
@@ -228,6 +259,8 @@ public class CurrencyBL {
                 }
             }
         }
+
+        invalidateCache();;
     }
 
     public static List<Date> getUsedTimePoints(Integer entityId) {
@@ -249,7 +282,7 @@ public class CurrencyBL {
     /**
      * Removes exchange data for specified date
      */
-    public static void removeExchangeRatesForDate(Integer entityId, Date date) {
+    public void removeExchangeRatesForDate(Integer entityId, Date date) {
         final Date dayStart = com.sapienter.jbilling.common.Util.truncateDate(date);
 
         final CurrencyExchangeDAS exchangeDAS = new CurrencyExchangeDAS();
@@ -264,6 +297,12 @@ public class CurrencyBL {
         }
         /* @todo Konstantin Kulagin this should be in controller	*/
         exchangeDAS.flush();
+        invalidateCache();;
+    }
+
+    public void invalidateCache() {
+        LOG.debug("Invalidating currency cache");
+        cache.flushCache(flushModel);
     }
 
     public static Integer getEntityCurrency(Integer entityId) {
@@ -351,6 +390,11 @@ public class CurrencyBL {
         }
         LOG.debug("Exchange found " + exchange.getId());
         return exchange;
+    }
+
+    private String getCacheKey(Integer languageId, Integer entityId, Date date)  {
+        return "currency language" + languageId + "entity:" + entityId + "date:"
+                + com.sapienter.jbilling.common.Util.truncateDate(date);
     }
 
     /**

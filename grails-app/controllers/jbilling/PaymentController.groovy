@@ -211,7 +211,7 @@ class PaymentController {
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
         def invoices = getUnpaidInvoices(user.userId)
 
-        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId, availableFields: availableMetaFields ]
+        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: retrieveCurrencies(), invoiceId: params.invoiceId, availableFields: retrieveAvailableMetaFields() ]
     }
 
     /**
@@ -312,7 +312,7 @@ class PaymentController {
         log.debug "invoices are ${invoices}"
         log.debug "payments are ${refundablePayments}"
 
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId'), availableFields: availableMetaFields ]
+        [ payment: payment, user: user, invoices: invoices, currencies: retrieveCurrencies(), paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId'), availableFields: retrieveAvailableMetaFields() ]
     }
 
     def getUnpaidInvoices(Integer userId) {
@@ -375,13 +375,13 @@ class PaymentController {
             if (payment.methodId == Constants.PAYMENT_METHOD_CHEQUE) {
                  isCheque = true
             }
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, refundablePayments: refundablePayments, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields, isCheque: isCheque ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, refundablePayments: refundablePayments, currencies: retrieveCurrencies(), paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: retrieveAvailableMetaFields(), isCheque: isCheque ]
             return
         }
 
         // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, availableFields: availableMetaFields ]
+        [ payment: payment, user: user, invoices: invoices, currencies: retrieveCurrencies(), processNow: processNow, invoiceId: params.invoiceId, availableFields: retrieveAvailableMetaFields() ]
     }
 
     /**
@@ -469,7 +469,7 @@ class PaymentController {
             def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
             List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
 
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields, refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId')]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: retrieveCurrencies(), paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: retrieveAvailableMetaFields(), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId')]
             return
         } finally {
             session.removeAttribute("user_payment")
@@ -580,17 +580,17 @@ class PaymentController {
         return 'payment.successful'
     }
 
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll{ it.inUse }
     }
 
-    def getAvailableMetaFields() {
+    def retrieveAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.PAYMENT);
     }
 
     def bindMetaFields(PaymentWS paymentWS, GrailsParameterMap params) {
-        def fieldsArray = MetaFieldUtils.bindMetaFields(availableMetaFields, params);
+        def fieldsArray = MetaFieldUtils.bindMetaFields(retrieveAvailableMetaFields(), params);
         paymentWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

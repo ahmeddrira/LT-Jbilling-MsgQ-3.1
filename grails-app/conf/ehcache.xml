@@ -440,4 +440,13 @@
             overflowToDisk="false"
      />
 
+    <!-- Daily Currency cache -->
+    <cache name="currencyCache"
+           maxElementsInMemory="500"
+           eternal="false"
+           timeToIdleSeconds="86500"
+           timeToLiveSeconds="86500"
+           overflowToDisk="false"
+            />
+
 </ehcache>

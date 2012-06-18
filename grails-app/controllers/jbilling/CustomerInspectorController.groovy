@@ -103,7 +103,7 @@ class CustomerInspectorController {
                 company: company,
                 itemTypes: itemTypes,
                 products: products,
-                currencies: currencies,
+                currencies: retrieveCurrencies(),
                 cycle: cycle,
                 revenue: revenue
         ]
@@ -153,7 +153,7 @@ class CustomerInspectorController {
         if (priceId) {
             def price = getCustomerPrice(userId, priceId)
 
-            [ price: price, product: product, models: price?.models, user: user, currencies: currencies ]
+            [ price: price, product: product, models: price?.models, user: user, currencies: retrieveCurrencies() ]
 
         } else {
             // copy default product price model as a starting point
@@ -163,7 +163,7 @@ class CustomerInspectorController {
             def price = new PlanItemWS()
             price.addModel(CommonConstants.EPOCH_DATE, priceModel);
 
-            [ price: price, product: product, user: user, currencies: currencies ]
+            [ price: price, product: product, user: user, currencies: retrieveCurrencies() ]
         }
     }
 
@@ -176,7 +176,7 @@ class CustomerInspectorController {
         def priceModel = PlanHelper.bindPriceModel(params)
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: retrieveCurrencies() ]
     }
 
     def addChainModel = {
@@ -191,7 +191,7 @@ class CustomerInspectorController {
         }
         model.next = new PriceModelWS();
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: retrieveCurrencies() ]
     }
 
     def removeChainModel = {
@@ -211,7 +211,7 @@ class CustomerInspectorController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: retrieveCurrencies() ]
     }
 
     def addAttribute = {
@@ -231,7 +231,7 @@ class CustomerInspectorController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: retrieveCurrencies() ]
     }
 
     def removeAttribute = {
@@ -252,7 +252,7 @@ class CustomerInspectorController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: retrieveCurrencies() ]
     }
 
     /**
@@ -291,7 +291,7 @@ class CustomerInspectorController {
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
             def product = webServicesSession.getItem(params.int('itemId'), user.userId, null)
-            render view: 'editCustomerPrice', model: [ price: price, product: product, user: user, currencies: currencies ]
+            render view: 'editCustomerPrice', model: [ price: price, product: product, user: user, currencies: retrieveCurrencies() ]
             return
         }
 
@@ -321,7 +321,7 @@ class CustomerInspectorController {
         productPrices(params: [id: params.itemId, userId: userId])
     }
 
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }

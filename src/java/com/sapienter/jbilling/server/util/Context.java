@@ -68,6 +68,9 @@ public class Context {
         CACHE_MODEL_RW                  ("cacheModelPTDTO"),
         CACHE_FLUSH_MODEL_RW            ("flushModelPTDTO"),
 
+        CURRENCY_CACHE_MODEL            ("cacheModelCurrency"),
+        CURRENCY_FLUSH_MODEL            ("flushModelCurrency"),
+
         // HSQLDB data loader cache
         MEMCACHE_DATASOURCE                 ("memcacheDataSource"),
         MEMCACHE_JDBC_TEMPLATE              ("memcacheJdbcTemplate"),

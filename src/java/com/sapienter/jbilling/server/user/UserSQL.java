@@ -143,4 +143,16 @@ public interface UserSQL {
         "SELECT entity_id " +
         "  FROM base_user " +
         " WHERE id = ?";
+
+    static final String findUserByMetaValue =
+		 "select bu.id " +
+		 "from meta_field_value mfv, customer_meta_field_map cmfm, customer c, base_user bu " +
+		 "where mfv.meta_field_name_id = ? " +
+		 "and mfv.string_value = ? " +
+		 "and cmfm.meta_field_value_id = mfv.id " +
+		 "and cmfm.customer_id = c.id " +
+		 "and bu.id = c.user_id " +
+		 "and bu.deleted = 0 " +
+		 "and bu.entity_id = ?";
+
 }

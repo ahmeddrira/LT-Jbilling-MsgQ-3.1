@@ -1271,6 +1271,22 @@ public class UserBL extends ResultList implements UserSQL {
             throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
         }
     }
+    
+    public CachedRowSet getByMetaValue(String ccfValue, Integer entityId, Integer ccfType) {
+        try {
+
+            prepareStatement(UserSQL.findUserByMetaValue);
+            cachedResults.setInt(1, ccfType.intValue());
+            cachedResults.setString(2, ccfValue);
+            cachedResults.setInt(3, entityId.intValue());
+            execute();
+            conn.close();
+
+            return cachedResults;
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
+        }
+    }
 
     public CreditCardDTO getCreditCard() {
         if (user.getCreditCards().isEmpty()) {
@@ -1408,4 +1424,44 @@ public class UserBL extends ResultList implements UserSQL {
     public Integer getLanguage() {
         return user.getLanguageIdField();
     }
+
+    public Integer getUserIdFromCCF(String ccfValue, Integer entityId, Integer ccfType) {
+	    Integer userId = null;
+	    
+//		UserBL userBl = new UserBL();
+		LOG.debug("Getting UserId for CCF = " + ccfValue);
+				
+		CachedRowSet users = getByMetaValue(ccfValue, entityId, ccfType);
+		
+		Integer usersSize = new Integer(users.size());
+		LOG.debug("usersSize = " + usersSize);
+		
+		Integer[] ret = new Integer[usersSize];
+        int f = 0;
+        try {
+			while (users.next()) {
+			LOG.debug("users.getInt(1) = " + users.getInt(1));
+			    ret[f] = users.getInt(1);
+			    f++;
+			    if (f == usersSize) {
+			    	userId = users.getInt(1);
+			    }
+			    
+			}
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			LOG.error("SQLException e1  = " + e1.getMessage());
+			e1.printStackTrace();
+		}
+        try {
+			users.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			LOG.error("SQLException e = " + e.getMessage());
+		}
+		
+		return userId;
+	}
+
+
 }

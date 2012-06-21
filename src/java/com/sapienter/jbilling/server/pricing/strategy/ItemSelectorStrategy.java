@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -70,7 +71,7 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
 
         if (pricingOrder != null) {
             // parse item selection tiers
-            SortedMap<Integer, Integer> tiers = getTiers(planPrice.getAttributes());
+            SortedMap<BigDecimal, Integer> tiers = getTiers(planPrice.getAttributes());
             LOG.debug("Item selector tiers: " + tiers);
 
             // items used for selection
@@ -79,9 +80,9 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
             LOG.debug("Selecting tier for usage level " + typeUsage.getQuantity());
 
             // find matching tier
-            Integer selectedItemId = tiers.get(1);
-            for (Integer tier : tiers.keySet()) {
-                if (typeUsage.getQuantity().compareTo(new BigDecimal(tier)) >= 0) {
+            Integer selectedItemId = tiers.get(BigDecimal.ONE);
+            for (BigDecimal tier : tiers.keySet()) {
+                if (typeUsage.getQuantity().compareTo(tier) >= 0) {
                     selectedItemId = tiers.get(tier);
                 }
             }
@@ -106,7 +107,7 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
      * @param tiers tiers of quantities and items
      * @param itemId item id to add
      */
-    protected void addIfNotExists(OrderDTO order, Map<Integer, Integer> tiers, Integer itemId) {
+    protected void addIfNotExists(OrderDTO order, Map<BigDecimal, Integer> tiers, Integer itemId) {
         if (OrderHelper.collect(order, itemId).isEmpty()) {
 
             // remove other tiers from the order
@@ -132,12 +133,12 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
      * @param attributes attributes to parse
      * @return tiers of quantities and items
      */
-    protected SortedMap<Integer, Integer> getTiers(Map<String, String> attributes) {
-        SortedMap<Integer, Integer> tiers = new TreeMap<Integer, Integer>();
+    protected SortedMap<BigDecimal, Integer> getTiers(Map<String, String> attributes) {
+        SortedMap<BigDecimal, Integer> tiers = new TreeMap<BigDecimal, Integer>();
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            if (entry.getKey().matches("^\\d+$")) {
-                tiers.put(AttributeUtils.parseInteger(entry.getKey()), AttributeUtils.parseInteger(entry.getValue()));
+            if (NumberUtils.isNumber(entry.getKey())) {
+                tiers.put(AttributeUtils.parseDecimal(entry.getKey()), AttributeUtils.parseInteger(entry.getValue()));
             }
         }
 

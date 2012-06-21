@@ -83,6 +83,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
         LOG.debug("Usage amount: " + usage.getAmount());
         
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
+        BigDecimal totalQuantity = getTotalQuantity(pricingOrder, usage, quantity, singlePurchase);
         
         super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
         
@@ -92,7 +93,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
         // calculate a unit price that brings the total cost back down to the maximum cap
         if (result.getPrice() != null) {
 
-            BigDecimal total = quantity.multiply(result.getPrice());
+            BigDecimal total = totalQuantity.multiply(result.getPrice());
             
             LOG.debug("Total: " + total + ", maximum: " + maximum);
             BigDecimal billable = maximum;
@@ -101,7 +102,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
             }
             LOG.debug("Billable: " + billable);
             
-            BigDecimal price = billable.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            BigDecimal price = billable.divide(totalQuantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
             result.setPrice(price);
         }
     }

@@ -59,7 +59,7 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
                 ChainPosition.START
         );
 
-        setRequiresUsage(true);
+        setRequiresUsage(false);
     }
 
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
@@ -73,12 +73,15 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
             SortedMap<Integer, Integer> tiers = getTiers(planPrice.getAttributes());
             LOG.debug("Item selector tiers: " + tiers);
 
-            LOG.debug("Selecting tier for usage level " + usage.getQuantity());
+            // items used for selection
+            Integer typeId =  AttributeUtils.getInteger(planPrice.getAttributes(), "typeId");
+            Usage typeUsage = new UsageBL(result.getUserId(), pricingOrder).getItemTypeUsage(typeId);
+            LOG.debug("Selecting tier for usage level " + typeUsage.getQuantity());
 
             // find matching tier
             Integer selectedItemId = tiers.get(1);
             for (Integer tier : tiers.keySet()) {
-                if (usage.getQuantity().compareTo(new BigDecimal(tier)) >= 0) {
+                if (typeUsage.getQuantity().compareTo(new BigDecimal(tier)) >= 0) {
                     selectedItemId = tiers.get(tier);
                 }
             }
@@ -87,7 +90,7 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
             if (selectedItemId != null) {
                 addIfNotExists(pricingOrder, tiers, selectedItemId);
             } else {
-                LOG.debug("No tier for usage level " + usage.getQuantity());
+                LOG.debug("No tier for usage level " + typeUsage.getQuantity());
             }
 
         } else {

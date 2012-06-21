@@ -395,12 +395,16 @@ public class WSTest extends PricingTestCase {
         assertEquals(LONG_DISTANCE_PLAN_ITEM, fetchedPlan.getItemId());
         assertEquals("Updated description.", fetchedPlan.getDescription());
 
-        fetchedPrice = fetchedPlan.getPlanItems().get(1);
-        assertEquals(LONG_DISTANCE_CALL_GENERIC, fetchedPrice.getItemId());
-        assertEquals(PriceModelStrategy.METERED.name(), fetchedPrice.getModel().getType());
-        assertEquals(new BigDecimal("0.25"), fetchedPrice.getModel().getRateAsDecimal());
-        assertEquals(1, fetchedPrice.getModel().getCurrencyId().intValue());
-
+        
+        for (PlanItemWS planItemWS: fetchedPlan.getPlanItems()) {
+        	if (LONG_DISTANCE_CALL_GENERIC.equals(planItemWS.getItemId())) {
+        		fetchedPrice=planItemWS;
+        		assertEquals(PriceModelStrategy.METERED.name(), fetchedPrice.getModel().getType());
+        		assertEquals(new BigDecimal("0.25"), fetchedPrice.getModel().getRateAsDecimal());
+        		assertEquals(1, fetchedPrice.getModel().getCurrencyId().intValue());
+        		
+        	}
+        }
 
         // delete the plan
         api.deletePlan(fetchedPlan.getId());

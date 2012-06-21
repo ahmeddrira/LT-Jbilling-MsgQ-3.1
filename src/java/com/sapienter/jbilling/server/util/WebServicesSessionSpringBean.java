@@ -1625,6 +1625,31 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return payment authorization from the payment processor
      */
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+    	LOG.debug("In process payment");
+
+        if (payment == null && invoiceId != null) {
+        	return payInvoice(invoiceId);
+        }
+        
+		if (payment.getCreditCard() != null) {
+			LOG.debug("\n Are they sending the correct value in payment gateway field which should be Pares value the client got from the URL ??? >>>>>>>>> "
+					+ payment.getCreditCard().getGatewayKey());
+			
+			// if its a new credit card, it must be saved first
+			if (null != payment.getCreditCard()
+					&& (null == payment.getCreditCard().getId() || 0 == payment
+							.getCreditCard().getId().intValue())) {
+				LOG.debug("Payment is being made with a new Credit Card. This must be updated first.");
+
+                IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+                Integer ccId = userSession.createCreditCard(payment.getUserId(), new CreditCardDTO(payment.getCreditCard()));
+                CreditCardDTO cc = new CreditCardDAS().find(ccId);
+                //this step re-initializes the Payment object with saved gateway key if involved.
+                payment.setCreditCard(cc.getOldDTO());
+                LOG.debug("CreditCard gateway key : "+payment.getCreditCard().getGatewayKey());
+			}
+		}
+        
         // apply validations for refund payment
         if(payment.getIsRefund() == 1) {
             // check for validations
@@ -1633,9 +1658,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
             }
         }
-        if (payment == null && invoiceId != null)
-            return payInvoice(invoiceId);
-
+        
         Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 
@@ -2603,13 +2626,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (creditCard.getId() != null && creditCard.getId().intValue() !=0 ) {
                 creditCard.setHasChanged(true);
                 if (creditCard.getNumber() == null || creditCard.getNumber().contains("*")) {
-                    //number was not updated
+                    LOG.debug("number was not updated");
                     CreditCardDTO dbCard= new CreditCardDAS().find(creditCard.getId());
+                    Calendar newExp= Calendar.getInstance();
+                    	newExp.setTime(creditCard.getExpiry());
+                    Calendar oldExp= Calendar.getInstance();
+                    	oldExp.setTime(dbCard.getExpiry());
+                    LOG.debug("New Expiry: " + creditCard.getExpiry() + " VS. old Expiry: " + dbCard.getExpiry());
+                    
                     if ( creditCard.getName().equals( dbCard.getName() ) 
-                            && creditCard.getExpiry().compareTo( dbCard.getExpiry() ) == 0 ) {
-                        LOG.debug("Nothing changed in this credit card.");
+                            && newExp.get(Calendar.MONTH) == oldExp.get(Calendar.MONTH)
+                            && newExp.get(Calendar.YEAR) == oldExp.get(Calendar.YEAR) ) {
+                        LOG.debug("Nothing changed in this credit card, will return");
                         creditCard.setHasChanged(false);
-                        //we can practically return from here.
+                        return;
                     } else {
                         creditCard.setNumber(dbCard.getNumber());
                     }
@@ -2617,7 +2647,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 }
             }
         }
-
+        //go ahead update the card.
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
         userSession.updateCreditCard(getCallerId(), userId, creditCard != null ? new CreditCardDTO(creditCard) : null);
     }
@@ -3133,8 +3163,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 } else{
                     updateCurrency(currency);
                 }
+            } else{
+                updateCurrency(currency);
             }
-
         }
 
         if(currencyInUse){

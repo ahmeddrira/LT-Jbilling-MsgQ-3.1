@@ -23,6 +23,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -69,6 +71,7 @@ public class NotificationCategoryDTO extends AbstractDescription implements java
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "notification_category_GEN")
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;

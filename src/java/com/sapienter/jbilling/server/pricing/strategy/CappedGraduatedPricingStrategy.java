@@ -29,6 +29,8 @@ import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
 
 /**
@@ -41,6 +43,8 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  */
 public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
 
+	private static final Logger LOG = Logger.getLogger(CappedGraduatedPricingStrategy.class);
+	
     public CappedGraduatedPricingStrategy() {
         setAttributeDefinitions(
                 new AttributeDefinition("included", DECIMAL, true),
@@ -76,25 +80,29 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
             throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
         }
 
+        LOG.debug("Usage amount: " + usage.getAmount());
+        
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
-        if (usage.getAmount().compareTo(maximum) <= 0) {
-            // usage cap not yet reached, price normally
-            super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
-        } else {
-            // cap reached, price at zero
-            result.setPrice(BigDecimal.ZERO);
-        }
-
+        
+        super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
+        
+        LOG.debug("Calculated result price: " + result.getPrice());
+        
         // only bill up to the set maximum cap
         // calculate a unit price that brings the total cost back down to the maximum cap
         if (result.getPrice() != null) {
 
-            BigDecimal total = usage.getAmount().add(quantity.multiply(result.getPrice()));
-            if (total.compareTo(maximum) >= 0) {
-                BigDecimal billable = maximum.subtract(usage.getAmount());
-                BigDecimal price = billable.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-                result.setPrice(price);
+            BigDecimal total = quantity.multiply(result.getPrice());
+            
+            LOG.debug("Total: " + total + ", maximum: " + maximum);
+            BigDecimal billable = maximum;
+            if (total.compareTo(maximum) < 0) {
+                billable = total;
             }
+            LOG.debug("Billable: " + billable);
+            
+            BigDecimal price = billable.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            result.setPrice(price);
         }
     }
 }

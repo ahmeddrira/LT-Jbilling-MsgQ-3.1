@@ -103,8 +103,8 @@
 
                 <br/>
 
-                <g:if test="${planItem.model?.type}">
-                    <g:render template="/priceModel/builderModel" model="[model: planItem.model]"/>
+                <g:if test="${model?.type}">
+                    <g:render template="/priceModel/builderModel" model="[model: model]"/>
                 </g:if>
             </div>
         </div>

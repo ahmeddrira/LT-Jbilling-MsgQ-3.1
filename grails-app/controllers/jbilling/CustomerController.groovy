@@ -130,7 +130,7 @@ class CustomerController {
                 }
                 //check that the user is a customer
                 isNotNull('customer')
-                eq('company', new CompanyDTO(session['company_id']))
+                eq('company', retrieveCompany())
                 eq('deleted', 0)
 
                 if (SpringSecurityUtils.ifNotGranted("CUSTOMER_17")) {
@@ -353,7 +353,7 @@ class CustomerController {
 
         def periodUnits = PeriodUnitDTO.list()
         
-        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits: periodUnits, availableFields: availableMetaFields ]
+        [ user: user, contacts: contacts, parent: parent, company: retrieveCompany(), currencies: retrieveCurrencies(), periodUnits: periodUnits, availableFields: retrieveAvailableMetaFields() ]
     }
 
     /**
@@ -365,16 +365,16 @@ class CustomerController {
 
         UserHelper.bindUser(user, params)
 
-        UserHelper.bindMetaFields(user, availableMetaFields, params)
+        UserHelper.bindMetaFields(user, retrieveAvailableMetaFields(), params)
 
         def contacts = []
-        UserHelper.bindContacts(user, contacts, company, params)
+        UserHelper.bindContacts(user, contacts, retrieveCompany(), params)
 
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, availableFields: availableMetaFields, periodUnits: PeriodUnitDTO.list(),currencies: currencies ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: retrieveCompany(), availableFields: retrieveAvailableMetaFields(), periodUnits: PeriodUnitDTO.list(),currencies: retrieveCurrencies() ]
             return
         }
 
@@ -395,7 +395,7 @@ class CustomerController {
                         user.userName = ''
                         flash.error = message(code: 'customer.error.name.blank')
 
-                        render view: "edit", model: [user: user, contacts: contacts, parent: null, company: company, currencies: currencies, periodUnits: PeriodUnitDTO.list(), availableFields: availableMetaFields]
+                        render view: "edit", model: [user: user, contacts: contacts, parent: null, company: retrieveCompany(), currencies: retrieveCurrencies(), periodUnits: PeriodUnitDTO.list(), availableFields: retrieveAvailableMetaFields()]
                         return
                     }
                 } else {
@@ -443,28 +443,28 @@ class CustomerController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies, availableFields: availableMetaFields ,periodUnits : PeriodUnitDTO.list()]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), availableFields: retrieveAvailableMetaFields() ,periodUnits : PeriodUnitDTO.list()]
             return
         }
 
         chain action: 'list', params: [id: user.userId]
     }
 
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }
 
-    def getCompany() {
+    def retrieveCompany() {
         CompanyDTO.get(session['company_id'])
     }
 
-    def getAvailableMetaFields() {
+    def retrieveAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.CUSTOMER);
     }
 
     def findMetaFieldType(Integer metaFieldId) {
-        for (MetaField field : availableMetaFields) {
+        for (MetaField field : retrieveAvailableMetaFields()) {
             if (field.id == metaFieldId) {
                 return field;
             }

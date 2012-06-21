@@ -50,14 +50,14 @@ public class ItemPercentageSelectorStrategy extends ItemSelectorStrategy {
         setAttributeDefinitions(
                 new AttributeDefinition("typeId", INTEGER, true),
                 new AttributeDefinition("percentOfTypeId", INTEGER, true),
-                new AttributeDefinition("100", INTEGER, false)
+                new AttributeDefinition("0", INTEGER, false)
         );
 
         setChainPositions(
                 ChainPosition.START
         );
 
-        setRequiresUsage(true);
+        setRequiresUsage(false);
     }
 
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
@@ -71,8 +71,15 @@ public class ItemPercentageSelectorStrategy extends ItemSelectorStrategy {
             SortedMap<Integer, Integer> tiers = getTiers(planPrice.getAttributes());
             LOG.debug("Item selector percentage tiers: " + tiers);
 
-            BigDecimal percentage = getPercentageUsed(usage.getQuantity());
-            LOG.debug("( " + usage.getQuantity() + " ) * 100 = " + percentage);
+            // items used for selection
+            Integer typeId = AttributeUtils.getInteger(planPrice.getAttributes(), "typeId");
+            Integer percentOfTypeId = AttributeUtils.getInteger(planPrice.getAttributes(), "percentOfTypeId");
+
+            Usage typeUsage = new UsageBL(result.getUserId(), pricingOrder).getItemTypeUsage(typeId);
+            Usage percentageTypeUsage = new UsageBL(result.getUserId(), pricingOrder).getItemTypeUsage(percentOfTypeId);
+
+            BigDecimal percentage = getPercentageUsed(typeUsage.getQuantity(), percentageTypeUsage.getQuantity());
+            LOG.debug("( " + typeUsage.getQuantity() + " / " + percentageTypeUsage.getQuantity() + " ) * 100 = " + percentage);
             LOG.debug("Selecting tier for usage percentage " + percentage);
 
             // find matching tier
@@ -98,13 +105,16 @@ public class ItemPercentageSelectorStrategy extends ItemSelectorStrategy {
     /**
      * Calculate the percentage
      * @param typeUsage
+     * @param percentageOfUsage
      * @return
      */
-    public BigDecimal getPercentageUsed(BigDecimal typeUsage) {
+    public BigDecimal getPercentageUsed(BigDecimal typeUsage, BigDecimal percentageOfUsage) {
         if (typeUsage.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;
+        if (percentageOfUsage.compareTo(BigDecimal.ZERO) == 0) return ONE_HUNDRED;
 
         typeUsage = typeUsage.setScale(2);
+        percentageOfUsage = percentageOfUsage.setScale(2);
 
-        return typeUsage.multiply(ONE_HUNDRED);
+        return typeUsage.divide(percentageOfUsage, RoundingMode.HALF_UP).multiply(ONE_HUNDRED);
     }
 }

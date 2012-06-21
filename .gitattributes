@@ -8,6 +8,8 @@
 *.gsp text
 *.xml text
 *.properties text
+*.css text
+*.js text
 
 # Declare files that will always have CRLF line endings on checkout.
 # Not in use now. Example:

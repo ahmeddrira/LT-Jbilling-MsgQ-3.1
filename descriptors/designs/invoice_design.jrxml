@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_design_new" language="groovy" pageWidth="595" pageHeight="842" columnWidth="523" leftMargin="36" rightMargin="36" topMargin="36" bottomMargin="36">
-	<property name="ireport.zoom" value="0.9090909090909091"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="131"/>
 	<import value="java.text.SimpleDateFormat"/>
@@ -116,6 +116,9 @@
 	<parameter name="invoice_create_datetime" class="java.lang.String"/>
 	<parameter name="payment_terms" class="java.lang.String"/>
 	<parameter name="invoice_line_tax_id" class="java.lang.Integer"/>
+	<parameter name="message1" class="java.lang.String"/>
+	<parameter name="message2" class="java.lang.String"/>
+	<parameter name="invoice_number" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select id from invoice where id=$P{invoice_id};]]>
 	</queryString>
@@ -172,20 +175,20 @@
 				<reportElement x="290" y="47" width="257" height="113"/>
 				<imageExpression class="java.io.File"><![CDATA[$P{LOGO}]]></imageExpression>
 			</image>
-			<staticText>
+			<textField>
 				<reportElement x="328" y="158" width="219" height="10" forecolor="#A6A7A7"/>
-				<textElement verticalAlignment="Top">
+				<textElement verticalAlignment="Top" markup="none">
 					<font size="8" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[The Open Source Enterprise Billing Solution]]></text>
-			</staticText>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{message1}]]></textFieldExpression>
+			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="23" y="51" width="166" height="42" isRemoveLineWhenBlank="true" forecolor="#A6A7A7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Date : "+$P{invoice_create_datetime}+"\n"+
-"Invoice : "+$P{invoice_id}]]></textFieldExpression>
+"Invoice : "+$P{invoice_number}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="156" y="167" width="20" height="20" forecolor="#1F5868"/>
@@ -211,7 +214,7 @@ $P{receiver_email}]]></textFieldExpression>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{payment_terms}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{payment_terms} + " days from invoice date"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="36" y="278" width="264" height="17" isRemoveLineWhenBlank="true" forecolor="#A6A7A7"/>
@@ -286,20 +289,13 @@ $P{owner_email}]]></textFieldExpression>
 	</detail>
 	<lastPageFooter>
 		<band height="54">
-			<staticText>
+			<textField>
 				<reportElement x="176" y="21" width="150" height="25" forecolor="#1F5868"/>
-				<textElement verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle" markup="none">
 					<font size="9" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Thank you for your business!]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="163" y="1" width="197" height="20" forecolor="#A6A7A7"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="8" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[Please find payment instructions on next page]]></text>
-			</staticText>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{message2}]]></textFieldExpression>
+			</textField>
 		</band>
 	</lastPageFooter>
 </jasperReport>

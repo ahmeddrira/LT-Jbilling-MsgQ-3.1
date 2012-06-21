@@ -62,9 +62,16 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000)), false); // 10 purchased, 1000 usage
+        // total quantity = purchase quantity + usage = 1001
+        BigDecimal purchaseQuantity = new BigDecimal(2);
+        BigDecimal usageQuantity = new BigDecimal(1000);
+        BigDecimal ratedQuantity = purchaseQuantity.add(usageQuantity).subtract(new BigDecimal(1000));
 
-        assertEquals(rate, result.getPrice());
+        // 1 purchased, 1000 usage = 1001 total quantity, 1000 included ==> 1 rated with billable = rate
+        strategy.applyTo(null, result, null, planPrice, purchaseQuantity, getUsage(usageQuantity), false);
+
+        // (ratedQuantity / totalQuantity) * rate = price
+        assertEquals(rate, result.getPrice().multiply(purchaseQuantity.add(usageQuantity)).divide(ratedQuantity));
     }
 
     public void testApplyToUnderIncluded() throws Exception {
@@ -90,18 +97,31 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
         planPrice.setRate(rate);
         planPrice.addAttribute("included", "1000");
 
+        // 20 purchased, 990 usage
+        // total quantity = purchase quantity + usage = 1010
+        BigDecimal purchaseQuantity = new BigDecimal(20);
+        BigDecimal usageQuantity = new BigDecimal(990);
+        BigDecimal ratedQuantity = purchaseQuantity.add(usageQuantity).subtract(new BigDecimal(1000));
+
         // half of the call exceeds the included minutes
         // rate should be 50% of the plan rate
-        PricingResult result = new PricingResult(1, 2, 3);                                      // 20 purchased, 990 usage
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(20), getUsage(new BigDecimal(990)), false); // 10 minutes included, 10 minutes rated
+        PricingResult result = new PricingResult(1, 2, 3);
+        strategy.applyTo(null, result, null, planPrice, purchaseQuantity, getUsage(usageQuantity), false); // 10 minutes included, 10 minutes rated
 
-        assertEquals(new BigDecimal("0.50"), result.getPrice());
+        // (ratedQuantity / totalQuantity) * rate = price
+        assertEquals(rate, result.getPrice().multiply(purchaseQuantity.add(usageQuantity)).divide(ratedQuantity));
+
+        // 100 purchased, 980 usage
+        purchaseQuantity = new BigDecimal(100);
+        usageQuantity = new BigDecimal(980);
+        ratedQuantity = purchaseQuantity.add(usageQuantity).subtract(new BigDecimal(1000));
 
         // 80% of the call exceeds the included minutes
         // rate should be 80% of the plan rate
-        PricingResult result2 = new PricingResult(1, 2, 3);                                       // 100 purchased, 980 usage
-        strategy.applyTo(null, result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(980)), false); // 20 minutes included, 80 minutes rated
+        PricingResult result2 = new PricingResult(1, 2, 3);
+        strategy.applyTo(null, result2, null, planPrice, purchaseQuantity, getUsage(usageQuantity), false); // 20 minutes included, 80 minutes rated
 
-        assertEquals(new BigDecimal("0.80"), result2.getPrice());
+        // (ratedQuantity / totalQuantity) * rate = price
+        assertEquals(rate, result2.getPrice().multiply(purchaseQuantity.add(usageQuantity)).divide(ratedQuantity));
     }
 }

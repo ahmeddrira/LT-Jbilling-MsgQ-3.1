@@ -92,23 +92,16 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
             being purchased to the usage calc to get the total quantity.
          */
         BigDecimal total = getTotalQuantity(pricingOrder, usage, quantity, singlePurchase);
-        BigDecimal existing = getExistingQuantity(pricingOrder, usage, quantity, singlePurchase);
         BigDecimal included = getIncludedQuantity(pricingOrder, planPrice, usage);
 
         LOG.debug("Graduated pricing for " + included + " units included, " + total + " purchased ...");
 
-        if (existing.compareTo(included) >= 0) {
-            // included usage exceeded by current usage
-            result.setPrice(planPrice.getRate());
-
-            LOG.debug("Included quantity exceeded by existing usage, applying plan rate of " + result.getPrice());
-
-        } else if (total.compareTo(included) > 0) {
+        if (total.compareTo(included) > 0) {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
 
             BigDecimal rated = total.subtract(included);
-            BigDecimal percent = rated.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            BigDecimal percent = rated.divide(total, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
             result.setPrice(percent.multiply(planPrice.getRate()).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
 
             LOG.debug("Purchased quantity + existing usage exceeds included quantity, applying a partial rate of " + result.getPrice());

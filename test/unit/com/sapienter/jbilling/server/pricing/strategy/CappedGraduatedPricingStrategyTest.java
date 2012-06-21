@@ -94,14 +94,23 @@ public class CappedGraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         PricingResult result = new PricingResult(1, 2, 3);
 
-        // test 1 unit of purchase, with 2 units of existing usage
+        // test 1 unit of purchase, with 10 units of existing usage = total 11, 2 included --> 9 rated
         BigDecimal quantity = new BigDecimal(1);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(2, 0), false);
-        assertEquals(new BigDecimal("1.00"), result.getPrice());
+        Usage usage = getUsage(10, 0);
+        BigDecimal totalQuantity = usage.getQuantity().add(quantity);
 
-        // test 1 unit of purchase, with 10 units of existing usage and the cap exceeded
-        quantity = new BigDecimal(1);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(10, 10), false);
-        assertEquals(new BigDecimal("0.91"), result.getPrice());
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        // 9 rated --> total should be 9.00
+        assertEquals(new BigDecimal("9.00"), result.getPrice().multiply(totalQuantity));
+
+        // test 3 unit of purchase, with 10 units of existing usage and the cap exceeded
+        // 2 units included --> 1 rated
+        quantity = new BigDecimal(3);
+        usage = getUsage(10, 10);
+        totalQuantity = usage.getQuantity().add(quantity);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        // cap exceeded --> total should be 10.00
+        assertEquals(new BigDecimal("10.00"), result.getPrice().multiply(totalQuantity));
     }
 }

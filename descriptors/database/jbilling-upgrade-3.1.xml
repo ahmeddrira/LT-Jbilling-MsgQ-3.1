@@ -75,7 +75,7 @@
         <insert tableName="price_model">
             <column name="id" valueNumeric="2100"/>
             <column name="strategy_type" value="METERED"/>
-            <column name="rate" valueNumeric="10.0000000000"/>
+            <column name="rate" valueNumeric="0.0000000000"/>
             <column name="included_quantity"/>
             <column name="currency_id" valueNumeric="1"/>
             <column name="next_model_id"/>

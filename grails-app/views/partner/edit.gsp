@@ -165,7 +165,7 @@
                             <content tag="label.for">user.mainRoleId</content>
 
                             <g:hiddenField name="user.mainRoleId" value="${Constants.TYPE_PARTNER}"/>
-                            ${RoleDTO.findById(Constants.TYPE_PARTNER).getTitle(session['language_id'])}
+                            ${RoleDTO.findByRoleTypeId(Constants.TYPE_PARTNER)?.getTitle(session['language_id'])}
                         </g:applyLayout>
                         
                         <!--  Partner DTO specific fields. -->

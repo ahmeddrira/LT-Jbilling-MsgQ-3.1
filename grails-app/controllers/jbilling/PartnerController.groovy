@@ -151,7 +151,7 @@ class PartnerController {
             return
         }
 
-        [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks: clerks, availableFields: retrieveAvailableMetaFields() ]
+        [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks: retrieveClerks(), availableFields: retrieveAvailableMetaFields() ]
     }
 
     /**
@@ -177,7 +177,7 @@ class PartnerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks:clerks, availableFields: availableMetaFields ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks:retrieveClerks(), availableFields: availableMetaFields ]
             return
         }
 
@@ -222,7 +222,7 @@ class PartnerController {
             
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks: clerks, availableFields: availableMetaFields ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: retrieveCompany(), currencies: retrieveCurrencies(), clerks: retrieveClerks(), availableFields: availableMetaFields ]
             return
         }
 
@@ -244,14 +244,14 @@ class PartnerController {
         list()
     }
 
-    def getClerks() {
+    def retrieveClerks() {
         return UserDTO.createCriteria().list() {
             and {
                 or {
                     isEmpty('roles')
                     roles {
-                        ne('id', Constants.TYPE_CUSTOMER)
-                        ne('id', Constants.TYPE_PARTNER)
+                        ne('roleTypeId', Constants.TYPE_CUSTOMER)
+                        ne('roleTypeId', Constants.TYPE_PARTNER)
                     }
                 }
 

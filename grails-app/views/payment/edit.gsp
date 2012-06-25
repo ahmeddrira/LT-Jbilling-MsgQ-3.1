@@ -411,7 +411,7 @@
                                         <content tag="label.for">creditCard.number</content>
 
                                         %{-- obscure credit card by default, or if the preference is explicitly set --}%
-                                        <g:if test="${creditCard?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                                        <g:if test="${creditCard?.id && creditCard?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
                                             <g:set var="creditCardNumber" value="${creditCard.number.replaceAll('^\\d{12}','************')}"/>
                                             <g:if test="${creditCardNumber.size() < 16}">
                                                 <g:set var="creditCardNumber" value="************${creditCardNumber}"/>

@@ -435,6 +435,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         CreditCardDTO ccDto = null;
         if (payment.getCreditCard() != null) {
             ccDto = new CreditCardDTO();
+            ccDto.setId(payment.getCreditCard().getId());
             ccDto.setNumber(payment.getCreditCard().getNumber());
             ccDto.setCcExpiry(payment.getCreditCard().getCcExpiry());
             ccDto.setName(payment.getCreditCard().getName());

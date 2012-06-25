@@ -609,3 +609,8 @@ update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 
 alter table currency_exchange alter valid_since type date;
 alter table item_price_timeline alter start_date type date;
 alter table plan_item_price_timeline alter start_date type date;
+
+-- Date 30-May-2012
+-- Bugs #2825 - Fix percentage products in Plans.
+insert into order_period (id, entity_id, value, unit_id, optlock) values (5, null, null, null, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (17, 5, 'description', 1, 'All Orders');

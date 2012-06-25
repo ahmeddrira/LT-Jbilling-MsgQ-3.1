@@ -9,4 +9,188 @@
             <column name="next_id" valueNumeric="2"/>
         </insert>
     </changeSet>
+
+    <changeSet context="base" author="Juan Vidal" id="20120530-#2825-Fix-percentage-products-in-Plans">
+        <insert tableName="order_period">
+            <column name="id" valueNumeric="5"/>
+            <column name="entity_id"/>
+            <column name="value"/>
+            <column name="unit_id"/>
+            <column name="optlock" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="17"/>
+            <column name="foreign_id" valueNumeric="5"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="All Orders"/>
+        </insert>
+
+        <!--Test data-->
+        <insert tableName="jbilling_seqs">
+            <column name="name" value="plan_item_bundle"/>
+            <column name="next_id" valueNumeric="1"/>
+        </insert>
+        <update tableName="jbilling_seqs">
+            <column name="next_id" valueNumeric="32"/>
+            <where>name='item'</where>
+        </update>
+        <update tableName="jbilling_seqs">
+            <column name="next_id" valueNumeric="22"/>
+            <where>name='price_model'</where>
+        </update>
+        <update tableName="jbilling_seqs">
+            <column name="next_id" valueNumeric="2"/>
+            <where>name='plan'</where>
+        </update>
+        <update tableName="jbilling_seqs">
+            <column name="next_id" valueNumeric="2"/>
+            <where>name='plan_item'</where>
+        </update>
+
+        <insert tableName="item">
+            <column name="id" valueNumeric="3100"/>
+            <column name="internal_number" value="percentageLineTest"/>
+            <column name="entity_id" valueNumeric="1"/>
+            <column name="percentage"/>
+            <column name="deleted" valueNumeric="0"/>
+            <column name="has_decimals" valueNumeric="0"/>
+            <column name="optlock" valueNumeric="1"/>
+            <column name="gl_code"/>
+        </insert>
+
+        <insert tableName="item_type_map">
+            <column name="item_id" valueNumeric="3100"/>
+            <column name="type_id" valueNumeric="2301"/>
+        </insert>
+
+        <insert tableName="plan">
+            <column name="id" valueNumeric="100"/>
+            <column name="item_id" valueNumeric="3100"/>
+            <column name="description" value="Percentage Line Plan."/>
+            <column name="period_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="price_model">
+            <column name="id" valueNumeric="2100"/>
+            <column name="strategy_type" value="METERED"/>
+            <column name="rate" valueNumeric="10.0000000000"/>
+            <column name="included_quantity"/>
+            <column name="currency_id" valueNumeric="1"/>
+            <column name="next_model_id"/>
+        </insert>
+        <insert tableName="price_model">
+            <column name="id" valueNumeric="2101"/>
+            <column name="strategy_type" value="METERED"/>
+            <column name="rate" valueNumeric="3.5000000000"/>
+            <column name="included_quantity"/>
+            <column name="currency_id" valueNumeric="1"/>
+            <column name="next_model_id"/>
+        </insert>
+        <insert tableName="price_model">
+            <column name="id" valueNumeric="2102"/>
+            <column name="strategy_type" value="METERED"/>
+            <column name="rate" valueNumeric="25.0000000000"/>
+            <column name="included_quantity"/>
+            <column name="currency_id" valueNumeric="1"/>
+            <column name="next_model_id"/>
+        </insert>
+        <insert tableName="price_model">
+            <column name="id" valueNumeric="2103"/>
+            <column name="strategy_type" value="METERED"/>
+            <column name="rate" valueNumeric="40.0000000000"/>
+            <column name="included_quantity"/>
+            <column name="currency_id" valueNumeric="1"/>
+            <column name="next_model_id"/>
+        </insert>
+
+        <insert tableName="plan_item_bundle">
+            <column name="id" valueNumeric="1"/>
+            <column name="quantity" valueNumeric="1.0000000000"/>
+            <column name="period_id" valueNumeric="2"/>
+            <column name="target_customer" value="SELF"/>
+            <column name="add_if_exists" value="t"/>
+        </insert>
+        <insert tableName="plan_item_bundle">
+            <column name="id" valueNumeric="2"/>
+            <column name="quantity" valueNumeric="1.0000000000"/>
+            <column name="period_id" valueNumeric="5"/>
+            <column name="target_customer" value="SELF"/>
+            <column name="add_if_exists" value="t"/>
+        </insert>
+        <insert tableName="plan_item_bundle">
+            <column name="id" valueNumeric="3"/>
+            <column name="quantity" valueNumeric="1.0000000000"/>
+            <column name="period_id" valueNumeric="1"/>
+            <column name="target_customer" value="SELF"/>
+            <column name="add_if_exists" value="t"/>
+        </insert>
+        <insert tableName="plan_item_bundle">
+            <column name="id" valueNumeric="4"/>
+            <column name="quantity" valueNumeric="1.0000000000"/>
+            <column name="period_id" valueNumeric="2"/>
+            <column name="target_customer" value="SELF"/>
+            <column name="add_if_exists" value="t"/>
+        </insert>
+
+        <insert tableName="plan_item">
+            <column name="id" valueNumeric="100"/>
+            <column name="plan_id" valueNumeric="100"/>
+            <column name="item_id" valueNumeric="14"/>
+            <column name="precedence" valueNumeric="-1"/>
+            <column name="plan_item_bundle_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="plan_item">
+            <column name="id" valueNumeric="101"/>
+            <column name="plan_id" valueNumeric="100"/>
+            <column name="item_id" valueNumeric="2602"/>
+            <column name="precedence" valueNumeric="-1"/>
+            <column name="plan_item_bundle_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="plan_item">
+            <column name="id" valueNumeric="102"/>
+            <column name="plan_id" valueNumeric="100"/>
+            <column name="item_id" valueNumeric="2700"/>
+            <column name="precedence" valueNumeric="-1"/>
+            <column name="plan_item_bundle_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="plan_item">
+            <column name="id" valueNumeric="103"/>
+            <column name="plan_id" valueNumeric="100"/>
+            <column name="item_id" valueNumeric="2701"/>
+            <column name="precedence" valueNumeric="-1"/>
+            <column name="plan_item_bundle_id" valueNumeric="4"/>
+        </insert>
+
+        <insert tableName="item_price_timeline">
+            <column name="item_id" valueNumeric="3100"/>
+            <column name="price_model_id" valueNumeric="2100"/>
+            <column name="start_date" valueDate="1970-01-01"/>
+        </insert>
+
+        <insert tableName="plan_item_price_timeline">
+            <column name="plan_item_id" valueNumeric="101"/>
+            <column name="price_model_id" valueNumeric="2101"/>
+            <column name="start_date" valueDate="1970-01-01"/>
+        </insert>
+        <insert tableName="plan_item_price_timeline">
+            <column name="plan_item_id" valueNumeric="102"/>
+            <column name="price_model_id" valueNumeric="2102"/>
+            <column name="start_date" valueDate="1970-01-01"/>
+        </insert>
+        <insert tableName="plan_item_price_timeline">
+            <column name="plan_item_id" valueNumeric="103"/>
+            <column name="price_model_id" valueNumeric="2103"/>
+            <column name="start_date" valueDate="1970-01-01"/>
+        </insert>
+
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="14"/>
+            <column name="foreign_id" valueNumeric="3100"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Percentage Line Test Plan"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

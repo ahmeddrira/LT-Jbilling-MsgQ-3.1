@@ -208,6 +208,7 @@ public class PlanBL {
 
             plan.setDescription(dto.getDescription());
             plan.setItem(dto.getItem());
+            plan.setPeriod(dto.getPeriod());
 
             plan.getPlanItems().clear();
             plan.getPlanItems().addAll(dto.getPlanItems());

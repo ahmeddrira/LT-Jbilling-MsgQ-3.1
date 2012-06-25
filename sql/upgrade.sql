@@ -155,33 +155,6 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (111, 11);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 111, 'description', 1, 'Switch to any user');
 
--- Date 15-Mar-2012
--- Bugs #2417 Roles should be company wide not system wide
-alter table role add entity_id integer;
-alter table role add role_type_id integer;
-alter table role add constraint role_entity_id_FK foreign key (entity_id) references entity (id);
-
--- inserting roles per company from the existing roles
-update role r1 set role_type_id = (select id from role r2 where r1.id = r2.id);
-update role set entity_id = (select min(id) from entity);
-
-CREATE TEMPORARY TABLE temp_role
-(
-    entity_id integer,
-    role_type_id integer,
-    id SERIAL,
-    primary key(id)); -- postgresql
-
-insert into temp_role (select e.id as entity_id, r.id as role_type_id from entity e, role r where e.id > (select max(entity_id) from role) group by e.id, r.id);
-insert into role (select tr.id + (select max(id) from role), tr.entity_id, tr.role_type_id from temp_role tr order by tr.id);
-insert into permission_role_map (select p.permission_id, r.id from permission_role_map p, role r where p.role_id = r.role_type_id and r.entity_id >= (select min(entity_id) from temp_role));
-insert into international_description (select i.table_id, r.id, i.psudo_column, i.language_id, i.content from international_description i, role r  where i.table_id=60 and r.entity_id >= (select min(entity_id) from temp_role) and i.foreign_id=r.role_type_id);
-insert into user_role_map (select u.user_id, r.id from user_role_map u, base_user b, role r where b.id=u.user_id and b.entity_id=r.entity_id and r.entity_id > (select min(id) from entity) and u.role_id=r.role_type_id);
-delete from user_role_map where exists (select * from base_user, role
-    where base_user.id = user_role_map.user_id and user_role_map.role_id = role.id and base_user.entity_id > (select min(id) from entity) and role.entity_id = (select min(id) from entity));
-update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from role), 1) where name = 'role';
-drop table temp_role;
-
 -- switch all for super users
 insert into permission_role_map (role_id, permission_id) select r.id as role_id, 111 as permission_id from role r where r.role_type_id=2 group by r.id;
 
@@ -616,26 +589,13 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'title',1, 'Alternative Payment Info Task');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'description', 1, 'A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods');
 
-alter table order_line add column use_item boolean;
 update order_line set use_item = false where use_item is null;
 alter table order_line alter column use_item set not null;
 
 alter table price_model alter column strategy_type type varchar(40); -- postgresql
 -- alter table price_model modify strategy_type varchar(40); -- mysql
 
-insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
-
--- Sept 10
--- Redmine issue #1302
--- Description: Round invoices total and balance to 2 digits
-insert into preference_type values (50, 2);
-
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
-values (50, 50, 'description', 1, 'Invoice decimal rounding.');
-
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
-values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on the invoice. Defaults to 2.');
-
+insert into pluggable_task_type values (97, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
 
 -- 01-Nov-2011
 -- Redmine Issue: #1404
@@ -643,11 +603,6 @@ values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on t
 
 update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 month' - INTERVAL '1 day'; -- postgresql
 -- update credit_card set cc_expiry = last_day(cc_expiry); -- mysql
-
--- Date: 29-Nov-2011
--- Redmine Issue: #1575
--- Description: Cannot add Line Percentage to a Plan
-alter table plan_item alter column price_model_id drop not null;
 
 -- Date 18-May-2012
 -- Replace timestamp columns with date for timelines

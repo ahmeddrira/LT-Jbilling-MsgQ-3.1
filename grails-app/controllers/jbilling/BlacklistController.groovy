@@ -23,6 +23,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.UserBL
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor
 
 @Secured(["CUSTOMER_14"])
 class BlacklistController {
@@ -74,22 +75,27 @@ class BlacklistController {
     def save = {
         def replace = params.csvUpload == 'modify'
         def file = request.getFile('csv');
-        if(!params.csv.getContentType().toString().contains('application/octet-stream')){
+        if(!params.csv.getContentType().toString().contains('text/csv')){
             flash.error = "csv.error.found"
             redirect action: 'list'
-            }
-        if (!file.empty) {
+        } else if (!file.empty) {
             def csvFile = File.createTempFile("blacklist", ".csv")
             file.transferTo(csvFile)
 
             IPaymentSessionBean paymentSession = Context.getBean(Context.Name.PAYMENT_SESSION)
-            def added = paymentSession.processCsvBlacklist(csvFile.getAbsolutePath(), replace, (Integer) session['company_id'])
-
-            flash.message = replace ? 'blacklist.updated' : 'blacklist.added'
-            flash.args = [ added ]
+            def added
+            try{
+                added = paymentSession.processCsvBlacklist(csvFile.getAbsolutePath(), replace, (Integer) session['company_id'])
+                flash.message = replace ? 'blacklist.updated' : 'blacklist.added'
+                flash.args = [ added ]
+                redirect view: 'list'
+            } catch(CsvProcessor.ParseException e){
+                log.debug "Invalid format for the Blacklsit CSV file"
+                flash.error = "Invalid format for the Blacklist CSV file"
+                redirect action: 'list'
+            }
         }
 
-        redirect view: 'list'
     }
 
     def user = {

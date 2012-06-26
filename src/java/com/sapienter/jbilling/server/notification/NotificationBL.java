@@ -50,6 +50,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -714,13 +715,212 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             File compiledDesign = new File(designFile);
             LOG.debug("Generating paper invoice with design file : " + designFile);
+            
+            if(design.equals("invoice_design"))
+                return generatePaperInvoiceNew(compiledDesign,useSqlQuery,invoice,from,to,message1,message2,entityId,username,password);
+            else
+                return generatePaperInvoiceDefault(compiledDesign,useSqlQuery,invoice,from,to,message1,message2,entityId,username,password);
+            
+
+        } catch (Exception e) {
+            LOG.error("Exception generating paper invoice", e);
+            return null;
+        }
+    }
+
+    private static JasperPrint generatePaperInvoiceDefault(File compiledDesign,
+                                                    boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from,
+                                                    ContactDTOEx to, String message1, String message2, Integer entityId,
+                                                    String username, String password) throws FileNotFoundException,
+            SessionInternalError {
+        try{
             FileInputStream stream = new FileInputStream(compiledDesign);
             Locale locale = (new UserBL(invoice.getUserId())).getLocale();
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
 
+            // add all the invoice data
+            parameters.put("invoiceNumber", invoice.getPublicNumber());
+            parameters.put("invoiceId", invoice.getId());
+            parameters.put("entityName", printable(from.getOrganizationName()));
+            parameters.put("entityAddress", printable(from.getAddress1()));
+            parameters.put("entityAddress2", printable(from.getAddress2()));
+            parameters.put("entityPostalCode", printable(from.getPostalCode()));
+            parameters.put("entityCity", printable(from.getCity()));
+            parameters.put("entityProvince", printable(from.getStateProvince()));
+            parameters.put("customerOrganization", printable(to.getOrganizationName()));
+            parameters.put("customerName", printable(to.getFirstName(), to.getLastName()));
+            parameters.put("customerAddress", printable(to.getAddress1()));
+            parameters.put("customerAddress2", printable(to.getAddress2()));
+            parameters.put("customerPostalCode", printable(to.getPostalCode()));
+            parameters.put("customerCity", printable(to.getCity()));
+            parameters.put("customerProvince", printable(to.getStateProvince()));
+            parameters.put("customerUsername", username);
+            parameters.put("customerPassword", password);
+            parameters.put("customerId", invoice.getUserId().toString());
+            parameters.put("invoiceDate", Util.formatDate(invoice.getCreateDatetime(), invoice.getUserId()));
+            parameters.put("invoiceDueDate", Util.formatDate(invoice.getDueDate(), invoice.getUserId()));
+
+            // customer message
+            LOG.debug("m1 = " + message1 + " m2 = " + message2);
+            parameters.put("customerMessage1", printable(message1));
+            parameters.put("customerMessage2", printable(message2));
+
+            // invoice notes stripped of html line breaks
+            String notes = invoice.getCustomerNotes();
+            if (notes != null) {
+                notes = notes.replaceAll("<br/>", "\r\n");
+            }
+            parameters.put("notes", notes);
+
+            // now some info about payments
+            try {
+                InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
+                try {
+                    parameters.put("paid", Util.formatMoney(invoiceBL
+                            .getTotalPaid(), invoice.getUserId(), invoice
+                            .getCurrency().getId(), false));
+                    // find the previous invoice and its payment for extra info
+                    invoiceBL.setPrevious();
+                    parameters.put("prevInvoiceTotal", Util.formatMoney(
+                            invoiceBL.getEntity().getTotal(), invoice
+                            .getUserId(), invoice.getCurrency().getId(),
+                            false));
+                    parameters.put("prevInvoicePaid", Util.formatMoney(invoiceBL.getTotalPaid(), invoice
+                            .getUserId(), invoice.getCurrency().getId(),
+                            false));
+                } catch (EmptyResultDataAccessException e1) {
+                    parameters.put("prevInvoiceTotal", "0");
+                    parameters.put("prevInvoicePaid", "0");
+                }
+
+            } catch (Exception e) {
+                LOG.error("Exception generating paper invoice", e);
+                return null;
+            }
+
+            // add all the custom contact fields
+            // the from
+            UserDTO fromUser = new UserDAS().find(from.getUserId());
+            if (fromUser.getCustomer() != null && fromUser.getCustomer().getMetaFields() != null) {
+                for (MetaFieldValue metaFieldValue : fromUser.getCustomer().getMetaFields()) {
+                    parameters.put("from_custom_" + metaFieldValue.getField().getName(), metaFieldValue.getValue());
+                }
+            }
+            UserDTO toUser = new UserDAS().find(to.getUserId());
+            if (toUser.getCustomer() != null && toUser.getCustomer().getMetaFields() != null) {
+                for (MetaFieldValue metaFieldValue : toUser.getCustomer().getMetaFields()) {
+                    parameters.put("to_custom_" + metaFieldValue.getField().getName(), metaFieldValue.getValue());
+                }
+            }
+
+            // the logo is a file
+            File logo = new File(com.sapienter.jbilling.common.Util
+                    .getSysProp("base_dir")
+                    + "logos/entity-" + entityId + ".jpg");
+            parameters.put("entityLogo", logo);
+
+            // the invoice lines go as the data source for the report
+            // we need to extract the taxes from them, put the taxes as
+            // an independent parameter, and add the taxes rates as more
+            // parameters
+            BigDecimal taxTotal = new BigDecimal(0);
+            int taxItemIndex = 0;
+            // I need a copy, so to not affect the real invoice
+            List<InvoiceLineDTO> lines = new ArrayList<InvoiceLineDTO>(invoice.getInvoiceLines());
+            // Collections.copy(lines, invoice.getInvoiceLines());
+
+            List<InvoiceLineDTO> linesRemoved = new ArrayList<InvoiceLineDTO>();
+            for (InvoiceLineDTO line: lines) {
+                // log.debug("Processing line " + line);
+                // process the tax, if this line is one
+                if (line.getInvoiceLineType() != null && // for headers/footers
+                        line.getInvoiceLineType().getId() ==
+                                Constants.INVOICE_LINE_TYPE_TAX) {
+                    // update the total tax variable
+                    taxTotal = taxTotal.add(line.getAmount());
+                    // add the tax amount as an array parameter
+                    parameters.put("taxItem_" + taxItemIndex, Util.decimal2string(line.getPrice(), locale));
+                    taxItemIndex++;
+                    // taxes are not displayed as invoice lines
+                    linesRemoved.add(line); // can't do lines.remove(): ConcurrentModificationException
+                } else if (line.getIsPercentage() != null && line.getIsPercentage().intValue() == 1) {
+                    // if the line is a percentage, remove the price
+                    line.setPrice(null);
+                }
+            }
+            lines.removeAll(linesRemoved); // removed them once out of the loop. Otherwise it will throw
+            // remove the last line, that is the total footer
+            lines.remove(lines.size() - 1);
+
+            Collections.sort(lines, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    InvoiceLineDTO a = (InvoiceLineDTO)o1;
+                    InvoiceLineDTO b = (InvoiceLineDTO)o2;
+                    return Integer.valueOf(a.getId()).compareTo(Integer.valueOf(b.getId()));
+                }
+            });
+
+            // now add the tax
+            parameters.put("tax", Util.formatMoney(taxTotal, invoice.getUserId(), invoice
+                    .getCurrency().getId(), false));
+            parameters.put("totalWithTax", Util.formatMoney(invoice.getTotal(),
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
+            parameters.put("totalWithoutTax", Util.formatMoney(invoice.getTotal().subtract(taxTotal),
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
+            parameters.put("balance", Util.formatMoney(invoice.getBalance(),
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
+            parameters.put("carriedBalance", Util.formatMoney(invoice.getCarriedBalance(),
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
+
+            LOG.debug("Parameter tax = " + parameters.get("tax")
+                    + " totalWithTax = " + parameters.get("totalWithTax")
+                    + " totalWithoutTax = " + parameters.get("totalWithoutTax")
+                    + " balance = " + parameters.get("balance"));
+
+            // set report locale
+            parameters.put(JRParameter.REPORT_LOCALE, locale);
+
+            // set the subreport directory
+            String subreportDir = com.sapienter.jbilling.common.Util
+                    .getSysProp("base_dir") + "designs/";
+            parameters.put("SUBREPORT_DIR", subreportDir);
+
+            // at last, generate the report
+            JasperPrint report = null;
+            if (useSqlQuery) {
+                DataSource dataSource = (DataSource) Context.getBean(Context.Name.DATA_SOURCE);
+                Connection connection = DataSourceUtils.getConnection(dataSource);
+
+                report = JasperFillManager.fillReport(stream, parameters, connection);
+
+                DataSourceUtils.releaseConnection(connection, dataSource);
+            } else {
+                JRBeanCollectionDataSource data =
+                        new JRBeanCollectionDataSource(lines);
+                report = JasperFillManager.fillReport(stream, parameters, data);
+            }
+
+            stream.close();
+            return report;
+        } catch (Exception e) {
+            LOG.error("Exception generating paper invoice", e);
+            return null;
+        }
+    }
+
+    private static JasperPrint generatePaperInvoiceNew(File compiledDesign,
+                                                           boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from,
+                                                           ContactDTOEx to, String message1, String message2, Integer entityId,
+                                                           String username, String password) throws FileNotFoundException,
+            SessionInternalError {
+        try{
+            FileInputStream stream = new FileInputStream(compiledDesign);
+            Locale locale = (new UserBL(invoice.getUserId())).getLocale();
             HashMap<String, Object> parameters = new HashMap<String, Object>();
 
             // invoice data
             parameters.put("invoice_id", invoice.getId());
+            parameters.put("invoice_number", invoice.getPublicNumber());
             parameters.put("invoice_create_datetime", Util.formatDate(invoice.getCreateDatetime(), invoice.getUserId()));
             parameters.put("invoice_dueDate", Util.formatDate(invoice.getDueDate(), invoice.getUserId()));
 
@@ -744,8 +944,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("receiver_phone", getPhoneNumber(to));
             parameters.put("receiver_email", printable(to.getEmail()));
 
-            // customer message
-            parameters.put("customer_notes", "");
+            // text coming from the notification parameters
+            parameters.put("message1", message1);
+            parameters.put("message2", message2);
 
             // invoice notes stripped of html line breaks
             String notes = invoice.getCustomerNotes();
@@ -778,7 +979,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("invoice_line_tax_id", Constants.INVOICE_LINE_TYPE_TAX);
 
             //payment term calculated
-//            parameters.put("payment_terms",((invoice.getDueDate().getTime()-invoice.getCreateDatetime().getTime())/(24*60*60*1000))+" days from invoice date");
+            parameters.put("payment_terms",new Long(((invoice.getDueDate().getTime()-invoice.getCreateDatetime().getTime())/(24*60*60*1000))).toString());
 
             // set report locale
             parameters.put(JRParameter.REPORT_LOCALE, locale);

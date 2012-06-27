@@ -11,6 +11,7 @@
     </changeSet>
 
     <changeSet context="base" author="Juan Vidal" id="20120530-#2825-Fix-percentage-products-in-Plans">
+        <!--Upgrade data-->
         <insert tableName="order_period">
             <column name="id" valueNumeric="5"/>
             <column name="entity_id"/>
@@ -26,7 +27,9 @@
             <column name="language_id" valueNumeric="1"/>
             <column name="content" value="All Orders"/>
         </insert>
+    </changeSet>
 
+    <changeSet context="test" author="Juan Vidal" id="20120530-#2825-Fix-percentage-products-in-Plans-test-data">
         <!--Test data-->
         <insert tableName="jbilling_seqs">
             <column name="name" value="plan_item_bundle"/>

@@ -15,6 +15,7 @@
  */
 
 includeTargets << grailsScript("_GrailsDocs")
+includeTargets << new File("${basedir}/scripts/SetLicense.groovy")
 
 eventCreateWarStart = { warName, stagingDir ->
     println("Compiling documentation ...")
@@ -24,4 +25,8 @@ eventCreateWarStart = { warName, stagingDir ->
     ant.copy(todir: "${stagingDir}/") {
         fileset(dir: "${basedir}/target/docs/", includes: "manual/**")
     }
+}
+
+eventCompileStart = {
+    setLicense()
 }

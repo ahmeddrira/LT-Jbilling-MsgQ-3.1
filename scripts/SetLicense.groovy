@@ -23,5 +23,3 @@ target(setLicense: "Set the license key in jbilling.properties with whatever is 
 
     ant.replace(file: "${basedir}/src/java/jbilling.properties", token:"place license key here", value:"${licenseKey}")
 }
-
-setDefaultTarget(setLicense)

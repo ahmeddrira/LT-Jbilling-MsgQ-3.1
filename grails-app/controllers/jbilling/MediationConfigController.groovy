@@ -96,17 +96,25 @@ class MediationConfigController {
 		def ws= new MediationConfigurationWS()
         
 		bindData(ws, params)
+
+        try {
         
-		if ( params.int('id') > 0 ) {
-            log.debug "config exists.."
-            webServicesSession.updateAllMediationConfigurations([ws])
-            flash.message = 'mediation.config.update.success'
-		} else {
-            log.debug "New config.."
-            ws.setCreateDatetime new Date()
-            ws.setEntityId webServicesSession.getCallerCompanyId()
-            webServicesSession.createMediationConfiguration(ws)
-            flash.message = 'mediation.config.create.success'
+            if ( params.int('id') > 0 ) {
+                log.debug "config exists.."
+                webServicesSession.updateAllMediationConfigurations([ws])
+                flash.message = 'mediation.config.save.success'
+            } else {
+                log.debug "New config.."
+                ws.setCreateDatetime new Date()
+                ws.setEntityId webServicesSession.getCallerCompanyId()
+                webServicesSession.createMediationConfiguration(ws)
+                flash.message = 'mediation.config.save.success'
+            }
+        } catch (SessionInternalError e){
+            viewUtils.resolveException(flash, session.locale, e);
+        } catch (Exception e) {
+            log.error e.getMessage()
+            flash.error = 'mediation.config.save.failure'
         }
 		
 		redirect action: 'list'

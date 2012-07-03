@@ -18,7 +18,10 @@ package com.sapienter.jbilling.server.mediation;
 
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.security.WSSecured;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -32,8 +35,12 @@ public class MediationConfigurationWS implements WSSecured, Serializable {
 
     private Integer id;
     private Integer entityId;
+    @NotNull(message = "validation.error.notnull")
     private Integer pluggableTaskId;
+    @NotEmpty(message="validation.error.notnull")
+    @Size(min = 0, max = 150, message = "validation.error.size,0,150")
     private String name;
+    @NotNull(message = "validation.error.notnull")
     private Integer orderValue;
     private Date createDatetime;
     private Integer versionNum;
@@ -47,7 +54,7 @@ public class MediationConfigurationWS implements WSSecured, Serializable {
         this.pluggableTaskId = dto.getPluggableTask().getId();
         this.name = dto.getName();
         this.orderValue = dto.getOrderValue();
-        this.createDatetime = dto.getCreateDatetime();
+        this.createDatetime = dto.getCreateDatetime() == null ? new Date() : dto.getCreateDatetime();
         this.versionNum= dto.getVersionNum();
     }
 

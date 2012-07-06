@@ -368,7 +368,7 @@ public class CurrencyBL {
         CurrencyExchangeDTO exchange = findExchange(entityId, currencyId, toDate);
 
         // make the conversion itself
-        return amount.multiply(exchange.getRate());
+        return amount.multiply(exchange.getRate()).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
     }
 
     private CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId, Date toDate) throws SessionInternalError {

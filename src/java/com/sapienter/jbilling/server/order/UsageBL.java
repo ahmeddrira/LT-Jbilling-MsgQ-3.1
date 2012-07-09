@@ -17,6 +17,7 @@
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -180,8 +181,8 @@ public class UsageBL {
 
             // populate usage period object for cache
             usagePeriod.setPeriodOrder(periodOrder);
-            usagePeriod.setCycleStartDate(cycleStartDate);
-            usagePeriod.setCycleEndDate(cycleEndDate);
+            usagePeriod.setCycleStartDate(Util.truncateDate(cycleStartDate));
+            usagePeriod.setCycleEndDate(Util.truncateDate(cycleEndDate));
             usagePeriod.setBillingPeriods(billingPeriods);
 
         } catch (PluggableTaskException e) {
@@ -210,8 +211,8 @@ public class UsageBL {
         }
 
         usagePeriod.setPeriodOrder(periodOrder);
-        usagePeriod.setCycleStartDate(cycleStartDate);
-        usagePeriod.setCycleEndDate(cycleEndDate);
+        usagePeriod.setCycleStartDate(Util.truncateDate(cycleStartDate));
+        usagePeriod.setCycleEndDate(Util.truncateDate(cycleEndDate));
 
         periods = 1;
     }
@@ -372,7 +373,7 @@ public class UsageBL {
             usage = usageDas.findUsageByItem(workingOrderId, itemId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
-            usage = new Usage(userId, itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);
@@ -398,7 +399,7 @@ public class UsageBL {
             usage = usageDas.findSubAccountUsageByItem(workingOrderId, itemId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
-            usage = new Usage(userId, itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);
@@ -423,7 +424,7 @@ public class UsageBL {
             usage = usageDas.findUsageByItemType(workingOrderId, itemTypeId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
-            usage = new Usage(userId, null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);
@@ -449,7 +450,7 @@ public class UsageBL {
             usage = usageDas.findSubAccountUsageByItemType(workingOrderId, itemTypeId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
-            usage = new Usage(userId, null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);

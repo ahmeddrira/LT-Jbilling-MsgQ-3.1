@@ -75,7 +75,7 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
       if (singlePurchase || pricingOrder == null) {
           return usage.getQuantity();
       }
-      return usage.getQuantity().subtract(quantity);
+      return usage.getQuantity().subtract(usage.getCurrentQuantity());
     }
 
     /**

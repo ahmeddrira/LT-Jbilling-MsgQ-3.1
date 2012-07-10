@@ -18,8 +18,6 @@ package com.sapienter.jbilling.server.payment.blacklist;
 
 import java.util.Date;
 import java.util.List;
-import java.util.List;
-
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;

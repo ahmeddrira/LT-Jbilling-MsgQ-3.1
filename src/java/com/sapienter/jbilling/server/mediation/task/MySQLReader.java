@@ -52,9 +52,9 @@ public class MySQLReader extends JDBCReader {
         url.append("jdbc:mysql://");
 
         if (host != null) url.append(host);
-        if (port != null) url.append(":").append(port);
+        if (port != null) url.append(':').append(port);
 
-        url.append("/").append(getDatabaseName());
+        url.append('/').append(getDatabaseName());
 
         return url.toString();
     }

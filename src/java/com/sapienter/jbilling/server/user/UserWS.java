@@ -668,7 +668,7 @@ public class UserWS implements WSSecured, Serializable {
         builder.append(userIdBlacklisted);
         builder.append(", userName=");
         builder.append(userName);
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
    

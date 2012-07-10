@@ -103,7 +103,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         if (!errorMessages.isEmpty()) {
             StringBuilder builder = new StringBuilder("Errors during mediation triggering: \n");
             for (String message : errorMessages) {
-                builder.append(message).append("\n");
+                builder.append(message).append('\n');
             }
             throw new SessionInternalError(builder.toString());
         }
@@ -254,7 +254,7 @@ public class MediationSessionBean implements IMediationSessionBean {
             for (String message : errorMessages) {
                 builder.append("ERROR: ")
                     .append(message)
-                    .append("\n");
+                    .append('\n');
             }
             throw new SessionInternalError(builder.toString());
         }

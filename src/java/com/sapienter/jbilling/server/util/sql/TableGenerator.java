@@ -76,7 +76,7 @@ public class TableGenerator {
         public String toString() {
             StringBuilder sql = new StringBuilder();
             sql.append(name)
-               .append(" ")
+               .append(' ')
                .append(dataType);
 
             if (!nullable)
@@ -154,7 +154,7 @@ public class TableGenerator {
         }
 
         if (primaryKeys > 0) {
-            pk.append(")");
+            pk.append(')');
             ddl.append(", ").append(pk);
         }
 
@@ -210,7 +210,7 @@ public class TableGenerator {
             Column column = it.next();
 
             insert.append(column.getName());
-            values.append("?");
+            values.append('?');
 
             if (it.hasNext()) {
                 insert.append(", ");

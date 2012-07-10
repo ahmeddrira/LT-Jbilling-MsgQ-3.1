@@ -41,9 +41,9 @@ public class APILogger implements MethodBeforeAdvice, AfterReturningAdvice {
             if (ret.getClass().isArray()) {
                 for (int f = 0; f < Array.getLength(ret); f++) {
                     Object val = Array.get(ret, f);
-                    retStr.append("[");
+                    retStr.append('[');
                     retStr.append(val == null ? "null" : Array.get(ret, f).toString());
-                    retStr.append("]");
+                    retStr.append(']');
                 }
             } else {
                 retStr.append(ret.toString());

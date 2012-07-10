@@ -164,11 +164,11 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
 
             StringBuilder query = new StringBuilder("insert into ");
             query.append(getParameter(PARAM_TABLE_NAME.getName(), TABLE_NAME_DEFAULT));
-            query.append("(");
+            query.append('(');
             query.append(com.sapienter.jbilling.server.util.Util.join(columnNames, ", "));
             query.append(") values (");
             query.append(com.sapienter.jbilling.server.util.Util.join(Collections.nCopies(columnNames.size(), "?"), ", "));
-            query.append(")");
+            query.append(')');
 
             PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
 

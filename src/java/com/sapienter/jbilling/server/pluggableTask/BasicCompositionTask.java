@@ -198,9 +198,9 @@ public class BasicCompositionTask extends PluggableTask implements InvoiceCompos
 
             StringBuilder delLine = new StringBuilder();
             delLine.append(bundle.getString("invoice.line.delegated"));
-            delLine.append(" ").append(invoice.getPublicNumber()).append(" ");
+            delLine.append(' ').append(invoice.getPublicNumber()).append(' ');
             delLine.append(bundle.getString("invoice.line.delegated.due"));
-            delLine.append(" ").append(df.format(invoice.getDueDate()));
+            delLine.append(' ').append(df.format(invoice.getDueDate()));
 
             InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null,
                                                             delLine.toString(),
@@ -287,14 +287,14 @@ public class BasicCompositionTask extends PluggableTask implements InvoiceCompos
             LOG.debug("Using date format: " + bundle.getString("format.date"));
 
             // now add this to the line
-            lineDescription.append(" ");
+            lineDescription.append(' ');
             lineDescription.append(bundle.getString("invoice.line.period"));
-            lineDescription.append(" ");
+            lineDescription.append(' ');
 
             lineDescription.append(dateFormat.print(start));
-            lineDescription.append(" ");
+            lineDescription.append(' ');
             lineDescription.append(bundle.getString("invoice.line.to"));
-            lineDescription.append(" ");
+            lineDescription.append(' ');
             lineDescription.append(dateFormat.print(end));
 
         }
@@ -304,7 +304,7 @@ public class BasicCompositionTask extends PluggableTask implements InvoiceCompos
          */
         if (appendOrderId(order.getBaseUserByUserId().getCompany().getId())) {
             lineDescription.append(bundle.getString("invoice.line.orderNumber"));
-            lineDescription.append(" ");
+            lineDescription.append(' ');
             lineDescription.append(order.getId().toString());
         }
 

@@ -1037,7 +1037,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     private static String printable(String str, String str2) {
         StringBuilder builder = new StringBuilder();
         
-        if (str != null) builder.append(str).append(" ");
+        if (str != null) builder.append(str).append(' ');
         if (str2 != null) builder.append(str2);
         
         return builder.toString();

@@ -327,7 +327,7 @@ public class PricingField {
     public static String encode(PricingField field) {
         StringBuffer sb = new StringBuffer()
             .append(field.getName())
-            .append(":")
+            .append(':')
             .append(field.getPosition());
 
         switch(field.getType()) {
@@ -393,7 +393,7 @@ public class PricingField {
             for (int i = 0; i < fields.length; i++) {
                 result.append(PricingField.encode(fields[i]));
                 if (i < (fields.length - 1)) {
-                    result.append(",");
+                    result.append(',');
                 }
             }
         }

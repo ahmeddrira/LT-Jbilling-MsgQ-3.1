@@ -15,111 +15,89 @@
  */
 
 includeTargets << grailsScript("Init")
+includeTargets << new File("${basedir}/scripts/Liquibase.groovy")
+
+target(cleanDb: "Clean the test postgresql database, will drop/create the database if --hard.") {
+    depends(parseArguments, initLiquibase)
+
+    def db = getDatabaseParameters(argsMap)
+
+
+    // execute the postgresql dropdb command to forcibly drop the database
+    // when --drop or --hard
+    if (argsMap.drop || argsMap.hard) {
+        println "dropping database ${db.database}"
+        exec(executable: "dropdb", failonerror: false) {
+            arg(line: "-U ${db.username} -e ${db.database}")
+        }
+    }
+
+    // execute postgresql createdb to create the database
+    // when --create or --hard
+    if (argsMap.create || argsMap.hard) {
+        println "creating database ${db.database}"
+        exec(executable: "createdb", failonerror: true) {
+            arg(line: "-U ${db.username} -O ${db.username} -E UTF-8 -e ${db.database}")
+        }
+    }
+
+    // default, just use liquibase to drop all existing objects within the database
+    if (!argsMap.drop && !argsMap.create && !argsMap.hard) {
+        println "dropping all objects in ${db.database}"
+        dropAllDatabaseObjects(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password)
+    }
+}
 
 target(prepareTestDb: "Import the test postgresql database.") {
+    depends(parseArguments, initLiquibase)
 
-    // optionally accept user defined arguments:
-    // user - jbilling database username : default: jbilling
-    // db - jbilling database table only for postgres Db, for other databases use dbUrl parameter : default : jbilling_test
-    // dbUrl - jbilling database url : default : jdbc:postgresql://localhost:5432/${database}
-    // dbDriver - jbilling database driver : default: org.postgresql.Driver
-    // dbClasspath - jbilling database driver classpath default : lib/postgresql-8.4-702.jdbc4.jar
+    def db = getDatabaseParameters(argsMap)
+    def version = getApplicationMinorVersion(argsMap)
 
-    // version - jbilling branch version: default: 3.2
-    // skipTest - if skipTest is true create init database; otherwise load test database : default : false
+    println "Loading database version ${version}"
+    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (driver ${db.driver})"
 
-    parseArguments();
-    def username = argsMap.user ? argsMap.user : "jbilling"
-    def database = argsMap.db ? argsMap.db : "jbilling_test"
-    def dbUrl = argsMap.dbUrl ? argsMap.dbUrl : "jdbc:postgresql://localhost:5432/${database}"
-    def driver = argsMap.dbDriver ? argsMap.dbDriver : "org.postgresql.Driver"
-    def classpath = argsMap.dbClasspath ? argsMap.dbClasspath : "lib/postgresql-8.4-702.jdbc4.jar"
 
-    def version = argsMap.version ? argsMap.version : "3.1"
-    def skipTest = argsMap.skipTest ? argsMap.skipTest : false
+    // clean the db
+    cleanDb()
 
-    condition(property: "liquibaseExecutable", value: "liquidbase-2.0.5/liquibase.bat")
-    {
-        os("family": "windows")
+    // changelog files to load
+    def schema = "./descriptors/database/jbilling-schema.xml"
+    def init = "./descriptors/database/jbilling-init_data.xml"
+    def client = "./client-data.xml"
+    def test = "./descriptors/database/jbilling-test_data.xml"
+    def upgrade = "./descriptors/database/jbilling-upgrade-${version}.xml"
+
+    // load the jbilling database
+    // by default this will load the testing data
+    // if the -init argument is given then only the base jbilling data will be loaded
+    // if the -client argument is given then the client reference data will be loaded
+    switch(args) {
+        case "-init":
+            println "updating with context = base. Loading init jBilling data"
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: init)
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            break;
+
+        case "-client":
+            println "updating with context = base. Loading client reference Db"
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: client)
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            break;
+
+        case "-test":
+        default:
+            println "updating with context = test. Loading test data"
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: test)
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'test')
     }
-
-    condition(property: "liquibaseExecutable", value: "liquidbase-2.0.5/liquibase")
-    {
-        os("family": "unix")
-    }
-
-    println "Using liquibase: ${liquibaseExecutable}"
-
-    def jbillingSchema="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-schema.xml --url=${dbUrl} --username=${username} --password= "
-    def jbillingInit="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-init_data.xml --url=${dbUrl} --username=${username} --password= "
-    def jbillingTest="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-test_data.xml --url=${dbUrl} --username=${username} --password= "
-    def jbillingUpgrade="--driver=${driver} --classpath=${classpath} --changeLogFile=descriptors/database/jbilling-upgrade-${version}.xml --url=${dbUrl} --username=${username} --password= "
-
-
-    println "Dropping a database: ${database}..."
-    // call postgresl to drop database
-    exec(executable: "dropdb", failonerror: false) {
-        arg(line: "-U ${username} -e ${database}")
-    }
-    println "Done."
-
-    println "Creating a database: ${database}..."
-    // call postgresl to create database
-    exec(executable: "createdb", failonerror: true) {
-        arg(line: "-U ${username} -O ${username} -E UTF-8 -e ${database}")
-    }
-    println "Done."
-
-    println "Loading jbilling database schema"
-    // call liquibase to load the database base schema
-    exec(executable: "${liquibaseExecutable}", failonerror: false) {
-        arg(line: "${jbillingSchema} --contexts=base update")
-    }
-    println "Done."
-
-    if (skipTest) {
-
-        println "Initializing jbilling database: ${database}"
-        // skip test db load init db data
-        exec(executable: "${liquibaseExecutable}", failonerror: false) {
-            arg(line: "${jbillingInit}  update")
-        }
-        println "Done."
-
-    } else {
-
-        println "Loading test data into database: ${database}"
-        // call liquibase to load test db data
-        exec(executable: "${liquibaseExecutable}", failonerror: false) {
-            arg(line: "${jbillingTest}  update")
-        }
-        println "Done."
-    }
-
-    println "Settings database foreign keys"
-    // call liquibase to load the database foreign keys
-    exec(executable: "${liquibaseExecutable}", failonerror: false) {
-        arg(line: "${jbillingSchema} --contexts=FKs update")
-    }
-    println "Done"
-
-    println "Upgrading jbilling database schema to the latest version ${version}"
-    // call liquibase to upgrade DB to the latest version
-    exec(executable: "${liquibaseExecutable}", failonerror: false) {
-        arg(line: "${jbillingUpgrade} --contexts=base update")
-    }
-    println "Done"
-
-    if (!skipTest) {
-        println "Upgrading test data to the latest version: ${version}"
-        // call liquibase to upgrade test data
-        exec(executable: "${liquibaseExecutable}", failonerror: false) {
-            arg(line: "${jbillingUpgrade} --contexts=test update")
-        }
-        println "Done"
-    }
-
-    println "Done."
 }
 
 setDefaultTarget(prepareTestDb)

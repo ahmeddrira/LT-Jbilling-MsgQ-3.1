@@ -106,6 +106,7 @@ grails.project.dependency.resolution = {
             excludes 'xerces', 'xalan', 'xml-apis'
         }
 
+        compile 'org.liquibase:liquibase-core:2.0.5'
         compile 'c3p0:c3p0:0.9.1.2'
 
         runtime 'postgresql:postgresql:8.4-702.jdbc4'

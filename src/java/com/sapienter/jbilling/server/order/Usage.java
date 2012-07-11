@@ -39,13 +39,17 @@ public class Usage {
     private BigDecimal quantity;
     private BigDecimal amount;
 
+    private BigDecimal currentQuantity;
+    private BigDecimal currentAmount;
+
     private Date startDate;
     private Date endDate;
 
     public Usage() {
     }
 
-    public Usage(Integer userId, Integer itemId, Integer itemTypeId, BigDecimal quantity, BigDecimal amount, Date startDate, Date endDate) {
+    public Usage(Integer userId, Integer itemId, Integer itemTypeId, BigDecimal quantity, BigDecimal amount,
+                 BigDecimal currentQuantity, BigDecimal currentAmount, Date startDate, Date endDate) {
         this.userId = userId;
         this.itemId = itemId;
         this.itemTypeId = itemTypeId;
@@ -53,6 +57,8 @@ public class Usage {
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.currentQuantity = currentQuantity;
+        this.currentAmount = currentAmount;
     }
 
     public Usage(List<OrderLineDTO> lines, Integer userId, Integer itemId, Integer itemTypeId, Date startDate, Date endDate) {
@@ -68,9 +74,14 @@ public class Usage {
     public void calculateUsage(List<OrderLineDTO> lines) {
         quantity = BigDecimal.ZERO;
         amount = BigDecimal.ZERO;
+        currentAmount = BigDecimal.ZERO;
+        currentQuantity = BigDecimal.ZERO;
+
         for (OrderLineDTO line : lines) {
-            quantity = quantity.add(line.getQuantity());
-            amount = amount.add(line.getAmount());
+            quantity  = quantity.add(line.getQuantity());
+            amount  = amount.add(line.getAmount());
+            currentQuantity = currentQuantity.add(line.getQuantity());
+            currentAmount = currentAmount.add(line.getAmount());
         }
     }
 
@@ -142,6 +153,53 @@ public class Usage {
     }
 
     /**
+     * Quantity purchased over the working order
+     * @return Local item quantity
+     */
+    public BigDecimal getCurrentQuantity() {
+        return (currentQuantity != null ? currentQuantity : BigDecimal.ZERO);
+    }
+
+    public void setCurrentQuantity(BigDecimal currentQuantity) {
+        this.currentQuantity = currentQuantity;
+    }
+
+    public void addCurrentQuantity(BigDecimal currentQuantity) {
+        if (currentQuantity != null) {
+            setCurrentQuantity(getCurrentQuantity().add(currentQuantity));
+        }
+    }
+
+    public void subtractCurrentQuantity(BigDecimal currentQuantity) {
+        if (currentQuantity != null)
+            setCurrentQuantity(getCurrentQuantity().subtract(currentQuantity));
+    }
+
+    /**
+     * Amount of usage purchased over the working order
+     *
+     * @return local item amount
+     */
+    public BigDecimal getCurrentAmount() {
+        return (currentAmount != null ? currentAmount : BigDecimal.ZERO);
+    }
+
+    public void setCurrentAmount(BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
+
+    public void addCurrentAmount(BigDecimal currentAmount) {
+        if (currentAmount != null) {
+            setCurrentAmount(getCurrentAmount().add(currentAmount));
+        }
+    }
+
+    public void subtractCurrentAmount(BigDecimal currentAmount) {
+        if (currentAmount != null)
+            setCurrentAmount(getCurrentAmount().subtract(currentAmount));
+    }
+
+    /**
      * Add the quantity and amount from a given order line.
      * 
      * @param line order line to add
@@ -150,6 +208,8 @@ public class Usage {
         LOG.debug("Adding usage from line: " + line);
         addAmount(line.getAmount());
         addQuantity(line.getQuantity());
+        addCurrentAmount(line.getAmount());
+        addCurrentQuantity(line.getQuantity());
     }
 
     /**
@@ -161,7 +221,8 @@ public class Usage {
         LOG.debug("Subtracting usage from line: " + line);
         subractAmount(line.getAmount());
         subtractQuantity(line.getQuantity());
-
+        subtractCurrentAmount(line.getAmount());
+        subtractCurrentQuantity(line.getQuantity());
     }
 
     public Date getStartDate() {

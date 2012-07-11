@@ -80,30 +80,33 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
             throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
         }
 
-        LOG.debug("Usage amount: " + usage.getAmount());
-        
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
-        BigDecimal totalQuantity = getTotalQuantity(pricingOrder, usage, quantity, singlePurchase);
-        
+        BigDecimal currentUsageQuantity = usage.getCurrentQuantity();
+
         super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
-        
+
         LOG.debug("Calculated result price: " + result.getPrice());
-        
+
         // only bill up to the set maximum cap
         // calculate a unit price that brings the total cost back down to the maximum cap
         if (result.getPrice() != null) {
 
-            BigDecimal total = totalQuantity.multiply(result.getPrice());
-            
-            LOG.debug("Total: " + total + ", maximum: " + maximum);
-            BigDecimal billable = maximum;
-            if (total.compareTo(maximum) < 0) {
-                billable = total;
+            BigDecimal pastUsageAmount = usage.getAmount().subtract(usage.getCurrentAmount());
+
+            if (pastUsageAmount.compareTo(BigDecimal.ZERO) < 0) {
+                pastUsageAmount = BigDecimal.ZERO;
             }
-            LOG.debug("Billable: " + billable);
-            
-            BigDecimal price = billable.divide(totalQuantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-            result.setPrice(price);
+
+            BigDecimal total = pastUsageAmount.add(currentUsageQuantity.multiply(result.getPrice()));
+            LOG.debug("Total Usage amount: " + total + " ... from which past usage amount: " + pastUsageAmount);
+
+            if (total.compareTo(maximum) >= 0) {
+                BigDecimal billable = maximum.subtract(pastUsageAmount);
+                LOG.debug("Billable: " + billable);
+
+                BigDecimal price = billable.divide(currentUsageQuantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+                result.setPrice(price);
+            }
         }
     }
 }

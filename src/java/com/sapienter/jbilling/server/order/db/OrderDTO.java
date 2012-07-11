@@ -768,7 +768,7 @@ public class OrderDTO extends CustomizedEntity implements Serializable, Exportab
         for (OrderLineDTO line: getLines()) {
             str.append(line.toString() + "-");
         }
-        str.append("]");
+        str.append(']');
         return str.toString();
 
     }

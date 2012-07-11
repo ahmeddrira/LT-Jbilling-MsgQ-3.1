@@ -96,6 +96,16 @@
         <property name="flushBeforeMethodExecution" value="true"/>
     </bean>
 
+    <!-- Currency cache configuration. -->
+    <bean id="cacheModelCurrency" class="org.springmodules.cache.provider.ehcache.EhCacheCachingModel">
+        <property name="cacheName" value="currencyCache"/>
+    </bean>
+
+    <bean id="flushModelCurrency" class="org.springmodules.cache.provider.ehcache.EhCacheFlushingModel">
+        <property name="cacheNames" value="currencyCache"/>
+        <property name="flushBeforeMethodExecution" value="true"/>
+    </bean>
+
     <!-- Internal event processing configuration for the 'InternalEventsRulesTask' plug-in -->
     <!-- List of internal events that the rules task subscribes to -->
     <util:list id="invoiceEvents">

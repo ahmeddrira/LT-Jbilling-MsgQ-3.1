@@ -42,12 +42,14 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
     /**
      * Convenience test method to build a usage object for the given quantity.
-     * @param quantity quantity
+     * @param usageQuantity quantity
+     * @param purchasedQuantity quantity
      * @return usage object
      */
-    private Usage getUsage(BigDecimal quantity) {
+    private Usage getUsage(BigDecimal usageQuantity, BigDecimal purchasedQuantity) {
         Usage usage = new Usage();
-        usage.setQuantity(quantity);
+        usage.setQuantity(usageQuantity);
+        usage.setCurrentQuantity(purchasedQuantity);
 
         return usage;
     }
@@ -62,8 +64,14 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000)), false); // 10 purchased, 1000 usage
+        // total quantity = purchase quantity + usage = 1001
+        BigDecimal purchaseQuantity = new BigDecimal(2);
+        BigDecimal usageQuantity = new BigDecimal(1000);
 
+        // 1 purchased, 1000 usage = 1001 total quantity, 1000 included ==> 1 rated with billable = rate
+        strategy.applyTo(null, result, null, planPrice, purchaseQuantity, getUsage(usageQuantity, purchaseQuantity), false);
+
+        // single price = rate
         assertEquals(rate, result.getPrice());
     }
 
@@ -71,13 +79,14 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.GRADUATED);
 
+        BigDecimal purchaseQuantity = new BigDecimal(10);
         BigDecimal rate = new BigDecimal("0.07");
         planPrice.setRate(rate);
         planPrice.addAttribute("included", "1000");
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(BigDecimal.ZERO), false); // 10 purchased, 0 usage
+        strategy.applyTo(null, result, null, planPrice, purchaseQuantity, getUsage(BigDecimal.ZERO, purchaseQuantity), false); // 10 purchased, 0 usage
 
         assertEquals(BigDecimal.ZERO, result.getPrice());
     }
@@ -90,18 +99,27 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
         planPrice.setRate(rate);
         planPrice.addAttribute("included", "1000");
 
+        // 20 purchased, 990 usage
+        // total quantity = purchase quantity + usage = 1010
+        BigDecimal purchaseQuantity = new BigDecimal(20);
+        BigDecimal usageQuantity = new BigDecimal(990);
+
+        PricingResult result = new PricingResult(1, 2, 3);
+        strategy.applyTo(null, result, null, planPrice, purchaseQuantity, getUsage(usageQuantity, purchaseQuantity), false); // 10 minutes included, 10 minutes rated
+
         // half of the call exceeds the included minutes
         // rate should be 50% of the plan rate
-        PricingResult result = new PricingResult(1, 2, 3);                                      // 20 purchased, 990 usage
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(20), getUsage(new BigDecimal(990)), false); // 10 minutes included, 10 minutes rated
-
         assertEquals(new BigDecimal("0.50"), result.getPrice());
+
+        // 100 purchased, 980 usage
+        purchaseQuantity = new BigDecimal(100);
+        usageQuantity = new BigDecimal(980);
+
+        PricingResult result2 = new PricingResult(1, 2, 3);
+        strategy.applyTo(null, result2, null, planPrice, purchaseQuantity, getUsage(usageQuantity, purchaseQuantity), false); // 20 minutes included, 80 minutes rated
 
         // 80% of the call exceeds the included minutes
         // rate should be 80% of the plan rate
-        PricingResult result2 = new PricingResult(1, 2, 3);                                       // 100 purchased, 980 usage
-        strategy.applyTo(null, result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(980)), false); // 20 minutes included, 80 minutes rated
-
         assertEquals(new BigDecimal("0.80"), result2.getPrice());
     }
 }

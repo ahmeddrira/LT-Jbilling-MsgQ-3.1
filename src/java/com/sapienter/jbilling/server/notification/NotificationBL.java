@@ -50,6 +50,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -710,15 +711,34 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // This is needed for JasperRerpots to work, for some twisted XWindows issue
             System.setProperty("java.awt.headless", "true");
             String designFile = com.sapienter.jbilling.common.Util.getSysProp("base_dir")
-                                + "designs/" + design + ".jasper";
+                    + "designs/" + design + ".jasper";
 
             File compiledDesign = new File(designFile);
             LOG.debug("Generating paper invoice with design file : " + designFile);
+            
+            if(design.equals("invoice_design"))
+                return generatePaperInvoiceNew(compiledDesign,useSqlQuery,invoice,from,to,message1,message2,entityId,username,password);
+            else
+                return generatePaperInvoiceDefault(compiledDesign,useSqlQuery,invoice,from,to,message1,message2,entityId,username,password);
+            
+
+        } catch (Exception e) {
+            LOG.error("Exception generating paper invoice", e);
+            return null;
+        }
+    }
+
+    private static JasperPrint generatePaperInvoiceDefault(File compiledDesign,
+                                                    boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from,
+                                                    ContactDTOEx to, String message1, String message2, Integer entityId,
+                                                    String username, String password) throws FileNotFoundException,
+            SessionInternalError {
+        try{
             FileInputStream stream = new FileInputStream(compiledDesign);
             Locale locale = (new UserBL(invoice.getUserId())).getLocale();
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
 
             // add all the invoice data
-            HashMap<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("invoiceNumber", invoice.getPublicNumber());
             parameters.put("invoiceId", invoice.getId());
             parameters.put("entityName", printable(from.getOrganizationName()));
@@ -763,10 +783,10 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     invoiceBL.setPrevious();
                     parameters.put("prevInvoiceTotal", Util.formatMoney(
                             invoiceBL.getEntity().getTotal(), invoice
-                                    .getUserId(), invoice.getCurrency().getId(),
+                            .getUserId(), invoice.getCurrency().getId(),
                             false));
                     parameters.put("prevInvoicePaid", Util.formatMoney(invoiceBL.getTotalPaid(), invoice
-                                    .getUserId(), invoice.getCurrency().getId(),
+                            .getUserId(), invoice.getCurrency().getId(),
                             false));
                 } catch (EmptyResultDataAccessException e1) {
                     parameters.put("prevInvoiceTotal", "0");
@@ -807,14 +827,14 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             int taxItemIndex = 0;
             // I need a copy, so to not affect the real invoice
             List<InvoiceLineDTO> lines = new ArrayList<InvoiceLineDTO>(invoice.getInvoiceLines());
-           // Collections.copy(lines, invoice.getInvoiceLines());
+            // Collections.copy(lines, invoice.getInvoiceLines());
 
             List<InvoiceLineDTO> linesRemoved = new ArrayList<InvoiceLineDTO>();
             for (InvoiceLineDTO line: lines) {
                 // log.debug("Processing line " + line);
                 // process the tax, if this line is one
                 if (line.getInvoiceLineType() != null && // for headers/footers
-                        line.getInvoiceLineType().getId() == 
+                        line.getInvoiceLineType().getId() ==
                                 Constants.INVOICE_LINE_TYPE_TAX) {
                     // update the total tax variable
                     taxTotal = taxTotal.add(line.getAmount());
@@ -832,14 +852,14 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // remove the last line, that is the total footer
             lines.remove(lines.size() - 1);
 
-            Collections.sort(lines, new Comparator() { 
-                public int compare(Object o1, Object o2) { 
-                    InvoiceLineDTO a = (InvoiceLineDTO)o1; 
-                    InvoiceLineDTO b = (InvoiceLineDTO)o2; 
-                    return Integer.valueOf(a.getId()).compareTo(Integer.valueOf(b.getId())); 
-                } 
+            Collections.sort(lines, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    InvoiceLineDTO a = (InvoiceLineDTO)o1;
+                    InvoiceLineDTO b = (InvoiceLineDTO)o2;
+                    return Integer.valueOf(a.getId()).compareTo(Integer.valueOf(b.getId()));
+                }
             });
-            
+
             // now add the tax
             parameters.put("tax", Util.formatMoney(taxTotal, invoice.getUserId(), invoice
                     .getCurrency().getId(), false));
@@ -862,7 +882,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             // set the subreport directory
             String subreportDir = com.sapienter.jbilling.common.Util
-                .getSysProp("base_dir") + "designs/";
+                    .getSysProp("base_dir") + "designs/";
             parameters.put("SUBREPORT_DIR", subreportDir);
 
             // at last, generate the report
@@ -875,10 +895,108 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
                 DataSourceUtils.releaseConnection(connection, dataSource);
             } else {
-                JRBeanCollectionDataSource data = 
+                JRBeanCollectionDataSource data =
                         new JRBeanCollectionDataSource(lines);
                 report = JasperFillManager.fillReport(stream, parameters, data);
             }
+
+            stream.close();
+            return report;
+        } catch (Exception e) {
+            LOG.error("Exception generating paper invoice", e);
+            return null;
+        }
+    }
+
+    private static JasperPrint generatePaperInvoiceNew(File compiledDesign,
+                                                           boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from,
+                                                           ContactDTOEx to, String message1, String message2, Integer entityId,
+                                                           String username, String password) throws FileNotFoundException,
+            SessionInternalError {
+        try{
+            FileInputStream stream = new FileInputStream(compiledDesign);
+            Locale locale = (new UserBL(invoice.getUserId())).getLocale();
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
+
+            // invoice data
+            parameters.put("invoice_id", invoice.getId());
+            parameters.put("invoice_number", invoice.getPublicNumber());
+            parameters.put("invoice_create_datetime", Util.formatDate(invoice.getCreateDatetime(), invoice.getUserId()));
+            parameters.put("invoice_dueDate", Util.formatDate(invoice.getDueDate(), invoice.getUserId()));
+
+            // owner and receiver data
+            parameters.put("owner_company", printable(from.getOrganizationName()));
+            parameters.put("owner_street_address", getAddress(from));
+            parameters.put("owner_zip", printable(from.getPostalCode()));
+            parameters.put("owner_city", printable(from.getCity()));
+            parameters.put("owner_state", printable(from.getStateProvince()));
+            parameters.put("owner_country", printable(to.getCountryCode()));
+            parameters.put("owner_phone", getPhoneNumber(to));
+            parameters.put("owner_email", printable(to.getEmail()));
+
+            parameters.put("receiver_company", printable(to.getOrganizationName()));
+            parameters.put("receiver_name", printable(to.getFirstName(), to.getLastName()));
+            parameters.put("receiver_street_address",getAddress(to));
+            parameters.put("receiver_zip", printable(to.getPostalCode()));
+            parameters.put("receiver_city", printable(to.getCity()));
+            parameters.put("receiver_state", printable(to.getStateProvince()));
+            parameters.put("receiver_country", printable(to.getCountryCode()));
+            parameters.put("receiver_phone", getPhoneNumber(to));
+            parameters.put("receiver_email", printable(to.getEmail()));
+
+            // text coming from the notification parameters
+            parameters.put("message1", message1);
+            parameters.put("message2", message2);
+
+            // invoice notes stripped of html line breaks
+            String notes = invoice.getCustomerNotes();
+            if (notes != null) {
+                notes = notes.replaceAll("<br/>", "\r\n");
+            }
+            parameters.put("invoice_notes", notes);
+
+            // the logo is a file
+            File logo = new File(com.sapienter.jbilling.common.Util
+                    .getSysProp("base_dir")
+                    + "logos/entity-" + entityId + ".jpg");
+            parameters.put("LOGO", logo);
+
+            // tax calculated
+            BigDecimal taxTotal = new BigDecimal(0);
+            List<InvoiceLineDTO> lines = new ArrayList<InvoiceLineDTO>(invoice.getInvoiceLines());
+            for (InvoiceLineDTO line: lines) {
+                // process the tax, if this line is one
+                if (line.getInvoiceLineType() != null && // for headers/footers
+                        line.getInvoiceLineType().getId() ==
+                                Constants.INVOICE_LINE_TYPE_TAX) {
+                    // update the total tax variable
+                    taxTotal = taxTotal.add(line.getAmount());
+                }
+            }
+            parameters.put("sales_tax",taxTotal);
+
+            // this parameter help in filter out tax items from invoice lines
+            parameters.put("invoice_line_tax_id", Constants.INVOICE_LINE_TYPE_TAX);
+
+            //payment term calculated
+            parameters.put("payment_terms",new Long(((invoice.getDueDate().getTime()-invoice.getCreateDatetime().getTime())/(24*60*60*1000))).toString());
+
+            // set report locale
+            parameters.put(JRParameter.REPORT_LOCALE, locale);
+
+            // set the subreport directory
+            String subreportDir = com.sapienter.jbilling.common.Util
+                    .getSysProp("base_dir") + "designs/";
+            parameters.put("SUBREPORT_DIR", subreportDir);
+
+            LOG.debug("Parameters passed to invoice design are : "+parameters);
+
+            // at last, generate the report
+            JasperPrint report = null;
+            DataSource dataSource = (DataSource) Context.getBean(Context.Name.DATA_SOURCE);
+            Connection connection = DataSourceUtils.getConnection(dataSource);
+            report = JasperFillManager.fillReport(stream, parameters, connection);
+            DataSourceUtils.releaseConnection(connection, dataSource);
 
             stream.close();
 
@@ -896,6 +1014,17 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         return str;
     }
 
+    private static String getPhoneNumber(ContactDTOEx contact){
+        if(contact.getPhoneCountryCode()!=null && contact.getPhoneAreaCode()!=null && contact.getPhoneNumber()!=null)
+            return  contact.getPhoneCountryCode()+"-"+contact.getPhoneAreaCode()+"-"+contact.getPhoneNumber();
+        else
+            return "";
+    }
+
+    private static String getAddress(ContactDTOEx contact){
+        return printable(contact.getAddress1())+((contact.getAddress2()!=null)?(", "+contact.getAddress2()):(""));
+    }
+
     /**
      * Safely concatenates 2 strings together with a blank space (" "). Null strings
      * are handled safely, and no extra concatenated character will be added if one
@@ -908,7 +1037,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     private static String printable(String str, String str2) {
         StringBuilder builder = new StringBuilder();
         
-        if (str != null) builder.append(str).append(" ");
+        if (str != null) builder.append(str).append(' ');
         if (str2 != null) builder.append(str2);
         
         return builder.toString();

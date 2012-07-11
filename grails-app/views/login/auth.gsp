@@ -24,6 +24,15 @@
     <script type='text/javascript'>
         $(document).ready(function() {
             $('#login input[name="j_username"]').focus();
+
+            $(document).keypress(function(e) {
+                    if(e.which == 13) {
+
+                        $(this).blur();
+                        $('#login form').submit();
+                    }
+                });
+
         });
     </script>
 </head>
@@ -53,13 +62,24 @@
                         </g:applyLayout>
 
                         <g:applyLayout name="form/select">
+                            <g:set var="companies" value="${CompanyDTO.list()}"/>
                             <content tag="label"><g:message code="login.prompt.client.id"/></content>
                             <content tag="label.for">client_id</content>
-                            <g:select name="j_client_id"
-                                      from="${CompanyDTO.list()}"
-                                      optionKey="id"
-                                      optionValue="description"
-                                      value="${params.companyId}"/>
+                            <g:if test="${companies}" >
+                                <g:select name="j_client_id"
+                                          from="${companies}"
+                                          optionKey="id"
+                                          optionValue="description"
+                                          value="${params.companyId}"/>
+                            </g:if>
+                            <g:else>
+                                <g:select name="j_client_id"
+                                          from="${companies}"
+                                          optionKey="id"
+                                          noSelection="['': message(code: 'default.no.selection')]"
+                                          optionValue="description"
+                                          value="${params.companyId}"/>
+                            </g:else>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">

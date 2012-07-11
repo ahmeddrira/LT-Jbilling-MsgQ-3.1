@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -83,7 +84,7 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
             throw new IllegalArgumentException("Usage quantity cannot be null for VolumePricingStrategy.");
 
         // parse pricing tiers
-        SortedMap<Integer, BigDecimal> tiers = getTiers(planPrice.getAttributes());
+        SortedMap<BigDecimal, BigDecimal> tiers = getTiers(planPrice.getAttributes());
         LOG.debug("Volume pricing: " + tiers);
         LOG.debug("Selecting volume price for usage level " + usage.getQuantity());
 
@@ -91,9 +92,9 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
         // the usage quantity already includes the quantity being purchased as it rolls in the
         // lines from the order being worked on. In this case we only care about the TOTAL quantity, not
         // the individual amount being purchased for this one order.
-        BigDecimal price = tiers.get(0);
-        for (Integer tier : tiers.keySet()) {
-            if (usage.getQuantity().compareTo(new BigDecimal(tier)) >= 0) {
+        BigDecimal price = tiers.get(BigDecimal.ZERO);
+        for (BigDecimal tier : tiers.keySet()) {
+            if (usage.getQuantity().compareTo(tier) >= 0) {
                 price = tiers.get(tier);
             }
         }
@@ -112,12 +113,12 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
      * @param attributes attributes to parse
      * @return tiers of quantities and prices
      */
-    protected SortedMap<Integer, BigDecimal> getTiers(Map<String, String> attributes) {
-        SortedMap<Integer, BigDecimal> tiers = new TreeMap<Integer, BigDecimal>();
+    protected SortedMap<BigDecimal, BigDecimal> getTiers(Map<String, String> attributes) {
+        SortedMap<BigDecimal, BigDecimal> tiers = new TreeMap<BigDecimal, BigDecimal>();
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            if (entry.getKey().matches("^\\d+$")) {
-                tiers.put(AttributeUtils.parseInteger(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
+            if (NumberUtils.isNumber(entry.getKey())) {
+                tiers.put(AttributeUtils.parseDecimal(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
             }
         }
 

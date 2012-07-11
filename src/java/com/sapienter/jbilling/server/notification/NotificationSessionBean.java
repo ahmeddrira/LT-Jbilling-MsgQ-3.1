@@ -72,8 +72,8 @@ public class NotificationSessionBean implements INotificationSessionBean {
     }
     
     /**
-     * Sends an email with the invoice to a customer.
-     * This is used to manually send an email invoice from the GUI
+     * Sends an email with the Payment information to the customer.
+     * This is used to manually send an email Payment notification from the GUI (Show Payments)
      * @param userId
      * @param invoiceId
      * @return

@@ -61,6 +61,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private SortedMap<Date, PriceModelWS> defaultPrices = new TreeMap<Date, PriceModelWS>();
     private PriceModelWS defaultPrice;
 
+    @Size(min=1,max=50, message="validation.error.size,1,50")
     private String description = null;
     @ItemTypes
     private Integer[] types = null;
@@ -208,6 +209,8 @@ public class ItemDTOEx implements WSSecured, Serializable {
      *            The description to set
      */
     public void setDescription(String newDescription) {
+        description = newDescription;
+
         for (InternationalDescriptionWS description : descriptions) {
             if (description.getLanguageId() == LanguageDTO.ENGLISH_LANGUAGE_ID) {
                 description.setContent(newDescription);
@@ -430,7 +433,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
         builder.append(Arrays.toString(types));
         builder.append(", excludedTypes=");
         builder.append(Arrays.toString(excludedTypes));
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
 

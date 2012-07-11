@@ -29,6 +29,8 @@ import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
 
 /**
@@ -41,6 +43,8 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  */
 public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
 
+	private static final Logger LOG = Logger.getLogger(CappedGraduatedPricingStrategy.class);
+	
     public CappedGraduatedPricingStrategy() {
         setAttributeDefinitions(
                 new AttributeDefinition("included", DECIMAL, true),
@@ -77,22 +81,30 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
         }
 
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
-        if (usage.getAmount().compareTo(maximum) <= 0) {
-            // usage cap not yet reached, price normally
-            super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
-        } else {
-            // cap reached, price at zero
-            result.setPrice(BigDecimal.ZERO);
-        }
+        BigDecimal currentUsageQuantity = usage.getCurrentQuantity();
+
+        super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
+
+        LOG.debug("Calculated result price: " + result.getPrice());
 
         // only bill up to the set maximum cap
         // calculate a unit price that brings the total cost back down to the maximum cap
         if (result.getPrice() != null) {
 
-            BigDecimal total = usage.getAmount().add(quantity.multiply(result.getPrice()));
+            BigDecimal pastUsageAmount = usage.getAmount().subtract(usage.getCurrentAmount());
+
+            if (pastUsageAmount.compareTo(BigDecimal.ZERO) < 0) {
+                pastUsageAmount = BigDecimal.ZERO;
+            }
+
+            BigDecimal total = pastUsageAmount.add(currentUsageQuantity.multiply(result.getPrice()));
+            LOG.debug("Total Usage amount: " + total + " ... from which past usage amount: " + pastUsageAmount);
+
             if (total.compareTo(maximum) >= 0) {
-                BigDecimal billable = maximum.subtract(usage.getAmount());
-                BigDecimal price = billable.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+                BigDecimal billable = maximum.subtract(pastUsageAmount);
+                LOG.debug("Billable: " + billable);
+
+                BigDecimal price = billable.divide(currentUsageQuantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
                 result.setPrice(price);
             }
         }

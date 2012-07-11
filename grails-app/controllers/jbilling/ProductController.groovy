@@ -461,7 +461,7 @@ class ProductController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product?.number)
 
-        [ product: product, currencies: currencies, categories: getProductCategories(), categoryId: params.category, availableFields: availableMetaFields ]
+        [ product: product, currencies: retrieveCurrencies(), categories: getProductCategories(), categoryId: params.category, availableFields: retrieveAvailableMetaFields() ]
     }
 
     def updateStrategy = {
@@ -469,7 +469,7 @@ class ProductController {
         def priceModel = PlanHelper.bindPriceModel(params)
 		def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : null;
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def addChainModel = {
@@ -485,7 +485,7 @@ class ProductController {
         }
         model.next = new PriceModelWS();
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def removeChainModel = {
@@ -505,7 +505,7 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def addAttribute = {
@@ -530,7 +530,7 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def removeAttribute = {
@@ -551,20 +551,20 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def editDate = {
         def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-        render template: '/priceModel/model', model: [ startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def addDate = {
         def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
 
-        render template: '/priceModel/model', model: [ model: new PriceModelWS(), models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: new PriceModelWS(), models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def removeDate = {
@@ -586,7 +586,7 @@ class ProductController {
             flash.args = [ product.id ]
         }
 
-        render template: '/priceModel/model', model: [ models: product?.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     def saveDate = {
@@ -612,7 +612,7 @@ class ProductController {
             flash.args = [ product.id ]
         }
 
-        render template: '/priceModel/model', model: [ model: price, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: price, startDate: startDate, models: product.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
     /**
@@ -625,52 +625,32 @@ class ProductController {
         bindProduct(product, oldProduct, params)
 
         try {
+			
+			if (StringUtils.isEmpty(product.description?.trim())) {
+				//if blank description
+				product.description = ''
+				String[] errmsgs= new String[1];
+				errmsgs[0]= "ItemDTOEx,description,product.error.name.blank"
+				throw new SessionInternalError("There is an error in product data.", errmsgs );
+			}
+			
             // save or update
             if (!product.id || product.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_40")) {
-
-                    if (product.description.trim()) {
-                        log.debug("creating product ${product}")
-
-                        product.id = webServicesSession.createItem(product)
-
-                        flash.message = 'product.created'
-                        flash.args = [product.id]
-                    } else {
-                        log.debug("there was an error in the product data.")
-
-                        product.description = StringUtils.EMPTY
-
-                        flash.error = message(code: 'product.error.name.blank')
-
-                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
-                        return
-                    }
+                    log.debug("creating product ${product}")
+                    product.id = webServicesSession.createItem(product)
+                    flash.message = 'product.created'
+                    flash.args = [product.id]
                 } else {
                     render view: '/login/denied'
                     return;
                 }
-
             } else {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_41")) {
-                    if (product.description.trim()) {
-                        log.debug("saving changes to product ${product.id}")
-
-                        webServicesSession.updateItem(product)
-
-                        flash.message = 'product.updated'
-                        flash.args = [product.id]
-                    } else {
-                        log.debug("there was an error in the product data.")
-
-                        product.description = StringUtils.EMPTY
-
-                        flash.error = message(code: 'product.error.name.blank')
-
-                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
-                        return
-                    }
-
+                    log.debug("saving changes to product ${product.id}")
+                    webServicesSession.updateItem(product)
+                    flash.message = 'product.updated'
+                    flash.args = [product.id]
                 } else {
                     render view: '/login/denied'
                     return;
@@ -689,7 +669,7 @@ class ProductController {
                     product.percentage = null
                 }
             }
-            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies, availableFields: availableMetaFields ]
+            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: retrieveCurrencies(), category: params?.selectedCategoryId, availableFields: retrieveAvailableMetaFields() ]
             return
         }
 
@@ -725,17 +705,17 @@ class ProductController {
         }
     }
 
-    def getCurrencies() {
+    def retrieveCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }
 
-    def getAvailableMetaFields() {
+    def retrieveAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.PRODUCT);
     }
 
     def bindMetaFields(ItemDTOEx itemDto, GrailsParameterMap params) {
-        def fieldsArray = MetaFieldUtils.bindMetaFields(availableMetaFields, params)
+        def fieldsArray = MetaFieldUtils.bindMetaFields(retrieveAvailableMetaFields(), params)
         itemDto.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

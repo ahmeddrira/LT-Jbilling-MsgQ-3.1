@@ -49,7 +49,7 @@ public class ProcessRunStatusDTO extends AbstractGenericStatus implements java.i
         builder.append(getId());
         builder.append(", getDescription()=");
         builder.append(getDescription());
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
 

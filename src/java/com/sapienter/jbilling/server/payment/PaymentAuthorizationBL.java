@@ -49,7 +49,6 @@ public class PaymentAuthorizationBL {
 
     private void init() {
         paymentAuthorizationDas = new PaymentAuthorizationDAS();
-
     }
 
     public PaymentAuthorizationDTO getEntity() {

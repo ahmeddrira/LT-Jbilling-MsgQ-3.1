@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import junit.framework.TestCase;
 import org.joda.time.DateMidnight;
 
+import java.lang.Integer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -819,7 +820,7 @@ public class WSTest  extends TestCase {
         OrderWS order = api.getOrder(orders[1]);
         assertEquals("Setup fee order with one item", 1, order.getOrderLines().length);
         assertEquals("Setup fee with item 251", 251, order.getOrderLines()[0].getItemId().intValue());
-        assertEquals("Setup fee order one-ime", 1, order.getPeriod().intValue());
+        assertEquals("Setup fee order one-time", 1, order.getPeriod().intValue());
 
         // subscription
         order = api.getOrder(orders[0]);
@@ -830,6 +831,41 @@ public class WSTest  extends TestCase {
         // clean up
         api.deleteOrder(orders[0]);
         api.deleteOrder(orders[1]);
+
+        // Test Bug fix and new All Orders feature.
+        OrderWS newOrder = createMockOrder(USER_ID, 1, new BigDecimal("10.00"));
+        newOrder.setPeriod(2);
+        newOrder.getOrderLines()[0].setItemId(3100);
+        newOrder.getOrderLines()[0].setUseItem(true);
+        System.out.println("Creating percentage plan order ...");
+        Integer newOrderId = api.createOrder(newOrder);
+        assertNotNull("The order was not created", newOrderId);
+
+        // take the last two orders
+        Integer percentageOrders[] = api.getLastOrders(USER_ID, 2);
+        // setup
+        OrderWS savedOrder = api.getOrder(percentageOrders[1]);
+        assertEquals("There should be 2 lines in the order.", 2, savedOrder.getOrderLines().length);
+        assertEquals("This should be the item with id 2700.", 2700, savedOrder.getOrderLines()[0].getItemId().intValue());
+        System.out.println("Checking that the All Orders item is in this order.");
+        assertEquals("This should be the All Orders item.", 2602, savedOrder.getOrderLines()[1].getItemId().intValue());
+        assertEquals("Period should be One-Time", 1, savedOrder.getPeriod().intValue());
+
+        // subscription
+        savedOrder = api.getOrder(percentageOrders[0]);
+        assertEquals("There should be 4 lines in the order.", 4, savedOrder.getOrderLines().length);
+        assertEquals("This should be the plan with id 100.", 3100, savedOrder.getOrderLines()[0].getItemId().intValue());
+        assertEquals("This should be the Discount.", 14, savedOrder.getOrderLines()[1].getItemId().intValue());
+        System.out.println("Checking that the amount of the discount is correct.");
+        assertEquals("The amount of he Discount is incorrect.", new BigDecimal(-4.35), savedOrder.getOrderLines()[1].getAmountAsDecimal());
+        assertEquals("This should be the item with id 2701.", 2701, savedOrder.getOrderLines()[2].getItemId().intValue());
+        System.out.println("Checking that the All Orders item is in this order.");
+        assertEquals("This should be the All Orders item.", 2602, savedOrder.getOrderLines()[3].getItemId().intValue());
+        assertEquals("Period should be Monthly", 2, savedOrder.getPeriod().intValue());
+
+        // clean up
+        api.deleteOrder(percentageOrders[0]);
+        api.deleteOrder(percentageOrders[1]);
     }
 
     // Tests InternalEventsRulesTask plug-in.

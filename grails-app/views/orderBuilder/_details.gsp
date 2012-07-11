@@ -139,6 +139,14 @@
 
             <br/>
 
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_ORDER_OWN_INVOICE}" value="1">
+                <g:applyLayout name="form/checkbox">
+                    <content tag="label"><g:message code="order.label.order.own.invoice"/></content>
+                    <content tag="label.for">ownInvoice</content>
+                    <g:checkBox class="cb checkbox" name="ownInvoice" checked="${order?.ownInvoice > 0}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
+
             <!-- meta fields -->
             <g:render template="/metaFields/editMetaFields" model="[ availableFields: availableFields, fieldValues: order?.metaFields ]"/>
         </div>
@@ -191,6 +199,7 @@
                      },
                      '<g:message code="prompt.no"/>': function() {
                          $('#statusId').val(orderStatus);
+                         submitForm();
                          $(this).dialog('close');
                      }
                  }

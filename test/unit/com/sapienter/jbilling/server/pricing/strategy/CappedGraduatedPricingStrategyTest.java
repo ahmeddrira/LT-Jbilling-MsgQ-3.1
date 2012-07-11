@@ -49,10 +49,13 @@ public class CappedGraduatedPricingStrategyTest extends BigDecimalTestCase {
      * @param amount amount
      * @return usage object
      */
-    private Usage getUsage(Integer quantity, Integer amount) {
+    private Usage getUsage(Integer quantity, Integer amount, Integer currentQuantity, Integer currentAmount) {
         Usage usage = new Usage();
         usage.setQuantity(new BigDecimal(quantity));
         usage.setAmount(new BigDecimal(amount));
+
+        usage.setCurrentQuantity(new BigDecimal(currentQuantity));
+        usage.setCurrentAmount(new BigDecimal((currentAmount)));
 
         return usage;
     }
@@ -67,22 +70,22 @@ public class CappedGraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         // test 1 unit of purchase, should be free
         BigDecimal quantity = new BigDecimal(1);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0), false);
+        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0, 1, 0), false);
         assertEquals(BigDecimal.ZERO, result.getPrice());
 
         // test 4 unit of purchase, 2 over included, should be $2.00 total
         quantity = new BigDecimal(4);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0), false);
+        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0, 4, 0), false);
         assertEquals(new BigDecimal("2.00"), result.getPrice().multiply(quantity));
 
         // test 14 unit of purchase, totals $12.00, but maximum cap is set to $10.00
         quantity = new BigDecimal(14);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0), false);
+        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0, 14, 0), false);
         assertEquals(new BigDecimal("10.00"), result.getPrice().multiply(quantity));
 
         // HUGE purchase, still shouldn't exceed cap
         quantity = new BigDecimal(100);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0), false);
+        strategy.applyTo(null, result, null, model, quantity, getUsage(0, 0, 100, 0), false);
         assertEquals(new BigDecimal("10.00"), result.getPrice().multiply(quantity));
     }
 
@@ -94,14 +97,57 @@ public class CappedGraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         PricingResult result = new PricingResult(1, 2, 3);
 
-        // test 1 unit of purchase, with 2 units of existing usage
+        // test 1 unit of purchase, with 10 units of existing usage = total 11, 2 included --> 9 rated
         BigDecimal quantity = new BigDecimal(1);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(2, 0), false);
+        Usage usage = getUsage(10, 0, 1, 0);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        // 9 rated --> single price should be 1.00
         assertEquals(new BigDecimal("1.00"), result.getPrice());
 
-        // test 1 unit of purchase, with 10 units of existing usage and the cap exceeded
-        quantity = new BigDecimal(1);
-        strategy.applyTo(null, result, null, model, quantity, getUsage(10, 10), false);
+        // test 3 unit of purchase, with 10 units of existing usage and the cap exceeded
+        // 2 units included --> 1 rated
+        quantity = new BigDecimal(3);
+        usage = getUsage(10, 10, 3, 0);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        // cap already exceeded from existing usage so the price is 0
         assertEquals(BigDecimal.ZERO, result.getPrice());
+    }
+
+    public void testCurrentUsage() {
+        PriceModelDTO model = new PriceModelDTO();
+        model.setRate(new BigDecimal("5.00"));
+        model.addAttribute("included", "100");
+        model.addAttribute("max", "50.00");
+
+        PricingResult result = new PricingResult(1, 2, 3);
+
+        BigDecimal quantity = new BigDecimal(100);
+        Usage usage = getUsage(0, 0, 100, 0);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        assertEquals(BigDecimal.ZERO, result.getPrice());
+
+        //
+        quantity = new BigDecimal(103);
+        usage = getUsage(0, 0, 103, 0);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        assertEquals(new BigDecimal("15.00"), result.getPrice().multiply(quantity));
+
+        //
+        quantity = new BigDecimal(112);
+        usage = getUsage(0, 0, 112, 0);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        assertEquals(new BigDecimal("50.00"), result.getPrice().multiply(quantity));
+
+        //
+        quantity = new BigDecimal(200);
+        usage = getUsage(0, 0, 200, 0);
+
+        strategy.applyTo(null, result, null, model, quantity, usage, false);
+        assertEquals(new BigDecimal("50.00"), result.getPrice().multiply(quantity));
     }
 }

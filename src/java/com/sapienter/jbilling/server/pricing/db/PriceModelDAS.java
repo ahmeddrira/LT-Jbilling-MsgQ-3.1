@@ -17,10 +17,10 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import java.util.List;
-
 import org.hibernate.Query;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * PriceModelDAS
@@ -29,6 +29,10 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
  * @since 09/02/11
  */
 public class PriceModelDAS extends AbstractDAS<PriceModelDTO> {
+    private static final String findCurrencySQL =
+            "SELECT count(*) " +
+            "  FROM PriceModelDTO a " +
+            " WHERE a.currency.id = :currency ";
 
 	@SuppressWarnings("unchecked")
 	public List<PriceModelDTO> findRateCardPriceModels(Integer rateCardId) {
@@ -39,5 +43,11 @@ public class PriceModelDAS extends AbstractDAS<PriceModelDTO> {
 		query.setString("rateCardId", rateCardId.toString());
 		return query.list();
 	}
+
+    public Long findPriceCountByCurrency(Integer currencyId){
+        Query query = getSession().createQuery(findCurrencySQL);
+        query.setParameter("currency", currencyId);
+        return (Long) query.uniqueResult();
+    }
 
 }

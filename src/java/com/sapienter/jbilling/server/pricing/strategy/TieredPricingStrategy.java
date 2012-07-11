@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -93,7 +94,7 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
         assert existing.add(quantity).equals(total);
 
         // parse pricing tiers
-        SortedMap<Integer, BigDecimal> tiers = getTiers(planPrice.getAttributes());
+        SortedMap<BigDecimal, BigDecimal> tiers = getTiers(planPrice.getAttributes());
         LOG.debug("Tiered pricing: " + tiers);
         LOG.debug("Calculating tiered price for purchase quantity " + quantity + ", and " + existing + " existing.");
 
@@ -121,19 +122,19 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
      * @param quantity quantity to calculate total for
      * @return total dollar value of purchased quantity
      */
-    public BigDecimal getTotalForQuantity(SortedMap<Integer, BigDecimal> tiers, BigDecimal quantity) {
+    public BigDecimal getTotalForQuantity(SortedMap<BigDecimal, BigDecimal> tiers, BigDecimal quantity) {
         // sort through each tier, adding up the price for the full quantity purchased.
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        Integer lower = null;
-        for (Integer upper : tiers.keySet()) {
+        BigDecimal lower = null;
+        for (BigDecimal upper : tiers.keySet()) {
             if (lower == null) {
                 lower = upper;
                 continue;
             }
 
             // the total quantity in this tier that gets a price
-            BigDecimal tier = new BigDecimal(upper - lower);
+            BigDecimal tier = upper.subtract(lower);;
             BigDecimal price = tiers.get(lower);
 
             // quantity less than total number of units in tier
@@ -176,12 +177,12 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
      * @param attributes attributes to parse
      * @return tiers of quantities and prices
      */
-    protected SortedMap<Integer, BigDecimal> getTiers(Map<String, String> attributes) {
-        SortedMap<Integer, BigDecimal> tiers = new TreeMap<Integer, BigDecimal>();
+    protected SortedMap<BigDecimal, BigDecimal> getTiers(Map<String, String> attributes) {
+        SortedMap<BigDecimal, BigDecimal> tiers = new TreeMap<BigDecimal, BigDecimal>();
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            if (entry.getKey().matches("^\\d+$")) {
-                tiers.put(AttributeUtils.parseInteger(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
+            if (NumberUtils.isNumber(entry.getKey())) {
+                tiers.put(AttributeUtils.parseDecimal(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
             }
         }
 

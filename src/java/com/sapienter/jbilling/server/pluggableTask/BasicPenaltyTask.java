@@ -212,9 +212,11 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
 
         OrderLineDTO line = new OrderLineDTO();
         line.setAmount(fee);
+        line.setPrice(fee);
         line.setDescription(description);
         line.setItemId(getPenaltyItemId());
         line.setTypeId(Constants.ORDER_LINE_TYPE_PENALTY);
+        line.setQuantity(1);
         summary.getLines().add(line);
 
         // create the db record
@@ -276,11 +278,11 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
         StringBuffer buff = new StringBuffer();
         buff.append(" - ")
                 .append(bundle.getString("invoice.line.delegated"))
-                .append(" ")
+                .append(' ')
                 .append(invoice.getPublicNumber())
-                .append(" ")
+                .append(' ')
                 .append(bundle.getString("invoice.line.delegated.due"))
-                .append(" ")
+                .append(' ')
                 .append(df.format(invoice.getDueDate()));
 
         return buff.toString();

@@ -285,10 +285,10 @@ public class ContactDTO  implements java.io.Serializable {
         StringBuilder phone = new StringBuilder();
 
         if (phoneCountryCode != null)
-            phone.append(phoneCountryCode).append(" ");
+            phone.append(phoneCountryCode).append(' ');
 
         if (phoneAreaCode != null)
-            phone.append(phoneAreaCode).append(" ");
+            phone.append(phoneAreaCode).append(' ');
 
         if (phoneNumber != null)
             phone.append(phoneNumber);
@@ -328,10 +328,10 @@ public class ContactDTO  implements java.io.Serializable {
         StringBuilder phone = new StringBuilder();
 
         if (faxCountryCode != null)
-            phone.append(faxCountryCode).append(" ");
+            phone.append(faxCountryCode).append(' ');
 
         if (faxAreaCode != null)
-            phone.append(faxAreaCode).append(" ");
+            phone.append(faxAreaCode).append(' ');
 
         if (faxNumber != null)
             phone.append(faxNumber);

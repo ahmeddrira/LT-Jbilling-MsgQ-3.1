@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.metafields.db.MetaField
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.util.db.EnumerationDTO
+import com.sapienter.jbilling.server.metafields.db.DataType
 
 /**
  * @author Alexander Aksenov
@@ -144,12 +145,17 @@ class MetaFieldsController {
 
         if (params.id) {
             metaField = MetaField.findById(params.int("id"))
-            new MetaFieldBL().delete(params.int('id'))
         }
 
-        flash.message = 'metaField.deleted'
-        flash.args = [params.id]
+        if (new MetaFieldDAS().getTotalFieldCount(metaField.id) > 0){
+            log.debug('Can not delete metafield '+metaField.getId()+', it is in use.')
+            flash.error = 'Can not delete metafield '+metaField.getId()+', it is in use.'
+        } else {
+            new MetaFieldBL().delete(params.int('id'))
+            flash.message = 'metaField.deleted'
+        }
 
+        flash.args = [params.id]
         redirect action: "list", id: metaField.entityType
     }
 }

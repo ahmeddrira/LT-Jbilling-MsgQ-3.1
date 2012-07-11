@@ -408,7 +408,8 @@
       action: 'saveAndRedirect',
       id: params.id,
       onYes: 'saveFirst(this)',
-      onNo: 'Close_Popup(this)'
+      onNo: 'Close_Popup(this)',
+      doNotSubmitPopup: true
      ]"/>
 
 <g:render template="/confirm"
@@ -417,7 +418,8 @@
       action: 'saveAndCancel',
       id: params.id,
       onYes: 'saveAndCancel(this)',
-      onNo: 'cancelNoSave(this)'
+      onNo: 'cancelNoSave(this)',
+      doNotSubmitPopup: true
      ]"/>
 </body>
 </html>

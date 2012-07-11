@@ -68,7 +68,7 @@ public class ItemPercentageSelectorStrategy extends ItemSelectorStrategy {
 
         if (pricingOrder != null) {
             // parse item selection tiers
-            SortedMap<Integer, Integer> tiers = getTiers(planPrice.getAttributes());
+            SortedMap<BigDecimal, Integer> tiers = getTiers(planPrice.getAttributes());
             LOG.debug("Item selector percentage tiers: " + tiers);
 
             // items used for selection
@@ -83,9 +83,9 @@ public class ItemPercentageSelectorStrategy extends ItemSelectorStrategy {
             LOG.debug("Selecting tier for usage percentage " + percentage);
 
             // find matching tier
-            Integer selectedItemId = tiers.get(0);
-            for (Integer tier : tiers.keySet()) {
-                if (percentage.compareTo(new BigDecimal(tier)) >= 0) {
+            Integer selectedItemId = tiers.get(BigDecimal.ZERO);
+            for (BigDecimal tier : tiers.keySet()) {
+                if (percentage.compareTo(tier) >= 0) {
                     selectedItemId = tiers.get(tier);
                 }
             }

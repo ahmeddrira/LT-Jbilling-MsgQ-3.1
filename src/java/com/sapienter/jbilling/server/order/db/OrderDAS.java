@@ -22,7 +22,10 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -70,13 +73,23 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
     public List<OrderDTO> findByUserSubscriptions(Integer userId) {
         // I need to access an association, so I can't use the parent helper class
         Criteria criteria = getSession().createCriteria(OrderDTO.class)
-                .createAlias("orderStatus", "s")
-                    .add(Restrictions.eq("s.id", Constants.ORDER_STATUS_ACTIVE))
-                .add(Restrictions.eq("deleted", 0))
-                .createAlias("baseUserByUserId", "u")
-                    .add(Restrictions.eq("u.id", userId))
-                .createAlias("orderPeriod", "p")
-                    .add(Restrictions.ne("p.id", Constants.ORDER_PERIOD_ONCE));
+		        .add(Restrictions.eq("deleted", 0))
+		        .createAlias("baseUserByUserId", "u")
+		        	.add(Restrictions.eq("u.id", userId))
+	        	.createAlias("orderPeriod", "p")
+		        	.add(Restrictions.ne("p.id", Constants.ORDER_PERIOD_ONCE))
+	        	.createAlias("orderStatus", "s");
+        
+        Criterion ORDER_ACTIVE = Restrictions.eq("s.id", Constants.ORDER_STATUS_ACTIVE);
+        
+        Criterion ORDER_FINISHED = Restrictions.eq("s.id", Constants.ORDER_STATUS_FINISHED);
+        Criterion UNTIL_FUTURE = Restrictions.gt("activeUntil", new Date());
+        LogicalExpression FINISH_IN_FUTURE= Restrictions.and(ORDER_FINISHED, UNTIL_FUTURE);
+        
+        LogicalExpression orderActiveOrEndsLater= Restrictions.or(ORDER_ACTIVE, FINISH_IN_FUTURE);
+        
+        // Criteria or condition
+        criteria.add(orderActiveOrEndsLater);
         
         return criteria.list();
     }

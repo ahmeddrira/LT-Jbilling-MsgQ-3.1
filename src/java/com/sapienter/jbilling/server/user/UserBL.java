@@ -207,7 +207,10 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
-
+            if(!ifValidNotes(dto.getCustomer().getNotes())) {
+                LOG.error("Customer Notes Cannot Be Greater Than 1000 Characters");
+                throw new SessionInternalError("Customer notes cannot be more than 1000 characters long", new String[] {"CustomerWS,notes,customer.error.notes.length.exceeded"});
+            }
             user.getCustomer().setNotes(dto.getCustomer().getNotes());
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
 
@@ -215,7 +218,16 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
             if (dto.getCustomer().getParent() != null) {
                 // the API accepts the user ID of the parent instead of the customer ID
-                user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                try {
+                    if (dto.getCustomer().getParent() != null ) {
+                        user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                    } else {
+                        user.getCustomer().setParent(null);
+                    }
+                } catch (Exception ex) {
+                    throw new SessionInternalError("There doesn't exist a parent with the supplied id.",
+                            new String[]{"UserWS,parentId,validation.error.parent.does.not.exist"});
+                }
 
                 // use parent pricing flag
                 user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
@@ -388,6 +400,11 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
             
             //additional customer fields
+            // validate customer notes
+            if(!ifValidNotes(dto.getCustomer().getNotes())) {
+                LOG.error("Customer Notes Cannot Be Greater Than 1000 Characters");
+                throw new SessionInternalError("Customer notes cannot be more than 1000 characters long", new String[] {"CustomerWS,notes,customer.error.notes.length.exceeded"});
+            }
             user.getCustomer().setNotes(dto.getCustomer().getNotes());
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
 
@@ -1462,6 +1479,15 @@ public class UserBL extends ResultList implements UserSQL {
 		
 		return userId;
 	}
+
+    /**
+     * Checks if the string passed is less than 1000 characters
+     * @param notes
+     * @return boolean
+     */
+    public static boolean ifValidNotes(String notes) {
+        return notes==null || notes.length()<=1000;
+    }
 
 
 }

@@ -73,13 +73,13 @@ public class StatelessJDBCReader extends AbstractJDBCReader {
         if (getMarkMethod() == MarkMethod.LAST_ID) {
             if (getKeyColumns().size() > 1)
                 throw new SessionInternalError("LAST_ID marking method only allows for one key column.");
-            query.append(getKeyColumns().get(0)).append(" > ").append(getLastId()).append(" ");
+            query.append(getKeyColumns().get(0)).append(" > ").append(getLastId()).append(' ');
         }
 
         // append optional user-defined where clause
         String where = getParameter(PARAM_WHERE_APPEND.getName(), (String) null);
         if (where != null)
-            query.append(where).append(" ");
+            query.append(where).append(' ');
 
         // append optional user-defined order, or build one by using defined key columns
         String order = getParameter(PARAM_ORDER_BY.getName(), (String) null);

@@ -1,4 +1,3 @@
-
 %{--
   JBILLING CONFIDENTIAL
   _____________________
@@ -274,7 +273,7 @@
                     <th><g:message code="label.gui.payment.id"/></th>
                     <th><g:message code="label.gui.date"/></th>
                     <th><g:message code="label.gui.payment.refunds"/></th>
-                    <th><g:message code="label.gui.amount"/></th>
+                    <th><g:message code="label.gui.amountPaid"/></th>
                     <th><g:message code="label.gui.method"/></th>
                     <th><g:message code="label.gui.result"/></th>
                     <th></th>
@@ -300,7 +299,7 @@
                             ${paymentInvoice.payment.isRefund? "R":"P"}
                         </td>
                         <td class="innerContent">
-                            <g:formatNumber number="${new BigDecimal(paymentInvoice.payment.amount ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+                            <g:formatNumber number="${new BigDecimal(paymentInvoice.amount ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
                         </td>
                         <td class="innerContent">
                             ${paymentInvoice.payment.paymentMethod.getDescription(session['language_id'])}

@@ -27,7 +27,6 @@
 <g:set var="product" value="${ItemDTO.get(planItem.itemId)}"/>
 <g:set var="model" value="${PriceModelBL.getWsPriceForDate(planItem.models, startDate)}"/>
 
-<g:set var="strategy" value="${PriceModelStrategy.valueOf(model.type)?.getStrategy()}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 
 <g:formRemote name="price-${index}-update-form" url="[action: 'edit']" update="column2" method="GET">
@@ -37,17 +36,26 @@
 
     <!-- review line ${index} -->
     <li id="line-${index}" class="line ${editable ? 'active' : ''}">
-        <g:set var="currency" value="${currencies.find{ it.id == model.currencyId}}"/>
-
         <span class="description">
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
-        <span class="rate">
-            <g:formatNumber number="${model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
-        </span>
-        <span class="strategy">
-            <g:message code="price.strategy.${model.type}"/>
-        </span>
+        <g:if test="${planItem?.model?.type}">
+            <g:set var="currency" value="${currencies.find{ it.id == model.currencyId}}"/>
+            <span class="rate">
+                <g:formatNumber number="${model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
+            </span>
+            <span class="strategy">
+                <g:message code="price.strategy.${model.type}"/>
+            </span>
+        </g:if>
+        <g:else>
+            <span class="rate">
+                <g:formatNumber number="${product.percentage}" formatName="percentage.format"/>
+            </span>
+            <span class="strategy">
+                <g:message code="product.percentage"/>
+            </span>
+        </g:else>
         <div style="clear: both;"></div>
     </li>
 
@@ -72,7 +80,7 @@
                 <g:applyLayout name="form/select">
                     <content tag="label"><g:message code="plan.bundle.period"/></content>
                     <content tag="label.for">bundle.periodId</content>
-                    <g:select from="${orderPeriods}"
+                    <g:select from="${itemOrderPeriods}"
                               optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
                               name="bundle.periodId"
                               value="${planItem?.bundle?.periodId}"/>
@@ -95,7 +103,9 @@
 
                 <br/>
 
-                <g:render template="/priceModel/builderModel" model="[model: model]"/>
+                <g:if test="${model?.type}">
+                    <g:render template="/priceModel/builderModel" model="[model: model]"/>
+                </g:if>
             </div>
         </div>
 

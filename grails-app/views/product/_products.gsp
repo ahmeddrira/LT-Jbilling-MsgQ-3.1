@@ -86,7 +86,7 @@
 <div class="pager-box">
     <div class="row">
         <div class="results">
-            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column2',id:selectedCategoryId]"/>
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column1',id:selectedCategoryId]"/>
         </div>
         <div class="download">
             <sec:access url="/product/csv">
@@ -97,7 +97,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div id="paginate" class="row">
         <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" params="${sortableParams(params: [partial: true])}" total="${products?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
@@ -114,11 +114,11 @@
             </sec:ifAllGranted>
         </g:if>
     </g:if>
-<g:else>
-            <em><g:message code="product.category.not.selected.message"/></em>
-        </g:else>
+    <g:else>
+        <em><g:message code="product.category.not.selected.message"/></em>
+    </g:else>
     <sec:access url="/product/allProducts">
-        <g:remoteLink action="allProducts" update="column2" class="submit show" onSuccess="\$('.submit.show').hide();" ><span><g:message code="button.show.all"/></span></g:remoteLink>
+        <g:remoteLink action="allProducts" update="column1" class="submit show" onSuccess="\$('.submit.show').hide();\$('#column2').html('');" ><span><g:message code="button.show.all"/></span></g:remoteLink>
     </sec:access>
 </div>
 
@@ -129,5 +129,13 @@
                   'id':selectedCategoryId,
                   'ajax':true,
                   'update':'column1',
-                 'onYes': 'closePanel(\'#column2\')'
+                  'onYes': 'closePanel(\'#column2\')'
                  ]"/>
+
+<script type="text/javascript">
+$(function(){
+    $('div#paginate a').click(function(){
+        $('#column2').html('');
+    });
+});
+</script>

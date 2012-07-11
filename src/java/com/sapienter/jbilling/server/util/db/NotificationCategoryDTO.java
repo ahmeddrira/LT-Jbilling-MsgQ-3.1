@@ -23,9 +23,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
@@ -35,8 +38,15 @@ import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 @Entity
+@TableGenerator(
+    name = "notification_category_GEN",
+            table = "jbilling_seqs",
+            pkColumnName = "name",
+            valueColumnName = "next_id",
+            pkColumnValue = "notification_category",
+            allocationSize = 10)
 @Table(name="notification_category")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationCategoryDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;
@@ -61,6 +71,7 @@ public class NotificationCategoryDTO extends AbstractDescription implements java
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "notification_category_GEN")
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;

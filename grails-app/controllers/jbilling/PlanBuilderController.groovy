@@ -113,7 +113,7 @@ class PlanBuilderController {
                     log.error("Could not fetch WS object", e)
 
                     session.error = 'plan.not.found'
-                    session.args = [ params.id ]
+                    session.args = [params.id]
 
                     redirect controller: 'plan', action: 'list'
                     return
@@ -124,21 +124,24 @@ class PlanBuilderController {
                 def internalPlansType = productService.getInternalPlansType()
 
                 def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
-                currencies = currencies.findAll{ it.inUse }
+                currencies = currencies.findAll { it.inUse }
 
-                def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
+                def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) }
+                def itemOrderPeriods = orderPeriods.clone()
+                itemOrderPeriods << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE) << new OrderPeriodDTO(Constants.ORDER_PERIOD_ALL_ORDERS)
                 orderPeriods.sort { it.id }
+                itemOrderPeriods.sort {it.id}
 
                 // subscription product defaults for new plans
                 if (!product.id || product.id == 0) {
                     product.hasDecimals = 0
-                    product.types = [ internalPlansType.id ]
+                    product.types = [internalPlansType.id]
                     product.entityId = company.id
 
                     def priceModel = new PriceModelWS()
                     priceModel.type = PriceModelStrategy.METERED
                     priceModel.rate = BigDecimal.ZERO
-                    priceModel.currencyId = (currencies.find{ it.id == session['currency_id']} ?: company.currency).id
+                    priceModel.currencyId = (currencies.find { it.id == session['currency_id']} ?: company.currency).id
 
                     product.defaultPrices.put(CommonConstants.EPOCH_DATE, priceModel)
                 }
@@ -152,7 +155,7 @@ class PlanBuilderController {
 
                 // defaults for new plans
                 if (!plan.id || plan.id == 0) {
-                    plan.periodId = orderPeriods.find{ it.id != Constants.ORDER_PERIOD_ONCE }?.id
+                    plan.periodId = orderPeriods.first().id
                 }
 
                 log.debug("plan ${plan}")
@@ -180,6 +183,7 @@ class PlanBuilderController {
                 flow.itemTypes = itemTypes
                 flow.currencies = currencies
                 flow.orderPeriods = orderPeriods
+                flow.itemOrderPeriods = itemOrderPeriods
 
                 // conversation scope
                 conversation.pricingDates = pricingDates
@@ -274,6 +278,47 @@ class PlanBuilderController {
             on("success").to("build")
         }
 
+        removeDate {
+            action {
+                def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+                log.debug("Removing pricing date from plan items ${startDate}")
+
+                // remove plan items for the startDate
+                for (PlanItemWS item : conversation.plan.planItems) {
+                    item.removeModel(startDate);
+                }
+
+                log.debug("Remove subscription product pricing date ${startDate}")
+                conversation.product.defaultPrices.remove(startDate)
+
+                // refresh pricing dates
+                conversation.pricingDates = collectPricingDates(conversation.plan.planItems)
+                conversation.startDate = conversation.product.defaultPrices.lastKey();
+
+                // (pai) this is not very good solution to delete the timeline on click
+                // preffered way on application level should be on save changes
+                /*
+                def plan = conversation.plan
+                def product = conversation.product
+
+                if (plan?.id && product?.id) {
+
+                    product.number = product?.number?.trim()
+                    product.description = product?.description?.trim()
+
+                    log.debug("Async saving changes to plan subscription item ${product.id}")
+                    webServicesSession.updateItem(product)
+
+                    log.debug("Async saving changes to plan ${plan.id}")
+                    webServicesSession.updatePlan(plan)
+                }*/
+
+                params.template = 'review'
+
+            }
+            on("success").to("build")
+        }
+
         /**
          * Add a new price for the given product id, and render the review panel.
          */
@@ -286,11 +331,8 @@ class PlanBuilderController {
 
                 // build a new plan item, using the default item price model
                 // as the new objects starting values
-                def priceModel = new PriceModelWS(productPrice)
+                def priceModel = productPrice ? new PriceModelWS(productPrice) : new PriceModelWS()
                 priceModel.id = null
-
-                if (!priceModel.type) priceModel.type = PriceModelStrategy.FLAT.name()
-                if (!priceModel.currencyId) priceModel.currencyId = flow.company.currency.id
 
                 // empty bundle
                 def bundle = new PlanItemBundleWS()
@@ -535,6 +577,7 @@ class PlanBuilderController {
             // pricing
             on("addDate").to("addDate")
             on("editDate").to("editDate")
+            on("removeDate").to("removeDate")
             on("addPrice").to("addPrice")
             on("updatePrice").to("updatePrice")
             on("removePrice").to("removePrice")
@@ -561,6 +604,10 @@ class PlanBuilderController {
                     def plan = conversation.plan
                     def product = conversation.product
 
+                    //to avoid spaces or tabs
+                    product.number = product?.number?.trim()
+                    product.description = product?.description?.trim()
+
                     if (!plan.id || plan.id == 0) {
                         if (SpringSecurityUtils.ifAllGranted("PLAN_60")) {
 
@@ -582,7 +629,6 @@ class PlanBuilderController {
 
                     } else {
                         if (SpringSecurityUtils.ifAllGranted("PLAN_61")) {
-
                             log.debug("saving changes to plan subscription item ${product.id}")
                             webServicesSession.updateItem(product)
 
@@ -591,6 +637,7 @@ class PlanBuilderController {
 
                             session.message = 'plan.updated'
                             session.args = [ plan.id ]
+
 
                         } else {
                             redirect controller: 'login', action: 'denied'

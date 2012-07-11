@@ -31,11 +31,7 @@ import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.*;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.item.db.PlanDAS;
-import com.sapienter.jbilling.server.item.db.PlanDTO;
-import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.item.db.*;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationBL;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
@@ -93,6 +89,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.pricing.RateCardBL;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.pricing.db.RateCardWS;
 import com.sapienter.jbilling.server.process.*;
@@ -1628,6 +1625,31 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return payment authorization from the payment processor
      */
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+    	LOG.debug("In process payment");
+
+        if (payment == null && invoiceId != null) {
+        	return payInvoice(invoiceId);
+        }
+        
+		if (payment.getCreditCard() != null) {
+			LOG.debug("\n Are they sending the correct value in payment gateway field which should be Pares value the client got from the URL ??? >>>>>>>>> "
+					+ payment.getCreditCard().getGatewayKey());
+			
+			// if its a new credit card, it must be saved first
+			if (null != payment.getCreditCard()
+					&& (null == payment.getCreditCard().getId() || 0 == payment
+							.getCreditCard().getId().intValue())) {
+				LOG.debug("Payment is being made with a new Credit Card. This must be updated first.");
+
+                IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+                Integer ccId = userSession.createCreditCard(payment.getUserId(), new CreditCardDTO(payment.getCreditCard()));
+                CreditCardDTO cc = new CreditCardDAS().find(ccId);
+                //this step re-initializes the Payment object with saved gateway key if involved.
+                payment.setCreditCard(cc.getOldDTO());
+                LOG.debug("CreditCard gateway key : "+payment.getCreditCard().getGatewayKey());
+			}
+		}
+        
         // apply validations for refund payment
         if(payment.getIsRefund() == 1) {
             // check for validations
@@ -1636,9 +1658,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
             }
         }
-        if (payment == null && invoiceId != null)
-            return payInvoice(invoiceId);
-
+        
         Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 
@@ -2606,13 +2626,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (creditCard.getId() != null && creditCard.getId().intValue() !=0 ) {
                 creditCard.setHasChanged(true);
                 if (creditCard.getNumber() == null || creditCard.getNumber().contains("*")) {
-                    //number was not updated
+                    LOG.debug("number was not updated");
                     CreditCardDTO dbCard= new CreditCardDAS().find(creditCard.getId());
+                    Calendar newExp= Calendar.getInstance();
+                    	newExp.setTime(creditCard.getExpiry());
+                    Calendar oldExp= Calendar.getInstance();
+                    	oldExp.setTime(dbCard.getExpiry());
+                    LOG.debug("New Expiry: " + creditCard.getExpiry() + " VS. old Expiry: " + dbCard.getExpiry());
+                    
                     if ( creditCard.getName().equals( dbCard.getName() ) 
-                            && creditCard.getExpiry().compareTo( dbCard.getExpiry() ) == 0 ) {
-                        LOG.debug("Nothing changed in this credit card.");
+                            && newExp.get(Calendar.MONTH) == oldExp.get(Calendar.MONTH)
+                            && newExp.get(Calendar.YEAR) == oldExp.get(Calendar.YEAR) ) {
+                        LOG.debug("Nothing changed in this credit card, will return");
                         creditCard.setHasChanged(false);
-                        //we can practically return from here.
+                        return;
                     } else {
                         creditCard.setNumber(dbCard.getNumber());
                     }
@@ -2620,7 +2647,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 }
             }
         }
-
+        //go ahead update the card.
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
         userSession.updateCreditCard(getCallerId(), userId, creditCard != null ? new CreditCardDTO(creditCard) : null);
     }
@@ -3114,8 +3141,37 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void updateCurrencies(CurrencyWS[] currencies) {
+        UserDAS userDAS = new UserDAS();
+        PriceModelDAS priceModelDAS = new PriceModelDAS();
+        String inUSeCurrencies = "";
+        Long inUseCount;
+        Boolean currencyInUse = false;
         for (CurrencyWS currency : currencies) {
-            updateCurrency(currency);
+            if(!currency.getInUse()){
+                inUseCount = 0l;
+
+                //currency in use for users
+                inUseCount += userDAS.findUserCountByCurrency(currency.getId());
+
+                //currency in use for products
+                inUseCount += priceModelDAS.findPriceCountByCurrency(currency.getId());
+
+                if(inUseCount > 0){
+                    currencyInUse = true;
+                    LOG.debug("Currency "+currency.getCode()+" is in use.");
+                    inUSeCurrencies += currency.getCode()+", ";
+                } else{
+                    updateCurrency(currency);
+                }
+            } else{
+                updateCurrency(currency);
+            }
+        }
+
+        if(currencyInUse){
+            inUSeCurrencies = inUSeCurrencies.substring(0,inUSeCurrencies.lastIndexOf(','));
+            LOG.debug("Currency(s) "+inUSeCurrencies+" is in use.");
+            throw new SessionInternalError("Currency(s) "+inUSeCurrencies+" is in use.");
         }
     }
 

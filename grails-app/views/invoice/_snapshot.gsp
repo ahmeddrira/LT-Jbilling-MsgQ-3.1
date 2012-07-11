@@ -76,7 +76,7 @@
     <div class="btn-row">
         <a class="submit okay" onclick="$('#apply-form').submit()">
             <span><g:message code="order.button.apply"/></span></a>
-        <a href="${createLink (controller: 'order', action: 'showListAndOrder', params: [id: session['applyToInvoiceOrderId']])}" class="submit cancel">
+        <a href="${createLink (controller: 'order', action: 'list', params: [id: session['applyToInvoiceOrderId']])}" class="submit cancel">
             <span><g:message code="button.cancel"/></span>
         </a>
     </div>

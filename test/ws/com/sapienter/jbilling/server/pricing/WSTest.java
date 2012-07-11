@@ -75,7 +75,7 @@ public class WSTest extends PricingTestCase {
 
         List<PlanWS> plans = api.getAllPlans();
         assertNotNull("plans is not null", plans);
-        assertEquals("only one plan in the list", 1, plans.size());
+        assertEquals("only two plans in the list", 2, plans.size());
 
         PlanWS plan = plans.get(0);
         assertEquals(PLAN_ID, plan.getId());
@@ -335,7 +335,7 @@ public class WSTest extends PricingTestCase {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
         Integer[] planIds = api.getPlansByAffectedItem(PLAN_AFFECTED_ITEM_ID);
-        assertEquals("Should only be 1 plan.", 1, planIds.length);
+        assertEquals("Should only be 2 plans.", 2, planIds.length);
         assertEquals("Should be 'crazy brian's discount plan'", PLAN_ID, planIds[0]);
     }
 
@@ -395,12 +395,16 @@ public class WSTest extends PricingTestCase {
         assertEquals(LONG_DISTANCE_PLAN_ITEM, fetchedPlan.getItemId());
         assertEquals("Updated description.", fetchedPlan.getDescription());
 
-        fetchedPrice = fetchedPlan.getPlanItems().get(1);
-        assertEquals(LONG_DISTANCE_CALL_GENERIC, fetchedPrice.getItemId());
-        assertEquals(PriceModelStrategy.METERED.name(), fetchedPrice.getModel().getType());
-        assertEquals(new BigDecimal("0.25"), fetchedPrice.getModel().getRateAsDecimal());
-        assertEquals(1, fetchedPrice.getModel().getCurrencyId().intValue());
-
+        
+        for (PlanItemWS planItemWS: fetchedPlan.getPlanItems()) {
+        	if (LONG_DISTANCE_CALL_GENERIC.equals(planItemWS.getItemId())) {
+        		fetchedPrice=planItemWS;
+        		assertEquals(PriceModelStrategy.METERED.name(), fetchedPrice.getModel().getType());
+        		assertEquals(new BigDecimal("0.25"), fetchedPrice.getModel().getRateAsDecimal());
+        		assertEquals(1, fetchedPrice.getModel().getCurrencyId().intValue());
+        		
+        	}
+        }
 
         // delete the plan
         api.deletePlan(fetchedPlan.getId());

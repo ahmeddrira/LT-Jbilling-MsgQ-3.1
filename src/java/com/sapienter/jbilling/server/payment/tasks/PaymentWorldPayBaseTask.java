@@ -270,7 +270,7 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
                   .append("=")
                   .append(pair.getValue());
 
-                if (it.hasNext()) sb.append("&");
+                if (it.hasNext()) sb.append('&');
             }
             return sb.toString();
         }        

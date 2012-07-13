@@ -107,6 +107,10 @@ public class PlanItemWS implements Serializable {
         getModels().put(date, model);
     }
 
+    public void removeModel(Date date) {
+        getModels().remove(date);
+    }
+
     /**
      * Get the current price model for today.
      *

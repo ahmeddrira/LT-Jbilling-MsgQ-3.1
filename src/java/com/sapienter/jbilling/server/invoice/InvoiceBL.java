@@ -33,8 +33,6 @@ import java.util.Set;
 import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import org.apache.log4j.Logger;
 
-import javax.sql.rowset.CachedRowSet;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -67,13 +65,9 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.*;
 
 public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {

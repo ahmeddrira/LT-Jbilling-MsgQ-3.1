@@ -31,4 +31,5 @@ libs/
 # local git configuration
 .gitattributes
 
-
+# license file that should not be part of the repository
+license.txt

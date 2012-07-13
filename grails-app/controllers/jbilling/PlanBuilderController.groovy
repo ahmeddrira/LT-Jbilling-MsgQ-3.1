@@ -278,6 +278,47 @@ class PlanBuilderController {
             on("success").to("build")
         }
 
+        removeDate {
+            action {
+                def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+                log.debug("Removing pricing date from plan items ${startDate}")
+
+                // remove plan items for the startDate
+                for (PlanItemWS item : conversation.plan.planItems) {
+                    item.removeModel(startDate);
+                }
+
+                log.debug("Remove subscription product pricing date ${startDate}")
+                conversation.product.defaultPrices.remove(startDate)
+
+                // refresh pricing dates
+                conversation.pricingDates = collectPricingDates(conversation.plan.planItems)
+                conversation.startDate = conversation.product.defaultPrices.lastKey();
+
+                // (pai) this is not very good solution to delete the timeline on click
+                // preffered way on application level should be on save changes
+                /*
+                def plan = conversation.plan
+                def product = conversation.product
+
+                if (plan?.id && product?.id) {
+
+                    product.number = product?.number?.trim()
+                    product.description = product?.description?.trim()
+
+                    log.debug("Async saving changes to plan subscription item ${product.id}")
+                    webServicesSession.updateItem(product)
+
+                    log.debug("Async saving changes to plan ${plan.id}")
+                    webServicesSession.updatePlan(plan)
+                }*/
+
+                params.template = 'review'
+
+            }
+            on("success").to("build")
+        }
+
         /**
          * Add a new price for the given product id, and render the review panel.
          */
@@ -536,6 +577,7 @@ class PlanBuilderController {
             // pricing
             on("addDate").to("addDate")
             on("editDate").to("editDate")
+            on("removeDate").to("removeDate")
             on("addPrice").to("addPrice")
             on("updatePrice").to("updatePrice")
             on("removePrice").to("removePrice")
@@ -587,7 +629,6 @@ class PlanBuilderController {
 
                     } else {
                         if (SpringSecurityUtils.ifAllGranted("PLAN_61")) {
-
                             log.debug("saving changes to plan subscription item ${product.id}")
                             webServicesSession.updateItem(product)
 
@@ -596,6 +637,7 @@ class PlanBuilderController {
 
                             session.message = 'plan.updated'
                             session.args = [ plan.id ]
+
 
                         } else {
                             redirect controller: 'login', action: 'denied'

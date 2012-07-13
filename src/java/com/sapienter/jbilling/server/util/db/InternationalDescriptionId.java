@@ -82,11 +82,14 @@ public class InternationalDescriptionId  implements java.io.Serializable {
          if ( !(other instanceof InternationalDescriptionId) ) return false;
          InternationalDescriptionId castOther = ( InternationalDescriptionId ) other; 
          
-         return (this.getTableId()==castOther.getTableId())
- && (this.getForeignId()==castOther.getForeignId())
- && ( (this.getPsudoColumn()==castOther.getPsudoColumn()) || ( this.getPsudoColumn()!=null && castOther.getPsudoColumn()!=null && this.getPsudoColumn().equals(castOther.getPsudoColumn()) ) )
- && (this.getLanguageId()==castOther.getLanguageId());
-   }
+		return (this.getTableId() == castOther.getTableId())
+				&& (this.getForeignId() == castOther.getForeignId())
+				&& ((this.getPsudoColumn() == castOther.getPsudoColumn()) || (this
+						.getPsudoColumn() != null
+						&& castOther.getPsudoColumn() != null && this
+						.getPsudoColumn().equals(castOther.getPsudoColumn())))
+				&& (this.getLanguageId() == castOther.getLanguageId());
+	}
    
    public int hashCode() {
          int result = 17;

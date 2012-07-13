@@ -49,7 +49,8 @@
             <div class="form-columns">
                 <g:hiddenField name="id" value="${config?.id?:0}"/>
                 <g:hiddenField name="entityId" value="${session['company_id']}"/>
-                <g:hiddenField name="createDatetime" value="${config?.createDatetime?: null}"/>
+                <g:hiddenField name="createDatetime" value="${config?.createDatetime ?
+                    formatDate(date: config.createDatetime, formatName: 'date.format') : null}"/>
                 <g:hiddenField name="versionNum" value="${config?.versionNum?: 0}"/>
                 
                 <g:applyLayout name="form/input">

@@ -137,10 +137,6 @@ public class ItemTypeBL {
             LOG.error("exists is being call with a null description");
             return true;
         }
-        if (new ItemTypeDAS().findByDescription(entityId, description) == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return new ItemTypeDAS().findByDescription(entityId, description) != null;
     }
 }

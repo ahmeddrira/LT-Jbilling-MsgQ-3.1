@@ -356,7 +356,7 @@ public class InvoiceWS implements WSSecured, Serializable {
         builder.append(userId);
         builder.append(", metaField=");
         builder.append(Arrays.toString(metaFields));
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
 

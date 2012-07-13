@@ -541,7 +541,7 @@ public class ItemDTO extends AbstractDescription implements MetaContent, Exporta
     public Object[][] getFieldValues() {
         StringBuilder itemTypes = new StringBuilder();
         for (ItemTypeDTO type : this.itemTypes) {
-            itemTypes.append(type.getDescription()).append(" ");
+            itemTypes.append(type.getDescription()).append(' ');
         }
 
         PriceModelDTO currentPrice = getPrice(new Date());

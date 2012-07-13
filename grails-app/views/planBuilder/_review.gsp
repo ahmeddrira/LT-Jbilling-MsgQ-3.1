@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.util.Constants" %>
+<%@ page import="com.sapienter.jbilling.common.CommonConstants; com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.util.Constants" %>
 <%--
   Renders a PlanWS as a quick preview of the plan being built. This view also allows
   individual plan prices to be edited and removed from the order.
@@ -103,7 +103,11 @@
         <g:link class="submit save" action="edit" params="[_eventId: 'save']">
             <span><g:message code="button.save"/></span>
         </g:link>
-
+        <g:if test="${!CommonConstants.EPOCH_DATE.equals(startDate)}">
+            <g:remoteLink class="submit delete" action="edit" params="[_eventId: 'removeDate', startDate: formatDate(date: startDate), index: index]" update="column2" method="GET" onSuccess="timeline.refresh(); details.refresh();">
+                <span><g:message code="button.remove"/></span>
+            </g:remoteLink>
+        </g:if>
         <g:link class="submit cancel" action="edit" params="[_eventId: 'cancel']">
             <span><g:message code="button.cancel"/></span>
         </g:link>

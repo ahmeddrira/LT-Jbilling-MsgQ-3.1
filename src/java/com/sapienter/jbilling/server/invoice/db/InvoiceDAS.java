@@ -243,6 +243,8 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         criteria.add(Restrictions.eq("baseUser.id", userId));
         criteria.add(Restrictions.eq("deleted", 0));
         criteria.add(Restrictions.eq("isReview", 0));
+        criteria.createAlias("invoiceStatus", "status");
+        criteria.add(Restrictions.ne("status.id", Constants.INVOICE_STATUS_PAID));
         criteria.setProjection(Projections.id()).addOrder(Order.desc("id"));
         return criteria.list();
     }

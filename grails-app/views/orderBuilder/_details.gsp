@@ -199,6 +199,7 @@
                      },
                      '<g:message code="prompt.no"/>': function() {
                          $('#statusId').val(orderStatus);
+                         submitForm();
                          $(this).dialog('close');
                      }
                  }

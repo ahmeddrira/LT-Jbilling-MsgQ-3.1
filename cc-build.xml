@@ -97,7 +97,7 @@
         <!-- compile resources and load testing database -->
         <exec dir="${root.dir}" executable="${cc-grails}" failonerror="true">
             <arg value="prepare-test"/>
-            <arg value="-cleanDb=true"/>
+            <arg value="-hard"/>
             <arg value="-user=${test_db_user}"/>
             <arg value="-db=${test_db}"/>
         </exec>

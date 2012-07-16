@@ -27,6 +27,6 @@
     <g:applyLayout name="form/date">
         <content tag="label"><g:message code="end_date"/></content>
         <content tag="label.for">date</content>
-        <g:textField class="field" name="date" value="${formatDate(date: new Date(), formatName: 'datepicker.format')}"/>
+        <g:textField class="field" name="date" value="${formatDate(date: new Date(), formatName: 'datepicker.format')}" readonly="true"/>
     </g:applyLayout>
 </div>

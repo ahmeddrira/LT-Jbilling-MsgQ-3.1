@@ -18,8 +18,6 @@ import groovy.sql.Sql
  * is strictly forbidden.
  */
 
-includeTargets << grailsScript("Init")
-
 target(checkDbConnection: "Checks the connection to the database and prints the errors if there are any.") {
     depends(createConfig)
 
@@ -38,4 +36,4 @@ target(checkDbConnection: "Checks the connection to the database and prints the 
     }
 }
 
-setDefaultTarget(checkDbConnection)
+//setDefaultTarget(checkDbConnection)

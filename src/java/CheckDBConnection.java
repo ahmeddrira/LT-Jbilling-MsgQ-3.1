@@ -1,7 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class CheckDbConnection {
+public class CheckDBConnection {
     //DB Ports
     private static final String MYSQL_PORT = "3306";
     private static final String MSSQL_PORT = "1433";

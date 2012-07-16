@@ -19,7 +19,7 @@ includeTargets << grailsScript("_GrailsInit")
 
 target(setLicense: "Set the license key in jbilling.properties with whatever is in license.txt") {
     println "Setting license in jbilling.properties from license.txt"
-    ant.loadfile(property:"licenseKey", srcFile:"license.txt")
+    ant.loadfile(property:"licenseKey", srcFile:"license.txt", failonerror:"true")
 
     ant.replace(file: "${basedir}/src/java/jbilling.properties", token:"place license key here", value:"${licenseKey}")
 }

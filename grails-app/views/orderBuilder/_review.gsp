@@ -120,9 +120,10 @@
         </g:if>
     </div>
 
-    <div class="btn-box">
+    <div class="btn-box order-btn-box">
         <g:link class="submit save" action="edit" params="[_eventId: 'save']">
             <span><g:message code="button.save"/></span>
+            <g:hiddenField name="saveInProgress" value="false"/>
         </g:link>
 
         <g:link class="submit cancel" action="edit" params="[_eventId: 'cancel']">

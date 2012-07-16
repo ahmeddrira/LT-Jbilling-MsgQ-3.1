@@ -27,6 +27,6 @@ eventCreateWarStart = { warName, stagingDir ->
     }
 }
 
-eventCompileStart = {
+eventRunAppStart = {
     setLicense()
 }

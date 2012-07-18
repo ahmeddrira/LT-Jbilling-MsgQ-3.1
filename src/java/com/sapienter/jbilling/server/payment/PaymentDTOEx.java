@@ -81,7 +81,10 @@ public class PaymentDTOEx extends PaymentDTO {
         setPaymentPeriod(dto.getPaymentPeriod());
         setPaymentNotes(dto.getPaymentNotes());
         setMetaFields(dto.getMetaFields());
-
+        
+        //for refunds
+        setPayment(dto.getPayment());
+        
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
     }

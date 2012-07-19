@@ -269,10 +269,10 @@ class CustomerInspectorController {
         }
 
         def priceModel = PlanHelper.bindPriceModel(params)
-        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
-        price.models.put(startDate, priceModel)
 
         try {
+            def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+            price.models.put(startDate, priceModel)
             if (!price.id || price.id == 0) {
                 log.debug("creating customer ${user.userId} specific price ${price}")
 
@@ -291,6 +291,12 @@ class CustomerInspectorController {
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
             def product = webServicesSession.getItem(params.int('itemId'), user.userId, null)
+            render view: 'editCustomerPrice', model: [ price: price, product: product, user: user, currencies: retrieveCurrencies() ]
+            return
+        }   catch (Exception e) {
+            log.error e.getMessage()
+            flash.error = 'customer.price.save.error'
+            def product = webServicesSession.getItem(params.int('price.itemId'), user.userId, null)
             render view: 'editCustomerPrice', model: [ price: price, product: product, user: user, currencies: retrieveCurrencies() ]
             return
         }

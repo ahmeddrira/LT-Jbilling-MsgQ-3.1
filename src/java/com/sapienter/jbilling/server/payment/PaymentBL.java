@@ -222,6 +222,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
         dto.setId(payment.getId());
         dto.setCurrency(payment.getCurrency());
+        dto.setPayment(payment.getPayment());
         paymentDas.save(payment);
         // add a log row for convenience
         UserDAS user = new UserDAS();
@@ -405,6 +406,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         PaymentDTO dto = new PaymentDTO(payment.getId(), payment.getAmount(), payment.getBalance(), payment.getCreateDatetime(), payment.getUpdateDatetime(), payment.getPaymentDate(), payment.getAttempt(), payment.getDeleted(),
                 payment.getPaymentMethod(), payment.getPaymentResult(), payment.getIsRefund(), payment.getIsPreauth(), payment.getCurrency(), payment.getBaseUser());
         dto.setMetaFields(new LinkedList<MetaFieldValue>(payment.getMetaFields()));
+        //for refunds
+        dto.setPayment(payment.getPayment());
         return dto;
     }
 

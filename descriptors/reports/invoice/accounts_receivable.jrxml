@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="accounts_receivable" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="224"/>
+	<property name="ireport.x" value="573"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="entity_id" class="java.lang.Integer"/>
 	<queryString>
@@ -11,10 +11,12 @@
 	co.first_name,
 	co.last_name,
 	co.organization_name,
-	COALESCE(invoices.balance, 0) - COALESCE(payments.balance, 0) AS balance
+	COALESCE(invoices.balance, 0) - COALESCE(payments.balance, 0) AS balance,
+	currency.code AS currency_symbol
 FROM
 	customer cu
 	INNER JOIN base_user u on u.id = cu.user_id
+	INNER JOIN currency on u.currency_id = currency.id
 	LEFT OUTER JOIN contact co ON cu.user_id = co.user_id
 	LEFT OUTER JOIN
 	(
@@ -35,9 +37,11 @@ FROM
 	   GROUP BY p.user_id
 	)
 	AS payments ON cu.user_id = payments.user_id
+
 WHERE
 	( COALESCE(invoices.balance,0) - COALESCE(payments.balance, 0) != 0 )
 	and u.entity_id = $P{entity_id}
+
 ORDER BY cu.user_id;]]>
 	</queryString>
 	<field name="user_id" class="java.lang.Integer"/>
@@ -46,6 +50,7 @@ ORDER BY cu.user_id;]]>
 	<field name="last_name" class="java.lang.String"/>
 	<field name="organization_name" class="java.lang.String"/>
 	<field name="balance" class="java.math.BigDecimal"/>
+	<field name="currency_symbol" class="java.lang.String"/>
 	<variable name="subtotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal("0.00")]]></initialValueExpression>
@@ -153,13 +158,6 @@ ORDER BY cu.user_id;]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_name}]]></textFieldExpression>
 			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="455" y="0" width="100" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="false"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{balance}]]></textFieldExpression>
-			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="55" y="0" width="100" height="20"/>
 				<textElement verticalAlignment="Middle">
@@ -173,6 +171,20 @@ ORDER BY cu.user_id;]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{last_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="0" width="30" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{currency_symbol}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="485" y="0" width="70" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{balance}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

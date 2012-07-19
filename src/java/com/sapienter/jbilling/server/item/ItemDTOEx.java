@@ -433,7 +433,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
         builder.append(Arrays.toString(types));
         builder.append(", excludedTypes=");
         builder.append(Arrays.toString(excludedTypes));
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
 

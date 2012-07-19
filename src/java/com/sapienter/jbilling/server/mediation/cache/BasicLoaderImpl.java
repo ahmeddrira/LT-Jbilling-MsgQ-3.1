@@ -162,7 +162,7 @@ public class BasicLoaderImpl implements ILoader {
                 .append(getIndexName())
                 .append(" ON ");
 
-        indexSql.append(getTableName()).append("(");
+        indexSql.append(getTableName()).append('(');
         for (String col : cols) {
             indexSql.append(col).append(COMMA);
         }
@@ -178,7 +178,7 @@ public class BasicLoaderImpl implements ILoader {
     private String[] computeInsertSql(List<Record> records) {
         int totalRecords = records.size();
         String[] batch = new String[totalRecords--];
-        StringBuffer retVal = new StringBuffer("INSERT INTO ").append(getTableName()).append(SPACE).append("(");
+        StringBuffer retVal = new StringBuffer("INSERT INTO ").append(getTableName()).append(SPACE).append('(');
 
         int outer = 0;
         for (Record record : records) {
@@ -187,7 +187,7 @@ public class BasicLoaderImpl implements ILoader {
             List<PricingField> fields = record.getFields();
 
             int listSize= fields.size();
-            values.append("(");
+            values.append('(');
 
             for (int iter = 1; iter <= listSize; iter++) {
 
@@ -199,9 +199,9 @@ public class BasicLoaderImpl implements ILoader {
                 // setting value with appropriate markers into the sql string
                 switch (field.getType()) {
                     case STRING:
-                        values.append("'")
+                        values.append('\'')
                                 .append(escapeSpecialChars((String) field.getValue()))
-                                .append("'");
+                                .append('\'');
                         break;
 
                     default:
@@ -249,7 +249,7 @@ public class BasicLoaderImpl implements ILoader {
 
         // indexes
         createTable
-                .append("(")
+                .append('(')
                 .append(CACHE_PRIMARY_KEY)
                 .append(" identity NOT NULL PRIMARY KEY,");
 

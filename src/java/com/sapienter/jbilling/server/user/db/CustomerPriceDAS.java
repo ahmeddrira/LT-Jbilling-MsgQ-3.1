@@ -53,12 +53,9 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
         Query query = getSession().getNamedQuery("PlanItemDTO.findCustomerPriceByItem");
         query.setParameter("user_id", userId);
         query.setParameter("item_id", itemId);
+        query.setMaxResults(1);
 
-        // use an iterator to scroll the cursor instead of returning all customer
-        // prices in a list. This way we only fetch the price with the highest precedence
-        // and not the entire result set.
-        Iterator it = query.iterate();
-        return it.hasNext() ? (PlanItemDTO) it.next() : null;
+        return (PlanItemDTO) query.uniqueResult();
     }
 
     /**

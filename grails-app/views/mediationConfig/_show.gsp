@@ -63,7 +63,7 @@
 
     <div class="btn-box">
         <div class="row">
-            <g:remoteLink class="submit edit" id="${selected.id}" action="edit" update="column2">
+            <g:remoteLink class="submit edit" id="${selected.id}" action="edit" before="register(this);" onSuccess="render(data, second);" update="column2">
                 <span><g:message code="button.edit"/></span>
             </g:remoteLink>
             <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>

@@ -75,7 +75,7 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
       if (singlePurchase || pricingOrder == null) {
           return usage.getQuantity();
       }
-      return usage.getQuantity().subtract(quantity);
+      return usage.getQuantity().subtract(usage.getCurrentQuantity());
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
      * @return pricing field if found, null if not
      */
     public static PricingField find(List<PricingField> fields, String fieldName) {
-        if (fieldName != null) {
+        if (fieldName != null && fields != null) {
             for (PricingField field : fields) {
                 if (field.getName().equals(fieldName))
                     return field;

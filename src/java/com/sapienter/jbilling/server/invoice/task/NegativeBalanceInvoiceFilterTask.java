@@ -33,10 +33,6 @@ public class NegativeBalanceInvoiceFilterTask extends PluggableTask
     public boolean isApplicable(InvoiceDTO invoice, BillingProcessDTO process) 
             throws TaskException {
 
-        if (BigDecimal.ZERO.compareTo(invoice.getBalance()) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return BigDecimal.ZERO.compareTo(invoice.getBalance()) > 0;
     }
 }

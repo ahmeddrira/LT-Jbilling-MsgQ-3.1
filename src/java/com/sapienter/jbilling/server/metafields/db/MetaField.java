@@ -107,7 +107,7 @@ public class MetaField implements Serializable {
 
     @Column(name = "name", nullable = false)
     @NotNull(message="validation.error.notnull")
-    @Size(min = 1, max = 100, message = "validation.error.size,1,100")
+    @Size(min = 1, max = 100, message = "validation.metaField.name.error.size,1,100")
     public String getName() {
         return name;
     }

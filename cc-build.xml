@@ -21,14 +21,16 @@
 
     <property environment="env"/>
 
-    <condition property="grails.home" value="${env.GRAILS_HOME}">
-        <isset property="env.GRAILS_HOME"/>
+    <condition property="cc-grails.home" value="${env.GRAILS_HOME}">
+        <not>
+            <isset property="cc-grails.home"/>
+        </not>
     </condition>
 
-    <condition property="grails" value="${grails.home}\bin\grails.bat">
+    <condition property="cc-grails" value="${cc-grails.home}\bin\grails.bat">
         <os family="windows"/>
     </condition>
-    <property name="grails" value="${grails.home}/bin/grails"/>
+    <property name="cc-grails" value="${cc-grails.home}/bin/grails"/>
 
 
     <!-- 
@@ -80,20 +82,20 @@
         <property name="test-results.cleaned" value="true"/> <!-- mark test results as clean so the build doesn't do it again -->
 
         <!-- clean and re-compile -->
-        <echo message="Building with grails ${grails}"/>
+        <echo message="Building with grails ${cc-grails}"/>
 
-        <exec dir="${root.dir}" executable="${grails}" failonerror="true">
+        <exec dir="${root.dir}" executable="${cc-grails}" failonerror="true">
             <arg value="clean"/>
         </exec>
-        <exec dir="${root.dir}" executable="${grails}" failonerror="false"> <!-- always fails -->
+        <exec dir="${root.dir}" executable="${cc-grails}" failonerror="false"> <!-- always fails -->
             <arg value="compile"/>
         </exec>
-        <exec dir="${root.dir}" executable="${grails}" failonerror="true">  <!-- should compile on the 2nd try -->
+        <exec dir="${root.dir}" executable="${cc-grails}" failonerror="true">  <!-- should compile on the 2nd try -->
             <arg value="compile"/>
         </exec>
 
         <!-- compile resources and load testing database -->
-        <exec dir="${root.dir}" executable="${grails}" failonerror="true">
+        <exec dir="${root.dir}" executable="${cc-grails}" failonerror="true">
             <arg value="prepare-test"/>
             <arg value="-cleanDb=true"/>
             <arg value="-user=${test_db_user}"/>
@@ -107,7 +109,9 @@
     -->
 
     <target name="start" description="Start jBilling and wait for the application to become available.">
-        <exec executable="./startup.sh" spawn="true"/>
+        <exec executable="./startup.sh" spawn="true">
+            <env key="GRAILS_HOME" value="${cc-grails.home}"/>
+        </exec>
 
         <echo message="Waiting for application to start on port ${server_port} ..."/>
         <waitfor maxwait="3" maxwaitunit="minute" checkevery="500" timeoutproperty="startup.timeout">

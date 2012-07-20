@@ -316,7 +316,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             PaymentBL payment = new PaymentBL(paymentId);
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             
-            BigDecimal paid = applyPayment(payment.getDTO(), invoice.getEntity(), true);
+            BigDecimal paid = applyPayment(payment.getEntity(), invoice.getEntity(), true);
             
             // link it with the invoice
             payment.createMap(invoice.getEntity(), paid);

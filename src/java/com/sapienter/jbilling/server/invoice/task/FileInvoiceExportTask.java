@@ -129,7 +129,7 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
         line.append("\"" + emptyIfNull(contact.getEntity().getPostalCode()) + "\"");
         line.append(',');
         // totdue - round to two decimals
-        line.append("\"" + new UserBL().getBalance(userId).round(new MathContext(2)) + "\"");
+        line.append("\"" + UserBL.getBalance(userId).round(new MathContext(2)) + "\"");
         line.append(',');
         // qty
         line.append("\"" + invoiceLine.getQuantity() + "\"");

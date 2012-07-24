@@ -176,7 +176,7 @@ public class DTOFactory {
         }
 
         // set the balance
-        dto.setBalance(new UserBL().getBalance(dto.getId()));
+        dto.setBalance(UserBL.getBalance(dto.getId()));
 
         return dto;
     }

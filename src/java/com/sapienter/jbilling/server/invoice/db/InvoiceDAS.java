@@ -317,6 +317,8 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
     }
 
+    
+    //This method is faulty. The balance of a carried Invoice should not be included
     public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
         
@@ -329,7 +331,10 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
         Object ttlBal= criteria.uniqueResult();
         
-        return ( ttlBal == null ? BigDecimal.ZERO : (BigDecimal) ttlBal);
+        BigDecimal invoiceBalance= ( ttlBal == null ? BigDecimal.ZERO : (BigDecimal) ttlBal);
+        LOG.debug("Total Invoice Balance for User " + userId + " is " + invoiceBalance);
+        return invoiceBalance;
+        
     }
 
     /**
@@ -344,10 +349,15 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         criteria.createAlias("invoiceStatus", "status");
         criteria.add(Restrictions.ne("status.id", Constants.INVOICE_STATUS_PAID));
         criteria.add(Restrictions.eq("isReview", 0));
+        criteria.add(Restrictions.eq("deleted", 0));
         criteria.setProjection(Projections.sum("balance"));
         criteria.setComment("InvoiceDAS.findTotalAmountOwed");
 
-        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
+        BigDecimal totalAmountOwed= (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
+        		
+		LOG.debug("Total Amount Owed for User " + userId + " is " + totalAmountOwed);
+        
+        return totalAmountOwed;
     }
 
     /*

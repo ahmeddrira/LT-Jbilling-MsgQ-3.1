@@ -172,6 +172,7 @@ public class PaymentDTOEx extends PaymentDTO {
         MetaFieldBL.fillMetaFieldsFromWS(new UserBL().getEntityId(userId), 
         		this, dto.getMetaFields());
     }
+    
     /**
      *
      */

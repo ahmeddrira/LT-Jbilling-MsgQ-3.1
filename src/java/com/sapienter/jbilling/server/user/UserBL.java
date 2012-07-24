@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -1018,9 +1019,9 @@ public class UserBL extends ResultList implements UserSQL {
         }
     }
 
-    public BigDecimal getBalance(Integer userId) {
-        return new InvoiceDAS().findTotalBalanceByUser(userId).subtract(
-                new PaymentDAS().findTotalBalanceByUser(userId));
+    public static BigDecimal getBalance(Integer userId) {
+        return new InvoiceDAS().findTotalAmountOwed(userId).subtract(
+                new PaymentDAS().findTotalBalanceByUser(userId)).setScale(CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
     }
 
     @Deprecated

@@ -18,6 +18,21 @@
 <html>
 <head>
     <meta name="layout" content="panels" />
+    <g:javascript src="form.js" />
+    <script type="text/javascript">
+        function validateDate(element) {
+            var dateFormat= "<g:message code="date.format"/>";
+            if(!isValidDate(element, dateFormat)) {
+                $("#error-messages").css("display","block");
+                $("#error-messages ul").css("display","block");
+                $("#error-messages ul").html("<li><g:message code="invalid.date.format"/></li>");
+                element.focus();
+                return false;
+            } else {
+                return true;
+            }
+        }
+    </script>
 </head>
 <body>
 

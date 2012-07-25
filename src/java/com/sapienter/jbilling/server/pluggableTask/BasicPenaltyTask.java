@@ -235,7 +235,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
      */
     public BigDecimal calculatePenaltyFee(InvoiceDTO invoice, ItemBL item) {
         // use the user's current balance as the base for our fee calculations
-        BigDecimal base = new UserBL().getBalance(invoice.getUserId());
+        BigDecimal base = UserBL.getBalance(invoice.getUserId());
 
         // if the item price is a percentage of the balance
         if (item.getEntity().getPercentage() != null) {

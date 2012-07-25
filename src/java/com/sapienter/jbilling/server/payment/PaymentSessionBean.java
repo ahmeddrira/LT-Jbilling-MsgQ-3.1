@@ -21,12 +21,14 @@ import java.sql.SQLException;
 import java.util.*;
 
 import com.sapienter.jbilling.server.payment.db.*;
+
 import org.apache.log4j.Logger;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -262,6 +264,19 @@ public class PaymentSessionBean implements IPaymentSessionBean {
     public Integer processAndUpdateInvoice(PaymentDTOEx dto, 
             Integer invoiceId, Integer entityId, Integer executorUserId) throws SessionInternalError {
         try {
+        	//for refunds, invoiceIds must be populated
+        	if ( dto.getIsRefund() == 1 ) {
+        		PaymentBL linkedPayment= new PaymentBL(dto.getPayment().getId());
+        		if (linkedPayment.getEntity().getInvoicesMap().size() > 0 ) {
+        			LOG.debug("The refund's linked payment has some paid Invoices.");
+	        		Iterator<PaymentInvoiceMapDTO> it = linkedPayment.getEntity().getInvoicesMap().iterator();
+	                while (it.hasNext()) {
+	                    PaymentInvoiceMapDTO map = it.next();
+	                    dto.getPayment().getInvoiceIds().add(map.getInvoiceEntity().getId());
+	                }
+        		}
+        	}
+        	
             if (dto.getIsRefund() == 0 && invoiceId != null) {
                 InvoiceBL bl = new InvoiceBL(invoiceId);
                 List inv = new ArrayList();
@@ -287,11 +302,21 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 }
 
                 if (result != null && result.equals(Constants.RESULT_OK)) {
-                    // if the configured, pay any unpaid invoices
-                    ConfigurationBL config = new ConfigurationBL(entityId);
-                    if (config.getEntity().getAutoPaymentApplication() == 1) {
-                        bl.automaticPaymentApplication();
-                    }
+                	
+                	LOG.debug("A successful Refund. But original payment not linked to Invoices.");
+                	//Therefore, will not be auto-applied to other Invoices 
+                	//The refund then in-fact must reduce the Payment Balance it is linked to.
+                	if (dto.getIsRefund() == 1) {
+                		LOG.debug("Linked payment balance before refund " + bl.getEntity().getPayment().getBalance());
+                		bl.getEntity().getPayment().setBalance(bl.getEntity().getPayment().getBalance().subtract(dto.getAmount()).setScale(CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND));
+                		LOG.debug("Linked payment balance after refund application " + bl.getEntity().getPayment().getBalance());
+                	} else {
+                		// if the configured, pay any unpaid invoices
+                		ConfigurationBL config = new ConfigurationBL(entityId);
+                		if (config.getEntity().getAutoPaymentApplication() == 1) {
+                			bl.automaticPaymentApplication();
+                		}
+                	}
                 }
 
                 return result;
@@ -378,25 +403,37 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     } else { // refunds add to the invoice
                         
                         LOG.debug("payment amount, " + payment.getAmount() + ", is added to balance " + balance);
-                        // todo get the invoice associated to the payment and increase its balance by the refund payment amount already done
-                        // todo ONLY the invoice total amount by which the invoice balance should be added
-//                        newBalance = balance.add(payment.getAmount());
+                        // TODO get the invoice associated to the payment and increase its balance by the refund payment amount already done
                         // get the payment_invoice map and for that payment add the amount corresponding to that
-                        PaymentDTO linkedPmt = new PaymentBL(payment.getPayment().getId()).getEntity();
-                        BigDecimal linkedPaymentInvoiceAmount = new PaymentInvoiceMapDAS().getLinkedInvoiceAmount(linkedPmt, invoice);
-                        LOG.debug("For payment id "+linkedPmt.getId()+ " and invoice id "+invoice.getId()+" the amount linked to it is "+linkedPaymentInvoiceAmount);
-                        newBalance = balance.add(linkedPaymentInvoiceAmount);
-                        LOG.debug("new balance for the invoice "+invoice.getId() +" is "+newBalance);
-                        LOG.debug("Reduce the amount of the map as well");
-                        // todo no need to do it here
-//                        PaymentInvoiceMapDTO mapRow = new PaymentInvoiceMapDAS().getRow(payment,invoice);
-//                        if(mapRow!= null) {
-//                            // always will be set back to ZERO
-//                            mapRow.setAmount(BigDecimal.ZERO);
-//                        }
-//                        else {
-//                            LOG.debug("No row exists for payment "+payment.getId()+ " and invoice "+invoice.getId());
-//                        }
+                        PaymentDTO refundedPayment= payment.getPayment();
+                        PaymentDTO linkedPmt = new PaymentBL(refundedPayment.getId()).getEntity();
+                        PaymentInvoiceMapDTO row= new PaymentInvoiceMapDAS().getRow(linkedPmt, invoice);
+                        if ( null != row ) {
+	                        BigDecimal linkedPaymentInvoiceAmount = row.getAmount();
+							LOG.debug("For payment id " + linkedPmt.getId()
+									+ " and invoice id " + invoice.getId()
+									+ " the amount linked to it is "
+									+ linkedPaymentInvoiceAmount);
+	                        newBalance = balance.add(linkedPaymentInvoiceAmount);
+	                        payment.setBalance(
+	                        		payment.getBalance().subtract(
+	                        				linkedPaymentInvoiceAmount)
+	                				.setScale(CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND)
+	                				);
+							LOG.debug("new balance for the invoice " + invoice.getId() + " is " + newBalance);
+                        }
+                        // TODO no need to do it here
+                        // LOG.debug("Reduce the amount of the map as well");
+						// PaymentInvoiceMapDTO mapRow = new
+						// PaymentInvoiceMapDAS().getRow(payment,invoice);
+						// if(mapRow!= null) {
+						// 		// always will be set back to ZERO
+						// 		mapRow.setAmount(BigDecimal.ZERO);
+						// }
+						// else {
+						// 		LOG.debug("No row exists for payment "+payment.getId()+
+						// 			" and invoice "+invoice.getId());
+						// }
                     }
                         
                     // only level the balance if the original balance wasn't negative

@@ -175,7 +175,7 @@
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{customerCity} + ", " + $P{customerProvince} + " " + $P{customerPostalCode}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{customerCity} + " " + $P{customerProvince} + " " + $P{customerPostalCode}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

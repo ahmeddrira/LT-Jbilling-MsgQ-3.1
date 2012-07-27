@@ -90,6 +90,12 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
 
         } else if (event instanceof PaymentDeletedEvent) {
             PaymentDeletedEvent payment = (PaymentDeletedEvent) event;
+            
+            if (!Constants.PAYMENT_RESULT_SUCCESSFUL.equals(payment.getPayment().getResultId()) ) {
+                LOG.debug("A non-successful payment deletion must not affect dynamic balance.");
+                return BigDecimal.ZERO;
+            }
+            
             BigDecimal retVal= payment.getPayment().getAmount().negate();
             return convertAmountToUsersCurrency(retVal, payment.getPayment().getCurrency().getId(),
                     payment.getPayment().getBaseUser().getId(), payment.getPayment().getPaymentDate(), payment.getEntityId());

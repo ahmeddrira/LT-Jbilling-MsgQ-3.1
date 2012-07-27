@@ -105,7 +105,7 @@
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{entityCity} + ", " + $P{entityProvince} + " " + $P{entityPostalCode}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[ ($P{entityProvince}!=null && !$P{entityProvince}.trim().equals(""))?$P{entityCity}+", "+ $P{entityProvince}+" "+$P{entityPostalCode}:$P{entityCity}+" "+ $P{entityProvince}+" "+$P{entityPostalCode}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true" hyperlinkType="None">
 				<reportElement positionType="Float" x="14" y="153" width="238" height="17"/>
@@ -175,7 +175,7 @@
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{customerCity} + " " + $P{customerProvince} + " " + $P{customerPostalCode}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[ ($P{customerProvince}!=null && !$P{customerProvince}.trim().equals(""))?$P{customerCity}+", "+ $P{customerProvince}+" "+$P{customerPostalCode}:$P{customerCity}+" "+ $P{customerProvince}+" "+$P{customerPostalCode}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

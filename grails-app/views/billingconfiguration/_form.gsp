@@ -37,7 +37,7 @@
 							<g:applyLayout name="form/date">
 	                             <content tag="label"><g:message code="billing.next.run.date"/></content>
 	                             <content tag="label.for">nextRunDate</content>
-	                             <g:textField class="field" name="nextRunDate" value="${formatDate(date: configuration?.nextRunDate, formatName:'datepicker.format')}"/>
+	                             <g:textField class="field" name="nextRunDate" value="${formatDate(date: configuration?.nextRunDate, formatName:'datepicker.format')}" onblur="validateDate(this)"/>
 	                        </g:applyLayout>
                         </div>
 

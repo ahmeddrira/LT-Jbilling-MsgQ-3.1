@@ -35,6 +35,8 @@ import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.pricing.PriceModelBL
+import com.sapienter.jbilling.server.util.Util
+import org.joda.time.DateTime
 
 @Secured(["CUSTOMER_13"])
 class CustomerInspectorController {
@@ -271,8 +273,9 @@ class CustomerInspectorController {
         def priceModel = PlanHelper.bindPriceModel(params)
 
         try {
-            def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
-            price.models.put(startDate, priceModel)
+            String errorString = "PriceModelWS,startDate,validation.error.pricemodel.startdate,${message(code: 'date.format').toString()}"
+            DateTime startDate = Util.getParsedDateOrThrowError(message(code: 'date.format').toString(), params.startDate.toString(),errorString)
+            price.models.put(startDate.toDate(), priceModel)
             if (!price.id || price.id == 0) {
                 log.debug("creating customer ${user.userId} specific price ${price}")
 
@@ -290,7 +293,8 @@ class CustomerInspectorController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            def product = webServicesSession.getItem(params.int('itemId'), user.userId, null)
+            def itemId = params.int('itemId')?:params.int('price.itemId')
+            def product = webServicesSession.getItem(itemId, user.userId, null)
             render view: 'editCustomerPrice', model: [ price: price, product: product, user: user, currencies: retrieveCurrencies() ]
             return
         }   catch (Exception e) {

@@ -504,7 +504,8 @@ function isValidDate(controlName, format){
 	var isValid = true;
 	var dateValue= $(controlName).val();
     try{
-        if(format.length!=dateValue.length)
+//        alert('format length is '+format.length+' and dateValue length is '+dateValue.length);
+        if(format.length<dateValue.length)
            isValid = false;
 
         format= format.replace('MM', 'mm');   //to support java date formats

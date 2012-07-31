@@ -28,10 +28,7 @@ eventCreateWarStart = { warName, stagingDir ->
     }
 }
 
-eventRunAppStart = {
-    setLicense()
-}
-
 eventCompileEnd = {
+    setLicense()
     checkDbConnection()
 }

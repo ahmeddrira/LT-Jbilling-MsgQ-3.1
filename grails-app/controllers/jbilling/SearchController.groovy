@@ -43,7 +43,7 @@ class SearchController {
         def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'id', template: 'id', visible: true, integerValue: cmd.id)
 
         // redirect to the controller of the type being searched
-        def type = Enum.valueOf(SearchType.class, cmd.type)
+        def type = cmd?.type ? Enum.valueOf(SearchType.class, cmd?.type) : ""
         switch (type) {
             case SearchType.CUSTOMERS:
                 filterService.setFilter(FilterType.CUSTOMER, filter)
@@ -74,6 +74,8 @@ class SearchController {
 				filterService.setFilter(FilterType.MEDIATIONPROCESS, filter)
 				redirect(controller: 'mediation', action: 'index', id: cmd.id)
 				break
+            default:
+                redirect(controller: 'home', action: 'index')
         }
     }
 }

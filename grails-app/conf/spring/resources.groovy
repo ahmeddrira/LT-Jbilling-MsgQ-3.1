@@ -116,6 +116,8 @@ beans = {
     }
 
     passwordEncoder(com.sapienter.jbilling.client.authentication.JBillingPasswordEncoder)
+	
+	saltSource(com.sapienter.jbilling.client.authentication.JBillingSaltSource)
 
     permissionVoter(com.sapienter.jbilling.client.authentication.PermissionVoter)
 

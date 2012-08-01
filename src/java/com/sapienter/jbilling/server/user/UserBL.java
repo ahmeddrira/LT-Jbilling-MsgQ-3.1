@@ -268,10 +268,10 @@ public class UserBL extends ResultList implements UserSQL {
                       EventLogger.MODULE_USER_MAINTENANCE,
                       EventLogger.ROW_UPDATED, null, null, null);
 
-        updateRoles(dto.getRoles(), dto.getMainRoleId());
+        updateRoles(dto.getEntityId(), dto.getRoles(), dto.getMainRoleId());
     }
 
-    private void updateRoles(Set<RoleDTO> theseRoles, Integer main)
+    private void updateRoles(Integer entityId, Set<RoleDTO> theseRoles, Integer main)
             throws SessionInternalError {
 
         if (theseRoles == null || theseRoles.isEmpty()) {
@@ -279,7 +279,7 @@ public class UserBL extends ResultList implements UserSQL {
                 if (theseRoles == null) {
                     theseRoles = new HashSet<RoleDTO>();
                 }
-                theseRoles.add(new RoleDTO(main));
+                theseRoles.add(new RoleDTO(0, null, main, null, null));
             } else {
                 return; // nothing to do
             }
@@ -288,7 +288,7 @@ public class UserBL extends ResultList implements UserSQL {
         user.getRoles().clear();
         for (RoleDTO aRole: theseRoles) {
             // make sure the role is in the session
-            RoleDTO dbRole = new RoleDAS().find(aRole.getId());
+            RoleDTO dbRole = new RoleDAS().findByRoleTypeIdAndCompanyId(aRole.getRoleTypeId(), entityId);
             //dbRole.getBaseUsers().add(user);
             user.getRoles().add(dbRole);
         }
@@ -462,7 +462,7 @@ public class UserBL extends ResultList implements UserSQL {
         for (Integer roleId: roles) {
             rolesDTO.add(new RoleDAS().findByRoleTypeIdAndCompanyId(roleId, entityId));
         }
-        updateRoles(rolesDTO, null);
+        updateRoles(entityId, rolesDTO, null);
 
         if ( null != executorUserId) {
             eLogger.audit(executorUserId,

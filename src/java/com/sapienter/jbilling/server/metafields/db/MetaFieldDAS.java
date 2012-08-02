@@ -99,6 +99,12 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         getHibernateTemplate().bulkUpdate(deleteValuesHql, metaFieldId);
     }
 
+    /**
+     * Useful to delete meta field values for a given {@link EntityType} entityType and ID id
+     * @param id
+     * @param entityType
+     * @param values
+     */
     public void deleteMetaFieldValues(Integer id, EntityType entityType, List<MetaFieldValue> values) {
         Session session = getSession();
         List<String> deleteEntitiesList = new ArrayList<String>();

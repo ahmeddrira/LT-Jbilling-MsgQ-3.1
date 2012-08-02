@@ -53,7 +53,8 @@ class MetaFieldsController {
     }
 
     def list = {
-        EntityType entityType = EntityType.valueOf(params.get('id').toString())
+        EntityType entityType = MetaField.findById(params.get('id')).entityType
+
         def lstByCateg = MetaFieldBL.getAvailableFieldsList(session['company_id'], entityType);
 
         if (params.template)

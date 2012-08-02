@@ -25,6 +25,9 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -45,6 +48,7 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -799,6 +803,13 @@ public class UserBL extends ResultList implements UserSQL {
         user.setDeleted(1);
         user.setUserStatus(new UserStatusDAS().find(UserDTOEx.STATUS_DELETED));
         user.setLastStatusChange(Calendar.getInstance().getTime());
+
+        //meta fields
+        CustomerDTO customer= user.getCustomer();
+        MetaFieldDAS das = new MetaFieldDAS();
+        for (MetaFieldValue fieldValue: customer.getMetaFields()) {
+            das.deleteMetaFieldValuesForEntity(fieldValue.getField().getEntityType(), fieldValue.getField().getId());
+        }
 
         // credit cards
         for (CreditCardDTO cc: user.getCreditCards()) {

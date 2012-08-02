@@ -805,11 +805,6 @@ public class UserBL extends ResultList implements UserSQL {
         user.setUserStatus(new UserStatusDAS().find(UserDTOEx.STATUS_DELETED));
         user.setLastStatusChange(Calendar.getInstance().getTime());
 
-        //meta fields
-        CustomerDTO customer= user.getCustomer();
-        MetaFieldDAS das = new MetaFieldDAS();
-        das.deleteMetaFieldValues(customer.getId(), EntityType.CUSTOMER, customer.getMetaFields());
-
         // credit cards
         for (CreditCardDTO cc: user.getCreditCards()) {
             cc.setDeleted(1);

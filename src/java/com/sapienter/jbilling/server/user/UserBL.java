@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
 import com.sapienter.jbilling.server.metafields.db.MetaField;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
@@ -807,9 +808,7 @@ public class UserBL extends ResultList implements UserSQL {
         //meta fields
         CustomerDTO customer= user.getCustomer();
         MetaFieldDAS das = new MetaFieldDAS();
-        for (MetaFieldValue fieldValue: customer.getMetaFields()) {
-            das.deleteMetaFieldValuesForEntity(fieldValue.getField().getEntityType(), fieldValue.getField().getId());
-        }
+        das.deleteMetaFieldValues(customer.getId(), EntityType.CUSTOMER, customer.getMetaFields());
 
         // credit cards
         for (CreditCardDTO cc: user.getCreditCards()) {

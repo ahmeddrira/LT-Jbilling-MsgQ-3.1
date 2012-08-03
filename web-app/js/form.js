@@ -522,7 +522,6 @@ function isValidDate(controlName, format){
     } else {
     	$("#error-messages").css("display","block");
     	$(controlName).css('border', '1px solid red');
-    	$(controlName).focus();
     }
     return isValid;
 }

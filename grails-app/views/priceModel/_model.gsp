@@ -93,7 +93,7 @@
                 <g:applyLayout name="form/date">
                     <content tag="label"><g:message code="plan.item.start.date"/></content>
                     <content tag="label.for">startDate</content>
-                    <g:textField class="field" id="startDate" name="startDate" value="${formatDate(date: startDate, formatName: 'datepicker.format')}" onblur="javascript: isValidStartDate();" />
+                    <g:textField class="field" id="startDate" name="startDate" value="${formatDate(date: startDate, formatName: 'datepicker.format')}" onblur="isValidStartDate(this);" />
                     <g:hiddenField name="originalStartDate" value="${formatDate(date: startDate, formatName: 'date.format')}"/>
                 </g:applyLayout>
             </g:else>
@@ -151,7 +151,7 @@
          */
         $(function() {
             $('.model-type').change(function() {
-                if(!isValidStartDate()) {
+                if(!isValidStartDate($('#startDate'))) {
                     return false;
                 }
                 else {
@@ -199,6 +199,9 @@
         }
 
         function saveDate() {
+        	if(!isValidStartDate($('#startDate'))) {
+                return false;
+            }
             $.ajax({
                        type: 'POST',
                        url: '${createLink(action: 'saveDate')}',
@@ -251,14 +254,13 @@
                    });
         }
 
-        function isValidStartDate() {
+        function isValidStartDate(dateControl) {
             //alert(startDateFormat);
-    	    //alert($('#startDate').val());
+            //alert($(dateControl).val());
 
-        	if(!isValidDate($('#startDate'), startDateFormat)) {
-            	$("#error-messages").css("display","block");
+            if(!isValidDate(dateControl, startDateFormat)) {
+                $("#error-messages ul").css("display","block");
                 $("#error-messages ul").html("<li><g:message code="product.invalid.startdate.format"/></li>");
-                $('#startDate').focus();
                 return false;
             } else {
                 return true;

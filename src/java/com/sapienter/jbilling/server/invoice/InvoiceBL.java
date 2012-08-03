@@ -286,22 +286,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         Iterator dueInvoiceLines = newInvoice.getResultLines().iterator();
         // go over the DTO lines, creating one invoice line for each
 
-        //#2196 - GET Invoice Rounding Preference for entity entityId
-        PreferenceBL pref = new PreferenceBL();
-        Integer entityId= newInvoice.getEntityId();
-        if (null == entityId) {
-            entityId = newInvoice.getBaseUser().getEntity().getId();
-        }
-
-        int decimals = Constants.BIGDECIMAL_SCALE;
-        try {
-            pref.set(entityId, Constants.PREFERENCE_INVOICE_DECIMALS);
-            decimals = pref.getInt();
-        } catch (EmptyResultDataAccessException e) {
-            // ignore
-        }
-        //#2196
-
         while (dueInvoiceLines.hasNext()) {
             InvoiceLineDTO lineToAdd = (InvoiceLineDTO) dueInvoiceLines.next();
             // define if the line is a percentage or not
@@ -316,12 +300,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                     LOG.error("Could not find item to create invoice line " + lineToAdd.getItem().getId());
                 }
             }
-            
-            //#2196 - Use Invoice Rounding Preference to round Invoice Lines
-            if (null != lineToAdd.getAmount()) {
-                lineToAdd.setAmount(lineToAdd.getAmount().setScale(decimals, Constants.BIGDECIMAL_ROUND));
-            }
-            //#2196
             
             // create the database row
             InvoiceLineDTO newLine = invoiceLineDas.create(lineToAdd.getDescription(), lineToAdd.getAmount(), lineToAdd.getQuantity(), lineToAdd.getPrice(),

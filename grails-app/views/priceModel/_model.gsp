@@ -252,7 +252,7 @@
         }
 
         function isValidStartDate() {
-//        	alert(startDateFormat);
+            //alert(startDateFormat);
     	    //alert($('#startDate').val());
 
         	if(!isValidDate($('#startDate'), startDateFormat)) {

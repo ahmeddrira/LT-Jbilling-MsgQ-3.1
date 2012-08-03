@@ -54,6 +54,7 @@ import com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -930,9 +931,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("owner_zip", printable(from.getPostalCode()));
             parameters.put("owner_city", printable(from.getCity()));
             parameters.put("owner_state", printable(from.getStateProvince()));
-            parameters.put("owner_country", printable(to.getCountryCode()));
-            parameters.put("owner_phone", getPhoneNumber(to));
-            parameters.put("owner_email", printable(to.getEmail()));
+            parameters.put("owner_country", printable(from.getCountryCode()));
+            parameters.put("owner_phone", getPhoneNumber(from));
+            parameters.put("owner_email", printable(from.getEmail()));
 
             parameters.put("receiver_company", printable(to.getOrganizationName()));
             parameters.put("receiver_name", printable(to.getFirstName(), to.getLastName()));
@@ -944,9 +945,27 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("receiver_phone", getPhoneNumber(to));
             parameters.put("receiver_email", printable(to.getEmail()));
 
+            // symbol of the currency
+            CurrencyBL currency = new CurrencyBL(invoice.getCurrency().getId());
+            String symbol = currency.getEntity().getSymbol();
+            if (symbol.length() >= 4 && symbol.charAt(0) == '&' &&
+                    symbol.charAt(1) == '#') {
+                // this is an html symbol
+                // remove the first two digits
+                symbol = symbol.substring(2);
+                // remove the last digit (;)
+                symbol = symbol.substring(0, symbol.length() - 1);
+                // convert to a single char
+                Character ch = new Character((char)
+                        Integer.valueOf(symbol).intValue());
+                symbol = ch.toString();
+            }
+            parameters.put("currency_symbol",symbol);
+            
             // text coming from the notification parameters
             parameters.put("message1", message1);
             parameters.put("message2", message2);
+            parameters.put("customer_notes", "HST: 884725441");            //todo: change this static value
 
             // invoice notes stripped of html line breaks
             String notes = invoice.getCustomerNotes();
@@ -963,6 +982,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             // tax calculated
             BigDecimal taxTotal = new BigDecimal(0);
+            String tax_price = "";
+            String tax_amount = "";
+            String product_code;
             List<InvoiceLineDTO> lines = new ArrayList<InvoiceLineDTO>(invoice.getInvoiceLines());
             for (InvoiceLineDTO line: lines) {
                 // process the tax, if this line is one
@@ -971,9 +993,16 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                                 Constants.INVOICE_LINE_TYPE_TAX) {
                     // update the total tax variable
                     taxTotal = taxTotal.add(line.getAmount());
+                    product_code = line.getItem().getInternalNumber();
+                    tax_price += product_code+" "+line.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString()+" %\n";
+                    tax_amount += symbol+" "+line.getAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString()+"\n" ;
                 }
             }
+            tax_price = (tax_price.equals(""))?"0.00 %":tax_price.substring(0,tax_price.lastIndexOf("\n"));
+            tax_amount = (tax_amount.equals(""))?symbol+" 0.00":tax_amount.substring(0,tax_amount.lastIndexOf("\n"));
             parameters.put("sales_tax",taxTotal);
+            parameters.put("tax_price", tax_price);
+            parameters.put("tax_amount", tax_amount);
 
             // this parameter help in filter out tax items from invoice lines
             parameters.put("invoice_line_tax_id", Constants.INVOICE_LINE_TYPE_TAX);
@@ -1015,14 +1044,14 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     private static String getPhoneNumber(ContactDTOEx contact){
-        if(contact.getPhoneCountryCode()!=null && contact.getPhoneAreaCode()!=null && contact.getPhoneNumber()!=null)
+        if(contact.getPhoneCountryCode()!=null && contact.getPhoneAreaCode()!=null && (contact.getPhoneNumber()!=null && !contact.getPhoneNumber().trim().equals("")))
             return  contact.getPhoneCountryCode()+"-"+contact.getPhoneAreaCode()+"-"+contact.getPhoneNumber();
         else
             return "";
     }
 
     private static String getAddress(ContactDTOEx contact){
-        return printable(contact.getAddress1())+((contact.getAddress2()!=null)?(", "+contact.getAddress2()):(""));
+        return printable(contact.getAddress1())+((contact.getAddress2()!=null && !contact.getAddress2().trim().equals(""))?(", "+contact.getAddress2()):(""));
     }
 
     /**

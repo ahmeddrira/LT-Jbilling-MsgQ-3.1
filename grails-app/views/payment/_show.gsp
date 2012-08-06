@@ -81,7 +81,7 @@
             <tbody>
                 <tr>
                     <td><g:message code="payment.date"/></td>
-                    <td class="value"><g:formatDate date="${selected.paymentDate ?: selected.createDatetime}" formatName="date.pretty.format"/></td>
+                    <td class="value"><g:formatDate date="${selected.createDatetime}" formatName="date.timeSecsAMPM.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.amount"/></td>

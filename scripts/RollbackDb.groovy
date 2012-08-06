@@ -27,13 +27,13 @@ target(rollbackDb: "Upgrades database to the latest version") {
     if (!tag) throw new IllegalArgumentException("Argument -tag=[tag name] is required for tag / rollback operations!");
 
     println "Rolling back database to tag '${tag}'"
-    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (driver ${db.driver})"
+    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (schema: ${db.schema}) (driver ${db.driver})"
 
 
     // liquibase upgrade changelog
     def changelog = "./descriptors/database/jbilling-upgrade-${version}.xml"
 
-    rollbackDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, changeLogFile: changelog, rollbackTag: tag)
+    rollbackDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, changeLogFile: changelog, rollbackTag: tag)
 }
 
 setDefaultTarget(rollbackDb)

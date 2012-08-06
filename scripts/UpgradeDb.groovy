@@ -24,7 +24,7 @@ target(upgradeDb: "Upgrades database to the latest version") {
     def version = getApplicationMinorVersion(argsMap)
 
     println "Upgrading database to version ${version}"
-    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (driver ${db.driver})"
+    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (schema: ${db.schema}) (driver ${db.driver})"
 
     // changelog files to load
     def upgrade = "./descriptors/database/jbilling-upgrade-${version}.xml"
@@ -35,13 +35,13 @@ target(upgradeDb: "Upgrades database to the latest version") {
     switch(args) {
         case "-test":
             println "updating with context = test"
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'test')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: upgrade, contexts: 'test')
             break;
 
         case "-upgrade":
         default:
             println "updating with context = base"
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
     }
 }
 

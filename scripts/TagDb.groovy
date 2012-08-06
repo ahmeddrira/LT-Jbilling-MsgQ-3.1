@@ -26,11 +26,11 @@ target(tagDb: "Upgrades database to the latest version") {
     if (!tag) throw new IllegalArgumentException("Argument -tag=[tag name] is required for tag / rollback operations!");
 
     println "Tagging database as '${tag}'"
-    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (driver ${db.driver})"
+    println "${db.url} ${db.username}/${db.password ?: '[no password]'} (schema: ${db.schema}) (driver ${db.driver})"
 
 
     // create tag
-    tagDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, tag: tag)
+    tagDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, tag: tag)
 }
 
 setDefaultTarget(tagDb)

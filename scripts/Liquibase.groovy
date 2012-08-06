@@ -79,7 +79,8 @@ getDatabaseParameters = { argsMap ->
         password: argsMap.pass ? argsMap.pass : "",
         database: database,
         url:      argsMap.url ? argsMap.url : "jdbc:postgresql://localhost:5432/${database}",
-        driver:   argsMap.driver ? argsMap.driver : "org.postgresql.Driver"
+        driver:   argsMap.driver ? argsMap.driver : "org.postgresql.Driver",
+        schema:   argsMap.schema ? argsMap.schema : "public"
     ]
 
     return db
@@ -100,7 +101,7 @@ target(echoArgs: "Prints the parsed liquibase parameters to the screen.") {
     def version = getApplicationMinorVersion(argsMap)
 
     println "jBilling minor version = ${version}"
-    println "DB config = ${db.url} ${db.username}/${db.password ?: '[no password]'} (driver ${db.driver})"
+    println "DB config = ${db.url} ${db.username}/${db.password ?: '[no password]'} (schema: ${db.schema}) (driver ${db.driver})"
 }
 
 setDefaultTarget(echoArgs)

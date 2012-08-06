@@ -44,7 +44,7 @@ target(cleanDb: "Clean the test postgresql database, will drop/create the databa
     // default, just use liquibase to drop all existing objects within the database
     if (!argsMap.drop && !argsMap.create && !argsMap.hard) {
         println "dropping all objects in ${db.database}"
-        dropAllDatabaseObjects(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password)
+        dropAllDatabaseObjects(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema)
     }
 }
 
@@ -75,28 +75,28 @@ target(prepareTestDb: "Import the test postgresql database.") {
     switch(args) {
         case "-init":
             println "updating with context = base. Loading init jBilling data"
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'base')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: init)
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: schema, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: init)
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
             break;
 
         case "-client":
             println "updating with context = base. Loading client reference Db"
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'base')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: client)
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: schema, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: client)
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
             break;
 
         case "-test":
         default:
             println "updating with context = test. Loading test data"
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'base')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: test)
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
-            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, dropFirst: false, changeLogFile: upgrade, contexts: 'test')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: schema, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: test)
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: schema, contexts: 'FKs')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: upgrade, contexts: 'base')
+            updateDatabase(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, defaultSchemaName: db.schema, dropFirst: false, changeLogFile: upgrade, contexts: 'test')
     }
 }
 

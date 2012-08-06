@@ -22,13 +22,10 @@ target(generateChangelog: "Upgrades database to the latest version") {
 
     def db = getDatabaseParameters(argsMap)
     def version = getApplicationMinorVersion(argsMap)
+    def changelog = argsMap.changelog ? argsMap.changelog : "descriptors/database/jbilling-changelog-${version}.xml"
 
     println "Generating changelog for version ${version}"
     println "${db.url} ${db.username}/${db.password ?: '[no password]'} (driver ${db.driver})"
-
-
-    // generate changelog out to a file
-    def changelog = "./descriptors/database/jbilling-changelog-${version}.xml"
 
     generateChangeLog(classpathref: "liquibase.classpath", driver: db.driver, url: db.url, username: db.username, password: db.password, outputfile: changelog)
 

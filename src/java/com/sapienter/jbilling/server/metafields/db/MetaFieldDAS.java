@@ -42,6 +42,12 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
                     " WHERE a.dataType = :dataType "+
                     " AND a.name = :name";
 
+    private static final String findAllIdsByDataTypeNameSQL =
+            "SELECT id " +
+                    "  FROM MetaField a " +
+                    " WHERE a.dataType = :dataType "+
+                    " AND a.name = :name";
+
     @SuppressWarnings("unchecked")
     public List<MetaField> getAvailableFields(Integer entityId, EntityType entityType) {
         DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
@@ -198,6 +204,19 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         }
 
         return totalCount;
+    }
+
+    /**
+     * Returns All IDs with matching criteria
+     * @param dataType
+     * @param name
+     * @return
+     */
+    public List<Integer> getAllIdsByDataTypeAndName(DataType dataType, String name){
+        Query query = getSession().createQuery(findAllIdsByDataTypeNameSQL);
+        query.setParameter("dataType", dataType);
+        query.setParameter("name", name);
+        return   query.list();
     }
 
 }

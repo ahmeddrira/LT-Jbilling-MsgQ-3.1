@@ -3,8 +3,12 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.sapienter.jbilling.server.metafields.db.DataType;
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.util.db.EnumerationDAS;
@@ -82,6 +86,25 @@ public class EnumerationBL {
     public void update(EnumerationDTO dto) {
         enumeration.setName(dto.getName());
         setEnumerationValues(dto.getValues());
+    }
+
+    /**
+     * Updates the meta_field_name table
+     * @param oldEnumName
+     * @param newEnumName
+     */
+    public void updateMetaFields(String oldEnumName, String newEnumName){
+        List<Integer> metaFieldIdList = new MetaFieldDAS().getAllIdsByDataTypeAndName(DataType.ENUMERATION, oldEnumName);
+
+        Iterator iterator = metaFieldIdList.iterator();
+
+        while(iterator.hasNext()) {
+            Integer metaFieldId = (Integer)iterator.next();
+            MetaField metaField = new MetaFieldDAS().find(metaFieldId);
+            metaField.setName(newEnumName);
+            new MetaFieldDAS().save(metaField);
+            LOG.debug("Metafield "+metaField.getId()+" updated.");
+        }
     }
 
     public EnumerationValueDTO createEnumerationValue(EnumerationValueDTO valueDto) {

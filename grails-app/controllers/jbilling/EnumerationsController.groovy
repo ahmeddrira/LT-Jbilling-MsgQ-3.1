@@ -11,6 +11,7 @@ import com.sapienter.jbilling.server.util.db.EnumerationValueDTO
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS
 import com.sapienter.jbilling.server.metafields.db.DataType
+import com.sapienter.jbilling.server.util.db.EnumerationDAS
 
 class EnumerationsController {
 
@@ -100,14 +101,14 @@ class EnumerationsController {
        }
 
        // validate duplicate enum
-       
+
            def var = EnumerationDTO.findByName(enumeration.name)
            if (var) {
                flash.error = 'enumeration.name.exists'
                render view: 'edit', model: [enumeration: enumeration]
                return
            }
-       
+
 
        // validate enumeration values
        Set<String> values = new HashSet<String>()
@@ -157,6 +158,8 @@ class EnumerationsController {
        } else {
            log.debug("updating enumeration ${enumeration.id}")
 
+           String oldEnumName = new EnumerationDAS().find(enumeration.id).name;
+           enumerationService.updateMetaFields(oldEnumName, params.name)
            enumerationService.set(enumeration.id)
            enumerationService.update(enumeration)
 
@@ -166,5 +169,5 @@ class EnumerationsController {
 
        chain action: 'list', params: [ id: enumeration.id ]
    }
-   
+
 }

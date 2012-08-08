@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.process;
 
+import com.sapienter.jbilling.server.order.validator.DateBetween;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
@@ -36,6 +37,7 @@ public class BillingProcessConfigurationWS implements Serializable {
     private int id;
     private Integer periodUnitId;
     private Integer entityId;
+    @DateBetween(start = "01/01/1901", end = "12/31/9999")
     @NotNull(message = "validation.error.is.required")
     private Date nextRunDate;
     private Integer generateReport;

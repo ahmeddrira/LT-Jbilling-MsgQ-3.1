@@ -5,8 +5,13 @@
     <property environment="env"/>
 
     <condition property="grails.home" value="${env.GRAILS_HOME}">
-        <isset property="env.GRAILS_HOME"/>
+        <not>
+            <isset property="grails.home"/>
+        </not>
+
     </condition>
+
+    <echo message="Building with grails ${grails.home}"/>
 
     <path id="compile.classpath">
         <!-- jbilling libraries -->
@@ -15,8 +20,8 @@
         </fileset>
 
         <!-- grails libraries-->
-        <fileset dir="${env.GRAILS_HOME}/lib/" includes="*.jar"/>
-        <fileset dir="${env.GRAILS_HOME}/dist/" includes="*.jar"/>
+        <fileset dir="${grails.home}/lib/" includes="**/*.jar"/>
+        <fileset dir="${grails.home}/dist/" includes="**/*.jar"/>
     </path>
 
     <path id="test.classpath">

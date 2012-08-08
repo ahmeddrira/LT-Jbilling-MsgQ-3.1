@@ -60,7 +60,7 @@
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="order.label.quantity"/></content>
                     <content tag="label.for">line-${index}.quantityAsDecimal</content>
-                    <g:textField name="line-${index}.quantityAsDecimal" class="field quantity" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
+                    <g:textField name="line-${index}.quantityAsDecimal" class="field quantity" value="${line.getQuantityAsDecimal() ?: BigDecimal.ONE}"/>
                 </g:applyLayout>
 
                 <sec:ifAllGranted roles="ORDER_26">

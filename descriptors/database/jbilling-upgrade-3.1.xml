@@ -196,4 +196,34 @@
             <column name="content" value="Percentage Line Test Plan"/>
         </insert>
     </changeSet>
+
+    <changeSet context="base" author="Juan Vidal" id="20120711-#3059">
+        <comment>Bugs #3059 - Title for PriceModePricingTask plugin is incorrect</comment>
+        <!--Upgrade data-->
+        <update tableName="international_description">
+            <column name="content" value="Price Model Pricing Task"/>
+            <where>table_id=24 and foreign_id=79 and psudo_column='title'</where>
+        </update>
+
+        <update tableName="international_description">
+            <column name="content" value="This is a plugin that handles the pricing calculation depending on the implemenations of the different Pricing Models."/>
+            <where>table_id=24 and foreign_id=79 and psudo_column='description'</where>
+        </update>
+
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="81"/>
+            <column name="psudo_column" value="title"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="Mediation Process Task"/>
+        </insert>
+
+        <insert tableName="international_description">
+            <column name="table_id" valueNumeric="24"/>
+            <column name="foreign_id" valueNumeric="81"/>
+            <column name="psudo_column" value="description"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="content" value="A scheduled task to execute the Mediation Process."/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

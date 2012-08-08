@@ -42,6 +42,12 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
                     " WHERE a.dataType = :dataType "+
                     " AND a.name = :name";
 
+    private static final String findAllIdsByDataTypeNameSQL =
+            "SELECT id " +
+                    "  FROM MetaField a " +
+                    " WHERE a.dataType = :dataType "+
+                    " AND a.name = :name";
+
     @SuppressWarnings("unchecked")
     public List<MetaField> getAvailableFields(Integer entityId, EntityType entityType) {
         DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
@@ -99,6 +105,52 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         getHibernateTemplate().bulkUpdate(deleteValuesHql, metaFieldId);
     }
 
+    /**
+     * Useful to delete meta field values for a given {@link EntityType} entityType and ID id
+     * @param id
+     * @param entityType
+     * @param values
+     */
+    public void deleteMetaFieldValues(Integer id, EntityType entityType, List<MetaFieldValue> values) {
+        Session session = getSession();
+        List<String> deleteEntitiesList = new ArrayList<String>();
+        
+        String metaFieldValuesToDelete= "delete from meta_field_value where id in (";
+        
+        StringBuffer csvID= new StringBuffer();
+        for(MetaFieldValue value: values) {
+            csvID.append(value.getId()).append(',');
+        }
+        metaFieldValuesToDelete += csvID.substring(0, csvID.length()-1) + ")";
+        
+        switch (entityType) {
+           case INVOICE:
+               deleteEntitiesList.add(" invoice_meta_field_map where invoice_id = " + id);
+               break;
+           case CUSTOMER:
+               deleteEntitiesList.add(" customer_meta_field_map where customer_id = " + id);
+               deleteEntitiesList.add(" partner_meta_field_map where partner_id = " + id);
+               break;
+           case PRODUCT:
+               deleteEntitiesList.add(" item_meta_field_map where item_id =" + id);
+               break;
+           case ORDER:
+               deleteEntitiesList.add(" order_meta_field_map where order_id = " + id);
+               break;
+           case PAYMENT:
+               deleteEntitiesList.add(" payment_meta_field_map where payment_id = " + id);
+               break;
+        }
+        
+        String deleteFromSql = "delete from ";
+        for (String deleteSingleEntity : deleteEntitiesList) {
+            StringBuilder sqlBuilder = new StringBuilder();
+            sqlBuilder.append(deleteFromSql).append(deleteSingleEntity);
+            session.createSQLQuery(sqlBuilder.toString()).executeUpdate();
+        }
+        session.createSQLQuery(metaFieldValuesToDelete).executeUpdate();
+    }    
+    
     public Long getFieldCountByDataTypeAndName(DataType dataType, String name){
         Query query = getSession().createQuery(findDataTypeNameSQL);
         query.setParameter("dataType", dataType);
@@ -152,6 +204,19 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         }
 
         return totalCount;
+    }
+
+    /**
+     * Returns All IDs with matching criteria
+     * @param dataType
+     * @param name
+     * @return
+     */
+    public List<Integer> getAllIdsByDataTypeAndName(DataType dataType, String name){
+        Query query = getSession().createQuery(findAllIdsByDataTypeNameSQL);
+        query.setParameter("dataType", dataType);
+        query.setParameter("name", name);
+        return   query.list();
     }
 
 }

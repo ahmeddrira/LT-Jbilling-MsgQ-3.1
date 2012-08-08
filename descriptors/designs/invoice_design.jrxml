@@ -119,6 +119,9 @@
 	<parameter name="message1" class="java.lang.String"/>
 	<parameter name="message2" class="java.lang.String"/>
 	<parameter name="invoice_number" class="java.lang.String"/>
+	<parameter name="currency_symbol" class="java.lang.String"/>
+	<parameter name="tax_price" class="java.lang.String"/>
+	<parameter name="tax_amount" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select id from invoice where id=$P{invoice_id};]]>
 	</queryString>
@@ -273,8 +276,17 @@ $P{owner_email}]]></textFieldExpression>
 				<subreportParameter name="invoice_line_tax_id">
 					<subreportParameterExpression><![CDATA[$P{invoice_line_tax_id}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="tax_price">
+					<subreportParameterExpression><![CDATA[$P{tax_price}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="sales_tax">
 					<subreportParameterExpression><![CDATA[$P{sales_tax}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tax_amount">
+					<subreportParameterExpression><![CDATA[$P{tax_amount}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="currency_symbol">
+					<subreportParameterExpression><![CDATA[$P{currency_symbol}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="invoice_id">
 					<subreportParameterExpression><![CDATA[$P{invoice_id}]]></subreportParameterExpression>
@@ -288,7 +300,7 @@ $P{owner_email}]]></textFieldExpression>
 		</band>
 		<band height="26">
 			<textField>
-				<reportElement x="176" y="1" width="150" height="25" forecolor="#1F5868"/>
+				<reportElement x="0" y="1" width="523" height="25" forecolor="#1F5868"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="9" isBold="true" isItalic="false"/>
 				</textElement>
@@ -298,6 +310,30 @@ $P{owner_email}]]></textFieldExpression>
 		<band height="24">
 			<subreport isUsingCache="false">
 				<reportElement x="0" y="0" width="523" height="23"/>
+				<subreportParameter name="owner_company">
+					<subreportParameterExpression><![CDATA[$P{owner_company}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_phone">
+					<subreportParameterExpression><![CDATA[$P{owner_phone}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_email">
+					<subreportParameterExpression><![CDATA[$P{owner_email}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_street_address">
+					<subreportParameterExpression><![CDATA[$P{owner_street_address}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_state">
+					<subreportParameterExpression><![CDATA[$P{owner_state}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_zip">
+					<subreportParameterExpression><![CDATA[$P{owner_zip}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_country">
+					<subreportParameterExpression><![CDATA[$P{owner_country}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="owner_city">
+					<subreportParameterExpression><![CDATA[$P{owner_city}]]></subreportParameterExpression>
+				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "invoice_design_page2.jasper"]]></subreportExpression>
 			</subreport>

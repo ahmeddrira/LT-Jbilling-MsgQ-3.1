@@ -74,6 +74,8 @@ public class PluggableTaskBL<T> {
         eLogger.audit(executorId, null, Constants.TABLE_PLUGGABLE_TASK, 
                 pluggableTask.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_CREATED, null, null, null);
+
+        das.invalidateCache();
         
         return pluggableTask.getId();
     }
@@ -126,6 +128,7 @@ public class PluggableTaskBL<T> {
         das.delete(pluggableTask);
         // clear the rules cache (just in case this plug-in was ruled based)
         PluggableTask.invalidateRuleCache(pluggableTask.getId());
+        das.invalidateCache();
     }
 
     public void deleteParameter(Integer executor, Integer id) {

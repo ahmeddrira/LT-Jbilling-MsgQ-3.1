@@ -53,13 +53,21 @@ class MetaFieldsController {
     }
 
     def list = {
-        EntityType entityType = EntityType.valueOf(params.get('id').toString())
+        
+        EntityType entityType 
+        MetaField selectedField = null;
+        if (params.get('id').isInteger()) {
+            selectedField= MetaField.findById(params.get('id'))
+            entityType= selectedField.entityType
+        } else {
+            entityType= EntityType.valueOf(params.get('id').toString())
+        } 
+
         def lstByCateg = MetaFieldBL.getAvailableFieldsList(session['company_id'], entityType);
 
         if (params.template)
             render template: 'list', model: [lstByCategory: lstByCateg, selected: new MetaField()]
         else {
-            MetaField selectedField = null;
             if (params.selectedId) {
                 selectedField = MetaField.findById(params.int("selectedId"))
             }

@@ -16,6 +16,7 @@
 
 includeTargets << grailsScript("_GrailsDocs")
 includeTargets << new File("${basedir}/scripts/SetLicense.groovy")
+includeTargets << new File("${basedir}/scripts/CheckDbConnection.groovy")
 
 eventCreateWarStart = { warName, stagingDir ->
     println("Compiling documentation ...")
@@ -27,6 +28,7 @@ eventCreateWarStart = { warName, stagingDir ->
     }
 }
 
-eventCompileStart = {
+eventCompileEnd = {
     setLicense()
+    checkDbConnection()
 }

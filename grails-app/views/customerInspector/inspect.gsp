@@ -163,7 +163,7 @@
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.payment.amount.owed"/></content>
-                        <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencySymbol="${user.currency.symbol}"/></span>
+                        <span><g:formatNumber number="${UserBL.getBalance(user.id)}" type="currency" currencySymbol="${user.currency.symbol}"/></span>
                     </g:applyLayout>
                 </div>
             </div>

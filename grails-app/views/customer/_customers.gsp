@@ -90,7 +90,7 @@
                 </td>
                 <td>
                     <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
-                        <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency"  currencySymbol="${user.currency.symbol}"/></span>
+                        <span><g:formatNumber number="${UserBL.getBalance(user.id)}" type="currency"  currencySymbol="${user.currency.symbol}"/></span>
                     </g:remoteLink>
                 </td>
                 <td class="center">

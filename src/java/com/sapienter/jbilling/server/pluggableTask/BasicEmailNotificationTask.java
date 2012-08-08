@@ -59,9 +59,9 @@ public class BasicEmailNotificationTask extends PluggableTask
     public static final ParameterDescription PARAMETER_PORT = 
     	new ParameterDescription("port", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_USERNAME = 
-    	new ParameterDescription("username", true, ParameterDescription.Type.STR);
+    	new ParameterDescription("username", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_PASSWORD = 
-    	new ParameterDescription("password", true, ParameterDescription.Type.STR);
+    	new ParameterDescription("password", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_FROM = 
         new ParameterDescription("from", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_FROM_NAME = 
@@ -163,13 +163,17 @@ public class BasicEmailNotificationTask extends PluggableTask
         sender.setUsername(username);
         sender.setPassword(password);
         sender.setPort(port);
-        if (username != null && username.length() > 0) {
-            sender.getJavaMailProperties().setProperty("mail.smtp.auth", "true");
-        }
+        
         if (tls) {
             sender.getJavaMailProperties().setProperty("mail.smtp.starttls.enable", "true");
         }
         if (sslAuth) {
+            if (username == null && username.length() == 0) {
+                LOG.error("username should not be null when authentication is required.");
+                //throw new TaskException("username should not be null when authentication is required.");
+            } else {
+                sender.getJavaMailProperties().setProperty("mail.smtp.auth", "true");
+            }
             // required for SMTP servers that use SSL authentication, 
             // e.g., Gmail's SMTP servers
             sender.getJavaMailProperties().setProperty(

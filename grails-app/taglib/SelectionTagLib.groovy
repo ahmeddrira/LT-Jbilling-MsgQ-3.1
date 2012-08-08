@@ -41,6 +41,24 @@ class SelectionTagLib {
 		out << "Savings<input type='radio' name=\'"  + attrs.name + "\' value=\'2\' "  + savings + ">"
 		
 	}
+
+    /**
+     * Tries to match the value in the param for the passed id
+     */
+    def showParamValue = { attrs,body->
+
+        def result = [:]
+        def finalResult=null
+
+        def keyRequired = "metaField_${attrs.id}"
+        params.each { key,value->
+            if (key.equals(keyRequired.toString())) {
+                result = value
+                finalResult = result['value']
+            }
+        }
+        out<<finalResult?.trim()
+    }
 	
 	def selectRoles = { attrs, body ->
 		

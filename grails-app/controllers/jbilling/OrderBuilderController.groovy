@@ -72,7 +72,8 @@ class OrderBuilderController {
     def subscribedPlan(List<OrderLineWS> lines, plans) {
         for (OrderLineWS line : lines) {
             def planItem = plans.find{ it.id == line.getItemId() }
-            if (planItem) {
+            //considering plan item which is not deleted from the order line
+            if (planItem && line.getDeleted()==0) {
                 return planItem.plans.asList()?.first()
             }
         }

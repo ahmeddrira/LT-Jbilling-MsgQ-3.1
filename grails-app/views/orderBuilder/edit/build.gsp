@@ -40,6 +40,17 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#builder-tabs').tabs();
+
+                // prevent the Save Changes button to be clicked more than once.
+                $('.order-btn-box .submit.save').live('click', function (e) {
+                    var saveInProgress = $('#saveInProgress').val();
+
+                    if (saveInProgress == "true") {
+                        e.preventDefault();
+                    } else {
+                        $('#saveInProgress').val("true");
+                    }
+                });
             });
         </script>
     </head>

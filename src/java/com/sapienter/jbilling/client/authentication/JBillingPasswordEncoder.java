@@ -39,12 +39,17 @@ public class JBillingPasswordEncoder implements PasswordEncoder {
      * change the outcome of the encoded password.
      *
      * @param password password to encode
-     * @param saltSource not supported
+     * @param saltSource company user details
      * @return encoded password
      * @throws DataAccessException
      */
     public String encodePassword(String password, Object saltSource) throws DataAccessException {
-        JBCrypto cipher = JBCrypto.getPasswordCrypto(Constants.TYPE_ROOT);
+    	Integer mainRoleId = null;
+    	if (saltSource instanceof CompanyUserDetails) {
+    		CompanyUserDetails companyUserDetails = (CompanyUserDetails) saltSource;
+    		mainRoleId = companyUserDetails.getMainRoleId();
+    	}
+        JBCrypto cipher = JBCrypto.getPasswordCrypto(mainRoleId);
         return cipher.encrypt(password);
     }
 
@@ -53,7 +58,7 @@ public class JBillingPasswordEncoder implements PasswordEncoder {
      *
      * @param encPass encoded password from stored user
      * @param rawPass plain-text password from authentication form
-     * @param saltSource not supported
+     * @param saltSource company user details
      * @return true if passwords match, false if not
      * @throws DataAccessException
      */

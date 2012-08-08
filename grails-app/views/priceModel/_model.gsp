@@ -23,6 +23,13 @@
   @since  02-Feb-2011
 --%>
 
+%{--include the javascript for checking whether the date can be parsed or not--}%
+<g:javascript src="form.js" />
+
+<script type="text/javascript">
+    var startDateFormat= "<g:message code="date.format"/>";
+</script>
+
 <!-- model and date to display -->
 <g:set var="startDate" value="${startDate ?: new Date()}"/>
 <g:set var="model" value="${model ?: models ? PriceModelBL.getWsPriceForDate(models, startDate) : null}"/>
@@ -32,7 +39,6 @@
 <g:set var="type" value="${model?.type ? PriceModelStrategy.valueOf(model.type) : types?.asList()?.first()}"/>
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
-
 <g:set var="isNew" value="${model == null || model.id == 0}"/>
 
 <div id="priceModel">
@@ -87,12 +93,12 @@
                 <g:applyLayout name="form/date">
                     <content tag="label"><g:message code="plan.item.start.date"/></content>
                     <content tag="label.for">startDate</content>
-                    <g:textField class="field" name="startDate" value="${formatDate(date: startDate, formatName: 'datepicker.format')}"/>
+                    <g:textField class="field" id="startDate" name="startDate" value="${formatDate(date: startDate, formatName: 'datepicker.format')}" onblur="isValidStartDate(this);" />
                     <g:hiddenField name="originalStartDate" value="${formatDate(date: startDate, formatName: 'date.format')}"/>
                 </g:applyLayout>
             </g:else>
 
-            <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
+            <g:render id="strategyTemplate" template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
         </div>
         <div class="column">
             <g:render template="/priceModel/attributes" model="[model: model, type: type, modelIndex: modelIndex, templateName: templateName]"/>
@@ -145,14 +151,23 @@
          */
         $(function() {
             $('.model-type').change(function() {
-                $.ajax({
-                           type: 'POST',
-                           url: '${createLink(action: 'updateStrategy')}',
-                           data: $('#priceModel').parents('form').serialize(),
-                           success: function(data) { $('#priceModel').replaceWith(data); }
-                       });
+                if(!isValidStartDate($('#startDate'))) {
+                    return false;
+                }
+                else {
+                    updateStrategy();
+                }
             });
         });
+
+        function updateStrategy() {
+            $.ajax({
+                type: 'POST',
+                url: '${createLink(action: 'updateStrategy')}',
+                data: $('#priceModel').parents('form').serialize(),
+                success: function(data) { $('#priceModel').replaceWith(data); }
+            });
+        }
 
         function editDate(date) {
             $('#startDate').val(date);
@@ -184,6 +199,9 @@
         }
 
         function saveDate() {
+        	if(!isValidStartDate($('#startDate'))) {
+                return false;
+            }
             $.ajax({
                        type: 'POST',
                        url: '${createLink(action: 'saveDate')}',
@@ -234,6 +252,19 @@
                        data: $('#priceModel').parents('form').serialize(),
                        success: function(data) { $('#priceModel').replaceWith(data); }
                    });
+        }
+
+        function isValidStartDate(dateControl) {
+            //alert(startDateFormat);
+            //alert($(dateControl).val());
+
+            if(!isValidDate(dateControl, startDateFormat)) {
+                $("#error-messages ul").css("display","block");
+                $("#error-messages ul").html("<li><g:message code="product.invalid.startdate.format"/></li>");
+                return false;
+            } else {
+                return true;
+            }
         }
     </script>
 </div>

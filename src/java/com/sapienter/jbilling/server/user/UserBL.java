@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -24,6 +25,10 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -44,6 +49,7 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -267,10 +273,10 @@ public class UserBL extends ResultList implements UserSQL {
                       EventLogger.MODULE_USER_MAINTENANCE,
                       EventLogger.ROW_UPDATED, null, null, null);
 
-        updateRoles(dto.getRoles(), dto.getMainRoleId());
+        updateRoles(dto.getEntityId(), dto.getRoles(), dto.getMainRoleId());
     }
 
-    private void updateRoles(Set<RoleDTO> theseRoles, Integer main)
+    private void updateRoles(Integer entityId, Set<RoleDTO> theseRoles, Integer main)
             throws SessionInternalError {
 
         if (theseRoles == null || theseRoles.isEmpty()) {
@@ -278,7 +284,7 @@ public class UserBL extends ResultList implements UserSQL {
                 if (theseRoles == null) {
                     theseRoles = new HashSet<RoleDTO>();
                 }
-                theseRoles.add(new RoleDTO(main));
+                theseRoles.add(new RoleDTO(0, null, main, null, null));
             } else {
                 return; // nothing to do
             }
@@ -287,7 +293,7 @@ public class UserBL extends ResultList implements UserSQL {
         user.getRoles().clear();
         for (RoleDTO aRole: theseRoles) {
             // make sure the role is in the session
-            RoleDTO dbRole = new RoleDAS().find(aRole.getId());
+            RoleDTO dbRole = new RoleDAS().findByRoleTypeIdAndCompanyId(aRole.getRoleTypeId(), entityId);
             //dbRole.getBaseUsers().add(user);
             user.getRoles().add(dbRole);
         }
@@ -461,7 +467,7 @@ public class UserBL extends ResultList implements UserSQL {
         for (Integer roleId: roles) {
             rolesDTO.add(new RoleDAS().findByRoleTypeIdAndCompanyId(roleId, entityId));
         }
-        updateRoles(rolesDTO, null);
+        updateRoles(entityId, rolesDTO, null);
 
         if ( null != executorUserId) {
             eLogger.audit(executorUserId,
@@ -1018,9 +1024,9 @@ public class UserBL extends ResultList implements UserSQL {
         }
     }
 
-    public BigDecimal getBalance(Integer userId) {
-        return new InvoiceDAS().findTotalBalanceByUser(userId).subtract(
-                new PaymentDAS().findTotalBalanceByUser(userId));
+    public static BigDecimal getBalance(Integer userId) {
+        return new InvoiceDAS().findTotalAmountOwed(userId).subtract(
+                new PaymentDAS().findTotalBalanceByUser(userId)).setScale(CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
     }
 
     @Deprecated

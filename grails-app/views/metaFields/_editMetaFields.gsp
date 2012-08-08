@@ -36,8 +36,15 @@
         <g:set var="fieldName" value="${StringUtils.abbreviate(message(code: field.name), 50).encodeAsHTML()}"/>
 
         <g:set var="fieldValue" value="${fieldValues?.find{ it.fieldName == field.name }?.getValue()}"/>
-        <g:if test="${fieldValue == null && field.getDefaultValue()}">
-            <g:set var="fieldValue" value="${field.getDefaultValue().getValue()}"/>
+        <g:if test="${fieldValue == null}">
+            <g:if test="${!field.getDefaultValue()}">
+                %{-- In if, there is no default value.. Maybe something in params otherwise null --}%
+                <g:set var="fieldValue" value="${g.showParamValue(id:field.id)}" />
+            </g:if>
+            <g:else>
+                %{--In else, this means there is a default value plus there is no value in params.. --}%
+                <g:set var="fieldValue" value="${field.getDefaultValue().getValue()}"/>
+            </g:else>
         </g:if>
 
         <!-- string fields -->

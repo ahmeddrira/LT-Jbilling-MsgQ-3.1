@@ -52,10 +52,12 @@ import com.sapienter.jbilling.server.user.CreateResponseWS
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS
 import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.CurrencyWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.util.PreferenceWS
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -306,6 +308,10 @@ class ApiService implements IWebServicesSessionBean {
     public void deleteOrder(Integer id) {
         webServicesSession.deleteOrder(id)
     }
+    
+    public Integer deleteOrderByStringMetaData(MetaFieldValueWS mfv) {
+        return webServicesSession.deleteOrderByStringMetaData(mfv);
+    }
 
     public OrderWS getCurrentOrder(Integer userId, Date date) {
         return webServicesSession.getCurrentOrder(userId, date)
@@ -391,6 +397,10 @@ class ApiService implements IWebServicesSessionBean {
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, String fields) {
         return webServicesSession.validatePurchase(userId, itemId, fields)
+    }
+
+    public ValidateUserAndPurchaseWS validateUserAndPurchase(Integer userId, Integer itemId, String fields) {
+        return webServicesSession.validateUserAndPurchase(userId, itemId, fields)
     }
 
     public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemId, String[] fields) {

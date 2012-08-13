@@ -54,6 +54,7 @@ import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -1321,6 +1322,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         bl.setForUpdate(id);
         bl.delete(getCallerId());
     }
+    
+    public Integer deleteOrderByStringMetaData(MetaFieldValueWS mfv) throws SessionInternalError {
+        OrderBL bl = new OrderBL();
+        // get the order
+        Integer id = bl.getByStringMetaData(mfv);
+        if (id != null) {
+            bl.setForUpdate(id);
+            bl.delete(getCallerId());
+        } 
+        return id;
+    }
 
     /**
      * Returns the current order (order collecting current one-time charges) for the
@@ -2493,18 +2505,58 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return doValidatePurchase(userId, itemIds, fieldsArray);
     }
 
+    public ValidateUserAndPurchaseWS validateUserAndPurchase(Integer userId, Integer itemId, String fields) {
+        Integer[] itemIds = null;
+        if (itemId != null) {
+            itemIds = new Integer[] { itemId };
+        }
+    
+        String[] fieldsArray = null;
+        if (fields != null) {
+            fieldsArray = new String[] { fields };
+        }
+    
+        return doValidateUserAndPurchase(userId, itemIds, fieldsArray);
+    }
+    
     public ValidatePurchaseWS validateMultiPurchase(Integer userId,
             Integer[] itemIds, String[] fields) {
 
         return doValidatePurchase(userId, itemIds, fields);
     }
 
+    private ValidateUserAndPurchaseWS doValidateUserAndPurchase(Integer userId, Integer[] itemIds, String[] fields) {
+        UserBL userBL = new UserBL(userId);
+        ValidatePurchaseWS validatePurchaseWS = doValidatePurchase(userBL, itemIds, fields);
+        if (validatePurchaseWS == null) {
+            return null;
+        } else {
+            ValidateUserAndPurchaseWS validateUserAndPurchaseWS = new ValidateUserAndPurchaseWS();
+            validateUserAndPurchaseWS.setAccountStatus(userBL.getDto().getStatus().getId());
+            validateUserAndPurchaseWS.setDynamicBalance(userBL.getDto().getCustomer().getDynamicBalance());
+            validateUserAndPurchaseWS.setSuccess(validatePurchaseWS.getSuccess());
+            validateUserAndPurchaseWS.setMessage(validatePurchaseWS.getMessage());
+            validateUserAndPurchaseWS.setAuthorized(validatePurchaseWS.getAuthorized());
+            validateUserAndPurchaseWS.setQuantity(validatePurchaseWS.getQuantity());
+            return validateUserAndPurchaseWS;
+        }
+    }
+    
     private ValidatePurchaseWS doValidatePurchase(Integer userId, Integer[] itemIds, String[] fields) {
 
         if (userId == null || (itemIds == null && fields == null)) {
             return null;
         }
 
+        UserBL userBL = new UserBL(userId);
+        return doValidatePurchase(userBL, itemIds, fields);
+    }
+   
+    private ValidatePurchaseWS doValidatePurchase(UserBL userBL, Integer[] itemIds, String[] fields) {
+        if (userBL == null || (itemIds == null && fields == null)) {
+            return null;
+        }
+ 
         List<List<PricingField>> fieldsList = null;
         if (fields != null) {
             fieldsList = new ArrayList<List<PricingField>>(fields.length);
@@ -2543,7 +2595,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     IMediationProcess processTask = tm.getNextClass();
 
                     MediationResult result = new MediationResult("WS", false);
-                    result.setUserId(userId);
+                    result.setUserId(userBL.getDto().getUserId());
                     result.setEventDate(new Date());
                     ArrayList results = new ArrayList(1);
                     results.add(result);
@@ -2594,12 +2646,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             }
 
             // todo: validate purchase should include the quantity purchased for validations
-            prices.add(item.getPrice(userId, BigDecimal.ONE, getCallerCompanyId()));
+            prices.add(item.getPrice(userBL.getDto().getUserId(), BigDecimal.ONE, getCallerCompanyId()));
             items.add(item.getEntity());
             itemNum++;
         }
 
-        ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(items, prices, fieldsList);
+        ValidatePurchaseWS ret = userBL.validatePurchase(items, prices, fieldsList);
         return ret;
     }
 

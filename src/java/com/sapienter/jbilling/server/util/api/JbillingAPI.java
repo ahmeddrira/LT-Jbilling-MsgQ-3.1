@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
@@ -52,6 +53,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.PreferenceWS;
@@ -138,7 +140,7 @@ public interface JbillingAPI {
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields);
     public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields);
-
+    public ValidateUserAndPurchaseWS validateUserAndPurchase(Integer userId, Integer itemId, PricingField[] fields);
 
     /*
         Orders
@@ -149,6 +151,7 @@ public interface JbillingAPI {
     public void updateOrder(OrderWS order);
     public Integer createUpdateOrder(OrderWS order);
     public void deleteOrder(Integer id);
+    public Integer deleteOrderByStringMetaData(MetaFieldValueWS mfv);
 
     public Integer createOrderAndInvoice(OrderWS order);
 

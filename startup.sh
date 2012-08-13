@@ -30,7 +30,7 @@ else
 fi
 
 # grails runtime options
-export GRAILS_OPTS="-server -Xmx1024M -Xms256M -XX:MaxPermSize=256m"
+export GRAILS_OPTS="-server -Xmx3072M -Xms1024M -XX:MaxPermSize=256m"
 
 # start jbilling and record process id
 nohup $GRAILS_HOME/bin/grails -Ddisable.auto.recompile=true -Dserver.port=${server_port} run-app &

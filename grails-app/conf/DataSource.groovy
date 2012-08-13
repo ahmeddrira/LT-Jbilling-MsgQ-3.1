@@ -31,7 +31,7 @@ dataSource {
     driverClassName = "org.postgresql.Driver"
     username = "jbilling"
     password = ""
-    url = "jdbc:postgresql://localhost:5432/jbilling_test"
+    url = "jdbc:postgresql://localhost:5432/jbilling"
 
     /*
      Other database configuration settings. Do not change unless you know what you are doing!

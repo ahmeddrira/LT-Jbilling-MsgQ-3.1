@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
@@ -49,6 +50,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
 import javax.jws.WebService;
@@ -151,6 +153,7 @@ public interface IWebServicesSessionBean {
     public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) throws SessionInternalError;
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, String fields);
+    public ValidateUserAndPurchaseWS validateUserAndPurchase(Integer userId, Integer itemId, String fields);
     public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemId, String[] fields);
 
 
@@ -163,6 +166,7 @@ public interface IWebServicesSessionBean {
     public void updateOrder(OrderWS order) throws SessionInternalError;
     public Integer createUpdateOrder(OrderWS order) throws SessionInternalError;
     public void deleteOrder(Integer id) throws SessionInternalError;
+    public Integer deleteOrderByStringMetaData(MetaFieldValueWS mfv) throws SessionInternalError;
 
     public Integer createOrderAndInvoice(OrderWS order) throws SessionInternalError;
 

@@ -33,6 +33,9 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
+import com.sapienter.jbilling.server.metafields.db.DataType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import com.sapienter.jbilling.server.metafields.db.value.StringMetaFieldValue;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -77,6 +80,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import javax.sql.rowset.CachedRowSet;
@@ -1327,6 +1331,57 @@ public class OrderBL extends ResultList
             return null;
         }
     }
+    
+    public Date getNextBillableDay(int userId) {
+        JdbcTemplate jdbcTemplate = (JdbcTemplate) Context.getBean(Context.Name.JDBC_TEMPLATE);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(OrderSQL.getNextBillableDay, userId);
+        Date nextBillableDate = null;
+        if (rowSet.next()) {
+            // next billable day set by billing process, no need to calculate anything
+            // TODO is it safe to assume that this is true for all orders for this user or do we need to compare to dates in the else below
+            nextBillableDate = rowSet.getDate(1);
+        }
+        jdbcTemplate = (JdbcTemplate) Context.getBean(Context.Name.JDBC_TEMPLATE);
+        rowSet = jdbcTemplate.queryForRowSet(OrderSQL.getNextBillableDayFromActiveSince, userId);
+        Date activeSince = null;
+        Integer orderBillingId = null;
+        if (rowSet.next()) {
+            activeSince = rowSet.getDate(1);
+            orderBillingId = rowSet.getInt(2);
+        }
+        jdbcTemplate = (JdbcTemplate) Context.getBean(Context.Name.JDBC_TEMPLATE);
+        rowSet = jdbcTemplate.queryForRowSet(OrderSQL.getNextBillableDayFromCreateDate, userId);
+        Date createDate = null;
+        if (rowSet.next()) {
+            activeSince = rowSet.getDate(1);
+            orderBillingId = rowSet.getInt(2);
+        }
+        Date startDate = activeSince != null ? (createDate != null ? (activeSince.before(createDate) ? activeSince : createDate) : activeSince) : createDate;
+        
+        // post-paid, customer pays later - invoice after 1 complete order period
+        if (orderBillingId == Constants.ORDER_BILLING_POST_PAID) {
+            Calendar calendar = GregorianCalendar.getInstance();
+            calendar.setTime(startDate);
+            calendar.add(MapPeriodToCalendar.map(order.getOrderPeriod().getPeriodUnit().getId()),
+                         order.getOrderPeriod().getValue());
+
+            startDate = calendar.getTime();
+        }
+        // not pre-paid which is invoiced immediately so log error and return null;
+        else if (orderBillingId != Constants.ORDER_BILLING_PRE_PAID) {
+            LOG.debug("Order uses unknown billing type " + orderBillingId);
+            return null;
+        }
+
+        nextBillableDate = nextBillableDate != null ? nextBillableDate : startDate;
+        return nextBillableDate;
+    }
+    
+    public Long getOrderCount (int userId) {
+        // NOTE: May find doing a query for orderand putting max rows of 1 here more efficient?
+        JdbcTemplate jdbcTemplate = (JdbcTemplate) Context.getBean(Context.Name.JDBC_TEMPLATE);
+        return jdbcTemplate.queryForLong(OrderSQL.getOrderCount, userId);
+    }
 
     public boolean isDateInvoiced(Date date) {
         return date != null && order.getNextBillableDay() != null &&
@@ -1698,4 +1753,17 @@ public class OrderBL extends ResultList
 
         return new OrderDAS().save(newOrder);
     }
+    
+    public Integer getByStringMetaData(MetaFieldValueWS mfv) {
+        JdbcTemplate jdbcTemplate = (JdbcTemplate) Context.getBean(Context.Name.JDBC_TEMPLATE);
+        try {
+            if (mfv.getStringValue() == null) {
+                return null;
+            }
+            return jdbcTemplate.queryForInt(OrderSQL.getByStringMetaData, mfv.getFieldName(), mfv.getStringValue());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null; 
+        }
+    }
+    
 }

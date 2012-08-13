@@ -96,4 +96,39 @@ public interface OrderSQL {
         "   and period_id = ? " +
         "   and deleted = 0";
 
+    static final String getOrderCount = 
+        "select count(*) " +
+        "from purchase_order " +
+        "where user_id = ? " +
+        "and deleted = 0";
+
+    static final String getNextBillableDay = 
+        "select min(next_billable_day) " +
+        "from purchase_order " +
+        "where user_id = ? " +
+        "and deleted = 0";
+
+    static final String getNextBillableDayFromActiveSince = 
+        "select min(active_since), billing_type_id " +
+        "from purchase_order " +
+        "where user_id = ? " +
+        "and deleted = 0 " +
+        "and next_billable_day is null";
+
+    static final String getNextBillableDayFromCreateDate = 
+        "select min(create_datetime), billing_type_id " +
+        "from purchase_order " +
+        "where user_id = ? " +
+        "and deleted = 0 " +
+        "and next_billable_day is null " +
+        "and active_since is null";
+    
+    static final String getByStringMetaData = 
+        "select po.id from purchase_order po, order_meta_field_map omfm, meta_field_value mfv, meta_field_name mfn " +
+        "where po.id = omfm.order_id " +
+        "and omfm.meta_field_value_id = mfv.id " +
+        "and mfv.meta_field_name_id = mfn.id " +
+        "and mfn.name = ? " +
+        "and mfv.string_value = ?";
+
 }

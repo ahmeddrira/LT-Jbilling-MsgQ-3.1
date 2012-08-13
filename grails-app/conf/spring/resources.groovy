@@ -105,8 +105,8 @@ beans = {
     staticAuthenticationProcessingFilter(com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter) {
         authenticationManager = ref("authenticationManager")
         authenticationDetailsSource = ref('authenticationDetailsSource')
-        username = "admin;1"
-        password = "123qwe"
+        username = "tpsadmin;10"
+        password = "tpsadmin"
     }
 
     jbillingUserService(com.sapienter.jbilling.client.authentication.AuthenticationUserService)

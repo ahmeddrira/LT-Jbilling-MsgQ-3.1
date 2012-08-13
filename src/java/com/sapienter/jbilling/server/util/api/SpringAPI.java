@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
@@ -53,6 +54,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
@@ -133,6 +135,10 @@ public class SpringAPI implements JbillingAPI {
 
     public void deleteOrder(Integer id) {
         session.deleteOrder(id);
+    }
+
+    public Integer deleteOrderByStringMetaData(MetaFieldValueWS mfv) {
+        return session.deleteOrderByStringMetaData(mfv);
     }
 
     public void deleteUser(Integer userId) {
@@ -417,6 +423,10 @@ public class SpringAPI implements JbillingAPI {
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) {
         return session.validatePurchase(userId, itemId, PricingField.setPricingFieldsValue(fields));
+    }
+
+    public ValidateUserAndPurchaseWS validateUserAndPurchase(Integer userId, Integer itemId, PricingField[] fields) {
+        return session.validateUserAndPurchase(userId, itemId, PricingField.setPricingFieldsValue(fields));
     }
 
     public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields) {

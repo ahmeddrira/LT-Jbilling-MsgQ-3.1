@@ -37,6 +37,7 @@ public class PlanItemBundleWS implements Serializable {
     public static final String TARGET_BILLABLE = "BILLABLE";
 
     private Integer id;
+    @NotNull(message = "validation.error.notnull")
     private String quantity = "0";
     private Integer periodId = Constants.ORDER_PERIOD_ONCE;
     private String targetCustomer = TARGET_SELF;

@@ -44,6 +44,7 @@ import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
 
 import com.sapienter.jbilling.client.metafield.MetaFieldUtils
 import org.apache.commons.lang.StringUtils
+import java.text.ParseException
 
 @Secured(["MENU_97"])
 class ProductController {
@@ -468,7 +469,6 @@ class ProductController {
         def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
         def priceModel = PlanHelper.bindPriceModel(params)
 		def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : null;
-
         render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: retrieveCurrencies() ]
     }
 
@@ -718,4 +718,17 @@ class ProductController {
         def fieldsArray = MetaFieldUtils.bindMetaFields(retrieveAvailableMetaFields(), params)
         itemDto.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
+    
+    private def validateStartDate(params) {
+        def startDate
+        try {
+            startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+        } catch(ParseException e) {
+            log.error e
+            String [] errors = ["ProductWS,startdate,product.invalid.startdate.format"]
+            throw new SessionInternalError("product.invalid.startdate.format", errors)
+        }
+        return startDate
+    }
+
 }

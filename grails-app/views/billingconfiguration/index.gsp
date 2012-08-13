@@ -17,7 +17,7 @@
 <html>
 <head>
      <meta name="layout" content="configuration" />
-     
+    <g:javascript src="form.js" />
      <script type="text/javascript">
         var selected;
 
@@ -30,6 +30,19 @@
                 selected.attr("class", "active");
             })
         });
+
+        function validateDate(element) {
+            var dateFormat= "<g:message code="date.format"/>";
+            if(!isValidDate(element, dateFormat)) {
+                $("#error-messages").css("display","block");
+                $("#error-messages ul").css("display","block");
+                $("#error-messages ul").html("<li><g:message code="invalid.date.format"/></li>");
+                element.focus();
+                return false;
+            } else {
+                return true;
+            }
+        }
     </script>
 </head>
 

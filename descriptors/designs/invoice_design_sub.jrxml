@@ -9,6 +9,9 @@
 	<parameter name="customer_notes" class="java.lang.String"/>
 	<parameter name="sales_tax" class="java.math.BigDecimal"/>
 	<parameter name="invoice_line_tax_id" class="java.lang.Integer"/>
+	<parameter name="tax_price" class="java.lang.String"/>
+	<parameter name="tax_amount" class="java.lang.String"/>
+	<parameter name="currency_symbol" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select
 	quantity,
@@ -90,129 +93,136 @@ order by il.id asc]]>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="17" splitType="Stretch">
+		<band height="25" splitType="Stretch">
 			<rectangle>
-				<reportElement x="33" y="0" width="70" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="33" y="0" width="70" height="25" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="418" y="0" width="82" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="418" y="0" width="82" height="25" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="310" y="0" width="108" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="310" y="0" width="108" height="25" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="103" y="0" width="207" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="103" y="0" width="207" height="25" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<textField isBlankWhenNull="true">
-				<reportElement x="46" y="0" width="57" height="17" forecolor="#808080"/>
+				<reportElement x="46" y="0" width="57" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[(new DecimalFormat("#,##0.##")).format($F{quantity})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="117" y="0" width="193" height="17" forecolor="#808080"/>
+				<reportElement x="117" y="0" width="193" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="322" y="0" width="96" height="17" forecolor="#808080"/>
+				<reportElement x="322" y="0" width="96" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[(new DecimalFormat("#,##0.##")).format($F{unit_price})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="429" y="0" width="71" height="17" forecolor="#808080"/>
+				<reportElement x="429" y="0" width="71" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{line_total}.setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currency_symbol}+" "+$F{line_total}.setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<lastPageFooter>
-		<band height="61">
+		<band height="81">
 			<rectangle>
-				<reportElement x="418" y="33" width="81" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="418" y="53" width="81" height="25" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="418" y="0" width="81" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="418" y="0" width="81" height="25" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="418" y="17" width="81" height="17" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
+				<reportElement x="418" y="24" width="81" height="30" forecolor="#A6A7A7" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement mode="Transparent" x="310" y="0" width="108" height="17" forecolor="#808080"/>
+				<reportElement mode="Transparent" x="310" y="0" width="108" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[  SUB TOTAL]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="310" y="17" width="108" height="17" forecolor="#808080"/>
+				<reportElement x="310" y="24" width="40" height="30" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[  TAXES]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="429" y="17" width="71" height="17" isRemoveLineWhenBlank="true" forecolor="#808080"/>
+				<reportElement x="429" y="24" width="71" height="30" isRemoveLineWhenBlank="true" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[($P{sales_tax}).setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{tax_amount}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="428" y="34" width="71" height="17" forecolor="#808080"/>
+				<reportElement x="428" y="53" width="71" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[(($V{sub_total}).add($P{sales_tax})).setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currency_symbol}+" "+(($V{sub_total}).add($P{sales_tax})).setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="46" y="0" width="264" height="51" isRemoveLineWhenBlank="true" forecolor="#808080"/>
+				<reportElement x="46" y="0" width="264" height="79" isRemoveLineWhenBlank="true" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{customer_notes}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="310" y="34" width="108" height="17" forecolor="#808080"/>
+				<reportElement x="310" y="54" width="108" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[  TOTAL]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="429" y="0" width="71" height="17" forecolor="#808080"/>
+				<reportElement x="429" y="0" width="71" height="25" forecolor="#808080"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[($V{sub_total}).setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currency_symbol}+" "+($V{sub_total}).setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="348" y="24" width="66" height="30" isRemoveLineWhenBlank="true" forecolor="#808080"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{tax_price}]]></textFieldExpression>
 			</textField>
 		</band>
 	</lastPageFooter>

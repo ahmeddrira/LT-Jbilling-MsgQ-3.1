@@ -3,6 +3,14 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="owner_company" class="java.lang.String"/>
+	<parameter name="owner_street_address" class="java.lang.String"/>
+	<parameter name="owner_city" class="java.lang.String"/>
+	<parameter name="owner_state" class="java.lang.String"/>
+	<parameter name="owner_country" class="java.lang.String"/>
+	<parameter name="owner_phone" class="java.lang.String"/>
+	<parameter name="owner_email" class="java.lang.String"/>
+	<parameter name="owner_zip" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT 1;]]>
 	</queryString>
@@ -46,17 +54,6 @@
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Swift Code: TDOMCATTTOR]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="40" y="47" width="449" height="53"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Enterprise jBilling Software Ltd.
-PO BOX 8482
-Ottawa, Ontario
-K1G 3H9
-Canada]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="40" y="308" width="449" height="13"/>
@@ -146,6 +143,19 @@ Account: 0283 7302004)]]></text>
 				</textElement>
 				<text><![CDATA[Account :]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="40" y="47" width="449" height="67" isRemoveLineWhenBlank="true" forecolor="#000000"/>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{owner_company}+"\n"+
+$P{owner_street_address}+"\n"+
+$P{owner_city}+" "+$P{owner_state}+"\n"+
+$P{owner_zip}+"\n"+
+$P{owner_country}+"\n"+
+$P{owner_phone}+"\n"+
+$P{owner_email}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 </jasperReport>

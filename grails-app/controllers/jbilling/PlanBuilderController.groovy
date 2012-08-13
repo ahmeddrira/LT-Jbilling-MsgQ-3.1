@@ -361,6 +361,11 @@ class PlanBuilderController {
                 bindData(planItem, params, 'price')
                 bindData(planItem.bundle, params, 'bundle')
 
+				//TODO pass default values to binder methods when not-null values not acceptable
+				if(!planItem?.bundle?.quantity) {
+					planItem?.bundle?.quantity= "0"
+				}
+				
                 def priceModel = PlanHelper.bindPriceModel(params)
                 planItem.models.put(conversation.startDate, priceModel)
 

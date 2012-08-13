@@ -25,6 +25,9 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -372,6 +375,33 @@ public class Util {
         return builder.toString();
     }
 
+    /**
+     * Accepts the possible date alongwith its pattern which should be checked against and the error String to throw if
+     * date is un-parsable. The errorString can use standard way of populating erorrs from message.properties.
+     * @param pattern
+     * @param canBeDate
+     * @param errorString
+     * @return
+     * @throws SessionInternalError
+     */
+    public static DateTime getParsedDateOrThrowError(String pattern, String canBeDate, String errorString) throws SessionInternalError {
 
+        DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern);
+        DateTime startDate;
+
+        try {
+            startDate =  fmt.parseDateTime(canBeDate);
+            if (Integer.toString(startDate.getYear()).length()> 4) {
+                // we are considering a length of over 4 in the year as an error, so 999 and 1000,2012, etc are OK but 20121 is not OK
+                throw new SessionInternalError();
+            }
+        }
+        catch (Exception e) {
+            String [] errors = new String[] {errorString};
+            throw new SessionInternalError("Unparsable Date", errors);
+        }
+
+        return startDate;
+    }
 
 }

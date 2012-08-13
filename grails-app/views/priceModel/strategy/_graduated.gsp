@@ -45,7 +45,7 @@
 <g:applyLayout name="form/input">
     <content tag="label"><g:message code="plan.model.rate"/></content>
     <content tag="label.for">model.${modelIndex}.rateAsDecimal</content>
-    <g:textField class="field" name="model.${modelIndex}.rateAsDecimal" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
+    <g:textField class="field" name="model.${modelIndex}.rateAsDecimal" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'price.format')}"/>
 </g:applyLayout>
 
 <g:applyLayout name="form/select">

@@ -213,7 +213,7 @@
     
     		<fieldset>
     			<div class="form-columns">
-    				<div class="column" style="width:50%;">
+    				<div class="column" style="width:70%;">
     					<div class="row">
     						<label><g:message code="title.notification.active"/>:</label>
     						<div class="checkboxArea">
@@ -269,7 +269,7 @@
     					<g:set var="flag" value="${true}" />
     					<div class="row">
     						<label><g:message code="prompt.edit.notification.bodytext" />:</label>
-    						<div>
+    						<div style='float: left;' >
     							<g:each in="${dto?.getNotificationMessageSections()}"
     								var="section">
     								<g:if test="${(section.section == 2)}">
@@ -305,7 +305,7 @@
     					<g:set var="flag" value="${true}" />
     					<div class="row">
     						<label><g:message code="prompt.edit.notification.bodyhtml" />:</label>
-    						<div>
+    						<div style='float: left;'>
     							<g:each in="${dto?.getNotificationMessageSections()}"
     								var="section">
     								<g:if test="${(section?.section == 3)}">
@@ -321,7 +321,7 @@
     										<g:set var="tempContent"
     											value="${tempContent=tempContent + line?.getContent()}" />
     									</g:each>
-    									<g:textArea  class="field" onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
+    									<g:textArea class="field" onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
     										name="messageSections[${section.section}].notificationMessageLines.content"
     										value="${tempContent}" />
     									<g:set var="flag" value="${false}" />
@@ -348,8 +348,8 @@
     				</div>
     				 -->
                     
-                    <div class="scroll">
-                        <div class="column" style="width:50%;">
+                    <div class="scroll" style="width:25%;">
+                        <div class="column" style="width:80%;">
             				<div class="row">
             					<label><g:message code="prompt.tokens"/> </label>
             				</div>

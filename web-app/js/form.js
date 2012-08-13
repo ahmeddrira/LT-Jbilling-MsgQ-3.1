@@ -500,3 +500,28 @@ function findPosX(obj) {
 	return posLeft;
 }
 //window.onload = initCastomForms;
+function isValidDate(controlName, format){
+	
+	var dateValue= $(controlName).val();
+	
+	//alert('format length is '+format.length+' and dateValue length is '+dateValue.length);
+	var isValid = !(format.length < dateValue.length);
+	//alert(isValid)
+    try {
+        format= format.replace('MM', 'mm');   //to support java date formats
+        format= format.replace('yyyy', 'yy'); //to support java date formats
+        jQuery.datepicker.parseDate(format, dateValue, null);
+    } catch(error){
+        isValid = false;
+    }
+
+    if (isValid) {
+    	// remove any error messages or border if any
+        $(controlName).css('border', 'none');
+        $("#error-messages").css("display","none");
+    } else {
+    	$("#error-messages").css("display","block");
+    	$(controlName).css('border', '1px solid red');
+    }
+    return isValid;
+}

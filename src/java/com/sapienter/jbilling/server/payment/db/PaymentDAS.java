@@ -22,8 +22,12 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -38,6 +42,8 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
+	
+	public static final Logger LOG = Logger.getLogger(PaymentDAS.class);
 
     // used for the web services call to get the latest X
     public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
@@ -92,25 +98,42 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         return criteria.list();
     }
 
+    /**
+     * Revenue = Payments minus Refunds
+     * @param userId
+     * @return
+     */
     public BigDecimal findTotalRevenueByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         criteria.add(Restrictions.eq("deleted", 0))
                 .createAlias("baseUser", "u")
                     .add(Restrictions.eq("u.id", userId))
-        		.createAlias("paymentResult", "pr")
-        		.add(Restrictions.ne("pr.id", CommonConstants.PAYMENT_RESULT_FAILED));
+        		.createAlias("paymentResult", "pr");
+        
+        Criterion PAYMENT_SUCCESSFUL = Restrictions.eq("pr.id", CommonConstants.PAYMENT_RESULT_SUCCESSFUL);
+        Criterion PAYMENT_ENTERED = Restrictions.eq("pr.id", CommonConstants.PAYMENT_RESULT_ENTERED);
+        		
+        LogicalExpression successOrEntered= Restrictions.or(PAYMENT_ENTERED, PAYMENT_SUCCESSFUL);
+        
+        // Criteria or condition
+        criteria.add(successOrEntered);
+        		
         criteria.add(Restrictions.eq("isRefund", 0));
         criteria.setProjection(Projections.sum("amount"));
         criteria.setComment("PaymentDAS.findTotalRevenueByUser-Gross Receipts");
 
         BigDecimal grossReceipts= criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult();
         
+        //Calculate Refunds
         Criteria criteria2 = getSession().createCriteria(PaymentDTO.class);
         criteria2.add(Restrictions.eq("deleted", 0))
                 .createAlias("baseUser", "u")
                     .add(Restrictions.eq("u.id", userId))
-            		.createAlias("paymentResult", "pr")
-            		.add(Restrictions.ne("pr.id", CommonConstants.PAYMENT_RESULT_FAILED));
+            		.createAlias("paymentResult", "pr");
+
+		// Criteria or condition
+        criteria2.add(successOrEntered);
+            		
         criteria2.add(Restrictions.eq("isRefund", 1));
         criteria2.setProjection(Projections.sum("amount"));
         criteria2.setComment("PaymentDAS.findTotalRevenueByUser-Gross Refunds");
@@ -118,7 +141,11 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         BigDecimal refunds= criteria2.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria2.uniqueResult();
         
         //net revenue = gross - all refunds
-        return ( grossReceipts.subtract(refunds));
+        BigDecimal netRevenueFromUser= grossReceipts.subtract(refunds);
+        
+		LOG.debug("Gross receipts " + grossReceipts + " minus Gross Refunds " + refunds + ": " + netRevenueFromUser);
+        
+        return netRevenueFromUser;
     }
     
     public BigDecimal findTotalBalanceByUser(Integer userId) {
@@ -127,25 +154,23 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         criteria.add(Restrictions.eq("deleted", 0))
             .createAlias("baseUser", "u")
-            .add(Restrictions.eq("u.id", userId))
-            .add(Restrictions.eq("isRefund", 0));
+	            .add(Restrictions.eq("u.id", userId))
+	            .add(Restrictions.eq("isRefund", 0))
+        	.createAlias("paymentResult", "pr");
+		
+        Criterion PAYMENT_SUCCESSFUL = Restrictions.eq("pr.id", CommonConstants.PAYMENT_RESULT_SUCCESSFUL);
+        Criterion PAYMENT_ENTERED = Restrictions.eq("pr.id", CommonConstants.PAYMENT_RESULT_ENTERED);
+        		
+        LogicalExpression successOrEntered= Restrictions.or(PAYMENT_ENTERED, PAYMENT_SUCCESSFUL);
+        
+        // Criteria or condition
+        criteria.add(successOrEntered);
         
         criteria.setProjection(Projections.sum("balance"));
         criteria.setComment("PaymentDAS.findTotalBalanceByUser");
         BigDecimal paymentBalances = (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
 
-        //calculate refunds
-        Criteria criteria2 = getSession().createCriteria(PaymentDTO.class);
-        criteria2.add(Restrictions.eq("deleted", 0))
-                .createAlias("baseUser", "u")
-                    .add(Restrictions.eq("u.id", userId))
-                    .add(Restrictions.eq("isRefund", 1));
-        
-        criteria2.setProjection(Projections.sum("balance"));
-        criteria2.setComment("PaymentDAS.findTotalBalanceByUser-less_Refunds");
-        BigDecimal refunds= criteria2.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria2.uniqueResult();
-
-        return paymentBalances.subtract(refunds);
+        return paymentBalances;
     }
     
 

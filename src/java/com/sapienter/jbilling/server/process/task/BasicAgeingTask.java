@@ -256,7 +256,7 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
         Date now = new Date();
 
         // validate that the user actually needs a status change
-        if (user.getStatus().getId() != UserDTOEx.STATUS_ACTIVE) {
+        if (UserDTOEx.STATUS_ACTIVE.equals(user.getStatus().getId())) {
             LOG.debug("User " + user.getId() + " is already active, no need to remove from ageing.");
             return;
         }

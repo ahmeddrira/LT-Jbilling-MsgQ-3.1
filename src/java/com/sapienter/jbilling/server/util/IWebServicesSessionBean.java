@@ -162,6 +162,7 @@ public interface IWebServicesSessionBean {
      */
 
     public OrderWS getOrder(Integer orderId) throws SessionInternalError;
+    public OrderWS getOrderByStringMetaData(MetaFieldValueWS mfv) throws SessionInternalError;
     public Integer createOrder(OrderWS order) throws SessionInternalError;
     public void updateOrder(OrderWS order) throws SessionInternalError;
     public Integer createUpdateOrder(OrderWS order) throws SessionInternalError;

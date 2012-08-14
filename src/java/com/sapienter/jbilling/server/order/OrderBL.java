@@ -1754,13 +1754,13 @@ public class OrderBL extends ResultList
         return new OrderDAS().save(newOrder);
     }
     
-    public Integer getByStringMetaData(MetaFieldValueWS mfv) {
+    public Integer getIdByStringMetaData(MetaFieldValueWS mfv) {
         JdbcTemplate jdbcTemplate = (JdbcTemplate) Context.getBean(Context.Name.JDBC_TEMPLATE);
         try {
             if (mfv.getStringValue() == null) {
                 return null;
             }
-            return jdbcTemplate.queryForInt(OrderSQL.getByStringMetaData, mfv.getFieldName(), mfv.getStringValue());
+            return jdbcTemplate.queryForInt(OrderSQL.getIdByStringMetaData, mfv.getFieldName(), mfv.getStringValue());
         } catch (IncorrectResultSizeDataAccessException e) {
             return null; 
         }

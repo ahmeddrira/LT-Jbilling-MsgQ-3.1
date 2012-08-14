@@ -147,6 +147,7 @@ public interface JbillingAPI {
      */
 
     public OrderWS getOrder(Integer orderId);
+    public OrderWS getOrderByStringMetaData(MetaFieldValueWS mfv);
     public Integer createOrder(OrderWS order);
     public void updateOrder(OrderWS order);
     public Integer createUpdateOrder(OrderWS order);

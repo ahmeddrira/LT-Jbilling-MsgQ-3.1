@@ -252,6 +252,10 @@ public class SpringAPI implements JbillingAPI {
     public OrderWS getOrder(Integer orderId) {
         return session.getOrder(orderId);
     }
+    
+    public OrderWS getOrderByStringMetaData(MetaFieldValueWS mfv) {
+        return session.getOrderByStringMetaData(mfv);
+    }
 
     public Integer[] getOrderByPeriod(Integer userId, Integer periodId) {
         return session.getOrderByPeriod(userId, periodId);

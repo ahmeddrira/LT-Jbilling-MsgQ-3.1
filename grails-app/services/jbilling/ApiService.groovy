@@ -284,6 +284,10 @@ class ApiService implements IWebServicesSessionBean {
     public OrderWS getOrder(Integer orderId) {
         return webServicesSession.getOrder(orderId)
     }
+    
+    public OrderWS getOrderByStringMetaData(MetaFieldValueWS mfv) {
+        return webServicesSession.getOrderByStringMetaData(mfv);
+    }
 
     public Integer[] getOrderByPeriod(Integer userId, Integer periodId) {
         return webServicesSession.getOrderByPeriod(userId, periodId)

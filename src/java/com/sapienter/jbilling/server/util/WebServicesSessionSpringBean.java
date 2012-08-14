@@ -1262,6 +1262,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
         return bl.getWS(languageId);
     }
+    
+    public OrderWS getOrderByStringMetaData(MetaFieldValueWS mfv) throws SessionInternalError {
+        OrderBL bl = new OrderBL();
+        // get the order
+        Integer id = bl.getIdByStringMetaData(mfv);
+        return getOrder(id);
+    }
 
     public Integer[] getOrderByPeriod(Integer userId, Integer periodId)
             throws SessionInternalError {
@@ -1326,7 +1333,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer deleteOrderByStringMetaData(MetaFieldValueWS mfv) throws SessionInternalError {
         OrderBL bl = new OrderBL();
         // get the order
-        Integer id = bl.getByStringMetaData(mfv);
+        Integer id = bl.getIdByStringMetaData(mfv);
         if (id != null) {
             bl.setForUpdate(id);
             bl.delete(getCallerId());

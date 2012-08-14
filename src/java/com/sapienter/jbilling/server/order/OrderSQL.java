@@ -123,7 +123,7 @@ public interface OrderSQL {
         "and next_billable_day is null " +
         "and active_since is null";
     
-    static final String getByStringMetaData = 
+    static final String getIdByStringMetaData = 
         "select po.id from purchase_order po, order_meta_field_map omfm, meta_field_value mfv, meta_field_name mfn " +
         "where po.id = omfm.order_id " +
         "and omfm.meta_field_value_id = mfv.id " +

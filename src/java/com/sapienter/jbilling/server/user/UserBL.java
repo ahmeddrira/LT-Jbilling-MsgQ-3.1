@@ -686,6 +686,57 @@ public class UserBL extends ResultList implements UserSQL {
      */
     public Date getNextInvoiceDate() {
         // customer has no orders, no invoices will be generated
+        OrderBL orderBL = new OrderBL();
+        if (orderBL.getOrderCount(this.user.getId()) == 0) {
+            return null;
+        }
+//      if (this.user.getOrders().isEmpty()) {
+//      return null;
+//  }
+        
+        // get earliest order "next billable" date
+        DateMidnight nextBillableDay = new DateMidnight(orderBL.getNextBillableDay(this.user.getId()));
+//        DateMidnight nextBillableDay = null;
+//
+//        for (OrderDTO order : this.user.getOrders()) {
+//            DateMidnight date = new DateMidnight(new OrderBL(order).getInvoicingDate());
+//            if (nextBillableDay == null || (date.isBefore(nextBillableDay))) {
+//                nextBillableDay = date;
+//            }
+//        }
+
+        // find next billing process run date that encompasses the order date
+        BillingProcessConfigurationDTO config = new ConfigurationBL(this.user.getEntity().getId()).getDTO();
+
+        // no next run date for the billing process, no invoices will be generated
+        if (config.getNextRunDate() == null) {
+            return null;
+        }
+
+        // orders to be processed by the next run
+        DateMidnight nextRunDate = new DateMidnight(config.getNextRunDate());
+        if (nextBillableDay == null || nextRunDate.isAfter(nextBillableDay)) {
+            return nextRunDate.toDate();
+        }
+
+        // orders to be processed by a subsequent run, increment the process run date by the
+        // billing period until we find the earliest possible billing run date
+        Calendar nextBillableDayCal = new GregorianCalendar();
+        nextBillableDayCal.setTime(nextBillableDay.toDate());
+
+        Calendar nextRunDateCal = new GregorianCalendar();
+        nextRunDateCal.setTime(nextRunDate.toDate());
+
+        while (nextRunDateCal.before(nextBillableDayCal)) {
+            nextRunDateCal.add(MapPeriodToCalendar.map(config.getPeriodUnit().getId()), config.getPeriodValue());
+        }
+
+        return nextRunDateCal.getTime();
+    }
+
+	/*
+    public Date getNextInvoiceDate() {
+        // customer has no orders, no invoices will be generated
         if (this.user.getOrders().isEmpty()) {
             return null;
         }
@@ -728,6 +779,7 @@ public class UserBL extends ResultList implements UserSQL {
 
         return nextRunDateCal.getTime();
     }
+	*/
 
     public Integer getMainRole() {
         if (mainRole == null) {

@@ -113,7 +113,9 @@ public interface OrderSQL {
         "from purchase_order " +
         "where user_id = ? " +
         "and deleted = 0 " +
-        "and next_billable_day is null";
+        "and next_billable_day is null " +
+	/* Postgres requires this group by clause */
+	"group by billing_type_id";
 
     static final String getNextBillableDayFromCreateDate = 
         "select min(create_datetime), billing_type_id " +
@@ -121,7 +123,9 @@ public interface OrderSQL {
         "where user_id = ? " +
         "and deleted = 0 " +
         "and next_billable_day is null " +
-        "and active_since is null";
+        "and active_since is null " +
+        /* Postgres requires this group by clause */
+        "group by billing_type_id";
     
     static final String getIdByStringMetaData = 
         "select po.id from purchase_order po, order_meta_field_map omfm, meta_field_value mfv, meta_field_name mfn " +

@@ -14,6 +14,6 @@
 # Dissemination of this information or reproduction of this material
 # is strictly forbidden.
 
-export GRAILS_OPTS="-server -Xmx1024M -Xms256M -XX:MaxPermSize=256m"
+export GRAILS_OPTS="-server -Xmx3072M -Xms1024M -XX:MaxPermSize=256m"
 
 grails -Ddisable.auto.recompile=true run-app

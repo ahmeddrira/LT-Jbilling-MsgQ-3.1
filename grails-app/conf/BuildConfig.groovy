@@ -110,5 +110,17 @@ grails.project.dependency.resolution = {
         compile 'c3p0:c3p0:0.9.1.2'
 
         runtime 'postgresql:postgresql:8.4-702.jdbc4'
+
+		// =====================================================
+		// Changes for message queue interface
+		// =====================================================
+		compile 'org.codehaus.jackson:jackson-core-asl:1.9.9'
+		compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.9'
+		compile 'commons-pool:commons-pool:1.5.6'
+		compile 'commons-logging:commons-logging:1.1.1'
+		compile 'org.springframework.integration:spring-integration-core:2.1.3.RELEASE'
+		compile 'org.springframework.integration:spring-integration-amqp:2.1.3.RELEASE'
+		compile 'org.springframework.amqp:spring-rabbit:1.1.2.RELEASE'
+
     }
 }

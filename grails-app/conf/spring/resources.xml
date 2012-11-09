@@ -485,5 +485,10 @@
         <constructor-arg ref="callIdentificationLoader"/>
     </bean>
 
-
+	<!-- 
+	*************************************************** 
+	* RABBIT MQ INTERFACE * 
+	*************************************************** 
+	-->
+	<import resource="jbilling-msg-queue-resources.xml" />
 </beans>

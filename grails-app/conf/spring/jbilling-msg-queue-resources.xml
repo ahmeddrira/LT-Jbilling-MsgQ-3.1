@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
+		http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/amqp/spring-integration-stream.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<!-- 
+	*************************************************** 
+	* RABBIT MQ INTERFACE * 
+	*************************************************** 
+	-->
+
+	<!-- Beans for RabbitMQ Broker connection -->
+	<rabbit:connection-factory id="jbConnectionFactory"
+		host="${jbilling.rabbit.host}" port="${jbilling.rabbit.port}"
+		username="${jbilling.rabbit.username}" password="${jbilling.rabbit.password}"
+		channel-cache-size="${jbilling.rabbit.channelCacheSize}" />
+
+	<rabbit:admin id="jbAmqpAdmin" connection-factory="jbConnectionFactory" />
+
+	<rabbit:template id="jbResponseAMQPTemplate"
+		connection-factory="jbConnectionFactory" reply-timeout="30000"
+		message-converter="jbJsonMessageConverter" />
+
+	<rabbit:listener-container id="jbClientListenerContainer"
+		connection-factory="jbConnectionFactory" concurrency="15" acknowledge="none">
+	</rabbit:listener-container>
+
+	<!-- Queue for requests -->
+	<rabbit:queue id="jbillingRequestQueue"
+		name="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).requestQueueName}"
+		durable="false" auto-delete="true">
+	</rabbit:queue>
+
+	<rabbit:direct-exchange id="jbAmqpExchange"
+		name="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).exchangeName }"
+		durable="false" auto-delete="true">
+		<rabbit:bindings>
+			<rabbit:binding queue="jbillingRequestQueue"
+				key="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).requestRoutingKey }" />
+		</rabbit:bindings>
+	</rabbit:direct-exchange>
+
+	<!-- Bean contains mapping of requests to responses, used to initalise the 
+		Jbilling Object mapper and the Jbilling Java Type mapper -->
+	<util:map id="jbMessageRequestResponseMap">
+		<entry
+			key="#{ T(com.sapienter.jbilling.server.util.amqp.GetUserRequest) }"
+			value="#{ T(com.sapienter.jbilling.server.util.amqp.GetUserResponse) }" />
+		<entry
+			key="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderRequest) }"
+			value="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderResponse) }" />
+		<entry
+			key="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderByStringMetaDataRequest) }"
+			value="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderByStringMetaDataResponse) }" />
+		<entry
+			key="#{ T(com.sapienter.jbilling.server.util.amqp.ValidateUserAndPurchaseRequest) }"
+			value="#{ T(com.sapienter.jbilling.server.util.amqp.ValidateUserAndPurchaseResponse) }" />
+		<entry
+			key="#{ T(com.sapienter.jbilling.server.util.amqp.DeleteOrderRequest) }"
+			value="#{ T(com.sapienter.jbilling.server.util.amqp.DeleteOrderResponse) }" />
+		<entry
+			key="#{ T(com.sapienter.jbilling.server.util.amqp.CreateOrderRequest) }"
+			value="#{ T(com.sapienter.jbilling.server.util.amqp.CreateOrderResponse) }" />
+	</util:map>
+
+	<!-- Bean used for formatting messages for the AMQP queues -->
+	<bean id="jbJsonMessageConverter"
+		class="org.springframework.amqp.support.converter.JsonMessageConverter">
+		<!-- This object mapper is configured to deal the overloaded methods in 
+			the JBilling DTO/WS classes -->
+		<property name="jsonObjectMapper">
+			<bean class="com.sapienter.jbilling.server.util.amqp.JBillingObjectMapper" />
+		</property>
+		<!-- The Message classes are not found by the GrailsClassLoader, so need 
+			to instantiate a map of class ids to classes for each request/response -->
+		<property name="javaTypeMapper">
+			<bean
+				class="com.sapienter.jbilling.server.util.amqp.JBillingJavaTypeMapper">
+				<constructor-arg index="0" ref="jbMessageRequestResponseMap" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- ## -->
+	<!-- ## Jbilling message queue entry and exit points -->
+	<!-- ## -->
+
+	<!-- Inbound channel adapter -->
+	<int-amqp:inbound-channel-adapter id="amqpJBillingRequestAdapter"
+		channel="jbRequestChannel" error-channel="jbAmqpMessagingExceptionChannel"
+		queue-names="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).requestQueueName}"
+		connection-factory="jbConnectionFactory" concurrent-consumers="10"
+		acknowledge-mode="NONE" message-converter="jbJsonMessageConverter"
+		mapped-request-headers="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).mappedHeaders }" />
+
+	<int:channel id="jbRequestChannel">
+		<int:interceptors>
+			<int:wire-tap channel="jbAMQPLogger" />
+		</int:interceptors>
+	</int:channel>
+
+	<!-- Chain to make adjustments to the message header -->
+
+	<int:channel id="jbResponseChannel">
+		<int:interceptors>
+			<int:wire-tap channel="jbAMQPLogger" />
+		</int:interceptors>
+	</int:channel>
+
+	<int:chain input-channel="jbResponseChannel" output-channel="jbAmqpOutboundChannel">
+		<!-- Add MessageHeader to make the message NON-PERSISTENT in the Rabbit -->
+		<int:header-enricher>
+			<int:header name="amqp_deliveryMode" value="NON_PERSISTENT"
+				type="org.springframework.amqp.core.MessageDeliveryMode" />
+			<int:header name="errorChannel" value="jbAmqpMessagingExceptionChannel" />
+		</int:header-enricher>
+	</int:chain>
+
+	<int:channel id="jbAmqpOutboundChannel">
+		<int:interceptors>
+			<int:wire-tap channel="jbAMQPLogger" />
+		</int:interceptors>
+	</int:channel>
+
+	<!-- Adapter interface for responses -->
+	<int-amqp:outbound-channel-adapter
+		id="jbAmqpResponseAdapter" channel="jbAmqpOutboundChannel"
+		amqp-template="jbResponseAMQPTemplate"
+		exchange-name="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).exchangeName }"
+		routing-key-expression="headers.get('#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).responseQueueHeader}')"
+		mapped-request-headers="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).mappedHeaders }" />
+
+	<int:channel id="jbAmqpMessagingExceptionChannel">
+		<int:interceptors>
+			<int:wire-tap channel="jbAMQPLogger" />
+		</int:interceptors>
+	</int:channel>
+
+	<!-- Transformer to handle messaging exceptions and convert them appropriate 
+		responses -->
+	<int:transformer input-channel="jbAmqpMessagingExceptionChannel"
+		output-channel="jbResponseChannel" method="handleErrorMessage">
+		<bean
+			class="com.sapienter.jbilling.server.util.amqp.MessageHandlingExceptionHandler">
+			<property name="requestResponseMap" ref="jbMessageRequestResponseMap" />
+		</bean>
+	</int:transformer>
+
+	<!-- Misc Beans -->
+
+	<int:logging-channel-adapter id="jbAMQPLogger"
+		level="INFO" auto-startup="true" log-full-message="true">
+	</int:logging-channel-adapter>
+
+	<int:logging-channel-adapter id="jbAMQPErrorLogger"
+		level="ERROR" auto-startup="true" log-full-message="true">
+	</int:logging-channel-adapter>
+
+	<!-- Message services -->
+	<int:service-activator id="getUserMessageService"
+		input-channel="jbRequestChannel" output-channel="jbResponseChannel">
+		<bean class="com.sapienter.jbilling.server.util.amqp.MessageServiceAPI" />
+	</int:service-activator>
+
+</beans>

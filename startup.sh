@@ -26,7 +26,9 @@
 if [ -f cc-build.properties ]; then
     . cc-build.properties
 else
-    server_port=8080
+	# Change port number so that it doesn't clash with 'GUI' JB instance
+	#    server_port=8080
+    server_port=8089
 fi
 
 # grails runtime options

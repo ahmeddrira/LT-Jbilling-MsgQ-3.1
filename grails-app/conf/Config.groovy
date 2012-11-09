@@ -95,12 +95,11 @@ environments {
         grails.serverURL = "http://www.changeme.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8081/${appName}"
     }
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8081/${appName}"
     }
-
 }
 
 
@@ -182,4 +181,15 @@ grails.plugins.springsecurity.filterChain.chainMap = [
 
 // voter configuration
 grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', 'permissionVoter', 'webExpressionVoter']
+
+// ===========================================
+// Config for message queue interface
+// ===========================================
+// Host runnig rabbit broker
+jbilling.rabbit.host = 'localhost'
+// Port of rabbit broker
+jbilling.rabbit.port = 5672
+jbilling.rabbit.username = 'guest'
+jbilling.rabbit.password = 'guest'
+jbilling.rabbit.channelCacheSize = 25
 

@@ -60,19 +60,19 @@ public class MessageHandlingExceptionHandler {
 		return null;
 	}
 	
-	public Message<ResponseBase> handleErrorMessage(ErrorMessage errorMessage) {
-		LOG.warn("Handle messaging error message " + errorMessage);
-
-		Assert.isInstanceOf(MessagingException.class, errorMessage.getPayload(), 
-				"Unexpected class type in MessagingExceptin payload (" + errorMessage.getPayload().getClass() + ")");
-		ResponseBase response = makeResponse((MessagingException) errorMessage.getPayload());
-		if (response != null) {
-			return MessageBuilder.withPayload(response).copyHeaders(errorMessage.getHeaders()).build();
-		}
-		
-		return null;
-	}
-	
+//	public Message<ResponseBase> handleErrorMessage(ErrorMessage errorMessage) {
+//		LOG.warn("Handle messaging error message " + errorMessage);
+//
+//		Assert.isInstanceOf(MessagingException.class, errorMessage.getPayload(), 
+//				"Unexpected class type in MessagingExceptin payload (" + errorMessage.getPayload().getClass() + ")");
+//		ResponseBase response = makeResponse((MessagingException) errorMessage.getPayload());
+//		if (response != null) {
+//			return MessageBuilder.withPayload(response).copyHeaders(errorMessage.getHeaders()).build();
+//		}
+//		
+//		return null;
+//	}
+//	
 	public Message<ResponseBase> handleMessagingException(MessagingException exception) {
 		LOG.warn("Handle messaging exception " + exception);
 

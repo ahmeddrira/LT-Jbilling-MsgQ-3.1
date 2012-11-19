@@ -141,6 +141,7 @@
 	<int-amqp:outbound-channel-adapter
 		id="jbAmqpResponseAdapter" channel="jbAmqpOutboundChannel"
 		amqp-template="jbResponseAMQPTemplate"
+		exchange-name-expression="headers.get('#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).responseExchangeHeader}')"
 		routing-key-expression="headers.get('#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).responseQueueHeader}')"
 		mapped-request-headers="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).mappedHeaders }" />
 
@@ -153,7 +154,7 @@
 	<!-- Transformer to handle messaging exceptions and convert them appropriate 
 		responses -->
 	<int:transformer input-channel="jbAmqpMessagingExceptionChannel"
-		output-channel="jbResponseChannel" method="handleErrorMessage">
+		output-channel="jbResponseChannel" method="handleMessagingException">
 		<bean
 			class="com.sapienter.jbilling.server.util.amqp.MessageHandlingExceptionHandler">
 			<property name="requestResponseMap" ref="jbMessageRequestResponseMap" />

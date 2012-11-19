@@ -26,7 +26,9 @@
 	<rabbit:connection-factory id="jbConnectionFactory"
 		host="${jbilling.rabbit.host}" port="${jbilling.rabbit.port}"
 		username="${jbilling.rabbit.username}" password="${jbilling.rabbit.password}"
-		channel-cache-size="${jbilling.rabbit.channelCacheSize}" />
+		channel-cache-size="${jbilling.rabbit.channelCacheSize}" 
+		virtual-host="${jbilling.rabbit.virtualhost}"
+		/>
 
 	<rabbit:admin id="jbAmqpAdmin" connection-factory="jbConnectionFactory" />
 
@@ -139,7 +141,6 @@
 	<int-amqp:outbound-channel-adapter
 		id="jbAmqpResponseAdapter" channel="jbAmqpOutboundChannel"
 		amqp-template="jbResponseAMQPTemplate"
-		exchange-name="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).exchangeName }"
 		routing-key-expression="headers.get('#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).responseQueueHeader}')"
 		mapped-request-headers="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).mappedHeaders }" />
 

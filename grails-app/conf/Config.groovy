@@ -189,6 +189,8 @@ grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', '
 jbilling.rabbit.host = 'localhost'
 // Port of rabbit broker
 jbilling.rabbit.port = 5672
+// Virtual host that jbilling queues and exchanges are contained in (by default '/' is used)
+jbilling.rabbit.virtualhost = '/'
 jbilling.rabbit.username = 'guest'
 jbilling.rabbit.password = 'guest'
 jbilling.rabbit.channelCacheSize = 25

@@ -1,23 +1,23 @@
 package com.sapienter.jbilling.server.util.amqp;
 
-import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 
 public class ValidateUserAndPurchaseResponse extends ResponseBase {
-	private ValidatePurchaseWS validatePurchaseWS;
+	private ValidateUserAndPurchaseWS validateUserAndPurchaseWS;
 
-	public ValidatePurchaseWS getValidatePurchaseWS() {
-		return validatePurchaseWS;
+	public ValidateUserAndPurchaseWS getValidateUserAndPurchaseWS() {
+		return validateUserAndPurchaseWS;
 	}
 
-	public void setValidatePurchaseWS(ValidatePurchaseWS validatePurchaseWS) {
-		this.validatePurchaseWS = validatePurchaseWS;
+	public void setValidateUserAndPurchaseWS(ValidateUserAndPurchaseWS validateUserAndPurchaseWS) {
+		this.validateUserAndPurchaseWS = validateUserAndPurchaseWS;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ValidateUserAndPurchaseResponse [validatePurchaseWS=")
-				.append(validatePurchaseWS).append(", getCorrelationId()=")
+		builder.append("ValidateUserAndPurchaseResponse [validateUserAndPurchaseWS=")
+				.append(validateUserAndPurchaseWS).append(", getCorrelationId()=")
 				.append(getCorrelationId()).append(", getIsSuccess()=")
 				.append(getIsSuccess()).append(", getErrorMessage()=")
 				.append(getErrorMessage()).append(", getCause()=")

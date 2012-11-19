@@ -493,7 +493,7 @@ public class MessageServiceAPI {
 			validateUserAndPurchaseWS.setQuantity(validatePurchaseWS
 					.getQuantity());
 
-			response.setValidatePurchaseWS(validateUserAndPurchaseWS);
+			response.setValidateUserAndPurchaseWS(validateUserAndPurchaseWS);
 			response.setIsSuccess(true);
 		}
 

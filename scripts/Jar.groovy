@@ -23,9 +23,10 @@ target(jar: "Packages all core jbilling classes in a .jar file.") {
 
     delete(dir: targetDir, includes: "${grailsAppName}.jar")
 
-    exec(executable: "git", outputproperty: "version") {
-        arg(line: "describe --tags")
-    }
+	// Removed as this fails on windows and git version doesn't return anything useful!
+//    exec(executable: "git", outputproperty: "version") {
+//        arg(line: "describe --tags")
+//    }
 
     tstamp()
     ant.jar(destfile: "${targetDir}/${grailsAppName}.jar", basedir: "${targetDir}/classes") {
@@ -37,7 +38,7 @@ target(jar: "Packages all core jbilling classes in a .jar file.") {
             attribute(name: "Specification-Vendor", value: "jBilling.com")
 
             attribute(name: "Package-Title", value: grailsAppName)
-            attribute(name: "Package-Version", value: version)
+//            attribute(name: "Package-Version", value: version)
             attribute(name: "Package-Vendor", value: "jBilling.com")
         }
     }

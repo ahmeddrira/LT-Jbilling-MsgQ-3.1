@@ -28,6 +28,10 @@ public class RequestResponseMap {
 		requestResponseMap.put(ValidateUserAndPurchaseRequest.class,
 				ValidateUserAndPurchaseResponse.class);
 	}
+	
+	public Map<Class<? extends RequestBase>, Class<? extends ResponseBase>> getMap() {
+		return requestResponseMap;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends ResponseBase> T makeResponse(RequestBase request) {

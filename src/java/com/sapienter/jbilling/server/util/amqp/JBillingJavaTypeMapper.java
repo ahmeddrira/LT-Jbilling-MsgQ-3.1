@@ -17,11 +17,11 @@ import org.springframework.amqp.support.converter.DefaultJavaTypeMapper;
  */
 public class JBillingJavaTypeMapper extends DefaultJavaTypeMapper {
 	
-	public JBillingJavaTypeMapper(Map<Class<? extends RequestBase>, Class<? extends ResponseBase>> requestResponseMap) {
+	public JBillingJavaTypeMapper(RequestResponseMap requestResponseMap) {
 		super();
 		
 		Map<String, Class<?>> idClassMapping = new HashMap<String, Class<?>>();
-		for (Entry<Class<? extends RequestBase>, Class<? extends ResponseBase>> entry : requestResponseMap.entrySet()) {
+		for (Entry<Class<? extends RequestBase>, Class<? extends ResponseBase>> entry : requestResponseMap.getMap().entrySet()) {
 			// Map the request (entry key)
 			idClassMapping.put(entry.getKey().toString(), entry.getKey());
 			// Map the response (entry value)

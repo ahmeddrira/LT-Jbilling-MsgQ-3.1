@@ -22,6 +22,7 @@ import com.sapienter.jbilling.server.util.amqp.ValidateUserAndPurchaseResponse;
  */
 public interface JBillingMessageQueueAPI {
 	CreateOrderResponse createOrder(CreateOrderRequest request);
+	//UpdateOrderResponse updateOrder(UpdateOrderRequest request);
 	DeleteOrderResponse deleteOrder(DeleteOrderRequest request);
 	GetOrderResponse getOrder(GetOrderRequest request);
 	GetOrderByStringMetaDataResponse getOrderByStringMetaData(GetOrderByStringMetaDataRequest request);

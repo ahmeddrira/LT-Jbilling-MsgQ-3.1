@@ -156,6 +156,7 @@
 	<int:service-activator id="getUserMessageService"
 		input-channel="jbRequestChannel" output-channel="jbResponseChannel">
 		<bean class="com.sapienter.jbilling.server.util.amqp.MessageServiceAPI">
+			<property name="requestResponseMap" ref="jbMessageRequestResponseMap"/>
 			<property name="messageServiceBL">
 				<bean class="com.sapienter.jbilling.server.util.amqp.MessageServiceBL" />
 			</property>

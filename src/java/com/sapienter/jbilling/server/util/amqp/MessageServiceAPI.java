@@ -18,21 +18,21 @@ public class MessageServiceAPI {
 	private static final Logger LOG = Logger.getLogger(MessageServiceAPI.class);
 	
 	private MessageServiceBL messageServiceBL;
-
-	public MessageServiceBL getMessageServiceBL() {
-		return messageServiceBL;
-	}
-
+	private RequestResponseMap requestResponseMap;
+	
 	public void setMessageServiceBL(MessageServiceBL messageServiceBL) {
 		this.messageServiceBL = messageServiceBL;
+	}
+
+	public void setRequestResponseMap(RequestResponseMap requestResponseMap) {
+		this.requestResponseMap = requestResponseMap;
 	}
 
 	public ValidateUserAndPurchaseResponse process(
 			ValidateUserAndPurchaseRequest request) {
 		LOG.info("Process request " + request);
 
-		ValidateUserAndPurchaseResponse response = new ValidateUserAndPurchaseResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		ValidateUserAndPurchaseResponse response = requestResponseMap.makeResponse(request);
 
 		UserBL userBL = new UserBL(request.getUserId());
 
@@ -86,8 +86,7 @@ public class MessageServiceAPI {
 	public GetOrderResponse process(GetOrderRequest request) {
 		LOG.info("Process request " + request);
 
-		GetOrderResponse response = new GetOrderResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		GetOrderResponse response = requestResponseMap.makeResponse(request);
 
 		OrderWS orderWS = getOrder(request.getOrderId());
 		if (orderWS == null) {
@@ -107,8 +106,7 @@ public class MessageServiceAPI {
 			GetOrderByStringMetaDataRequest request) {
 		LOG.info("Process request " + request);
 
-		GetOrderByStringMetaDataResponse response = new GetOrderByStringMetaDataResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		GetOrderByStringMetaDataResponse response = requestResponseMap.makeResponse(request);
 
 		OrderBL bl = new OrderBL();
 		// get the order
@@ -135,8 +133,7 @@ public class MessageServiceAPI {
 	public DeleteOrderResponse process(DeleteOrderRequest request) {
 		LOG.info("Process request " + request);
 
-		DeleteOrderResponse response = new DeleteOrderResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		DeleteOrderResponse response = requestResponseMap.makeResponse(request);
 
 		// now get the order
 		OrderBL bl = new OrderBL();
@@ -152,8 +149,7 @@ public class MessageServiceAPI {
 	public CreateOrderResponse process(CreateOrderRequest request) {
 		LOG.info("Process request " + request);
 
-		CreateOrderResponse response = new CreateOrderResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		CreateOrderResponse response = requestResponseMap.makeResponse(request);
 
 		OrderWS orderWS = messageServiceBL.doCreateOrder(request.getOrderWS(), true);
 		if (orderWS == null) {
@@ -172,8 +168,7 @@ public class MessageServiceAPI {
 	public GetUserResponse process(GetUserRequest request) {
 		LOG.info("Process request " + request);
 
-		GetUserResponse response = new GetUserResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		GetUserResponse response = requestResponseMap.makeResponse(request);
 
 		UserBL bl = new UserBL(request.getUserId());
 		response.setUserWS(bl.getUserWS());
@@ -186,8 +181,7 @@ public class MessageServiceAPI {
 	public UpdateOrderResponse process(UpdateOrderRequest request) {
 		LOG.info("Process request " + request);
 
-		UpdateOrderResponse response = new UpdateOrderResponse();
-		response.setCorrelationId(request.getCorrelationId());
+		UpdateOrderResponse response = requestResponseMap.makeResponse(request);
 
 		messageServiceBL.doUpdateOrder(request.getOrderWS());
 

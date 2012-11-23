@@ -57,26 +57,7 @@
 
 	<!-- Bean contains mapping of requests to responses, used to initalise the 
 		Jbilling Object mapper and the Jbilling Java Type mapper -->
-	<util:map id="jbMessageRequestResponseMap">
-		<entry
-			key="#{ T(com.sapienter.jbilling.server.util.amqp.GetUserRequest) }"
-			value="#{ T(com.sapienter.jbilling.server.util.amqp.GetUserResponse) }" />
-		<entry
-			key="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderRequest) }"
-			value="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderResponse) }" />
-		<entry
-			key="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderByStringMetaDataRequest) }"
-			value="#{ T(com.sapienter.jbilling.server.util.amqp.GetOrderByStringMetaDataResponse) }" />
-		<entry
-			key="#{ T(com.sapienter.jbilling.server.util.amqp.ValidateUserAndPurchaseRequest) }"
-			value="#{ T(com.sapienter.jbilling.server.util.amqp.ValidateUserAndPurchaseResponse) }" />
-		<entry
-			key="#{ T(com.sapienter.jbilling.server.util.amqp.DeleteOrderRequest) }"
-			value="#{ T(com.sapienter.jbilling.server.util.amqp.DeleteOrderResponse) }" />
-		<entry
-			key="#{ T(com.sapienter.jbilling.server.util.amqp.CreateOrderRequest) }"
-			value="#{ T(com.sapienter.jbilling.server.util.amqp.CreateOrderResponse) }" />
-	</util:map>
+	<bean id="jbMessageRequestResponseMap" class="com.sapienter.jbilling.server.util.amqp.RequestResponseMap"/>
 
 	<!-- Bean used for formatting messages for the AMQP queues -->
 	<bean id="jbJsonMessageConverter"
@@ -174,7 +155,11 @@
 	<!-- Message services -->
 	<int:service-activator id="getUserMessageService"
 		input-channel="jbRequestChannel" output-channel="jbResponseChannel">
-		<bean class="com.sapienter.jbilling.server.util.amqp.MessageServiceAPI" />
+		<bean class="com.sapienter.jbilling.server.util.amqp.MessageServiceAPI">
+			<property name="messageServiceBL">
+				<bean class="com.sapienter.jbilling.server.util.amqp.MessageServiceBL" />
+			</property>
+		</bean>
 	</int:service-activator>
 
 </beans>

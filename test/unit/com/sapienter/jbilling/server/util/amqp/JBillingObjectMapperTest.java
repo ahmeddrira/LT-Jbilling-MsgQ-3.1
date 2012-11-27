@@ -4,13 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
+import org.mvel2.optimizers.impl.refl.nodes.ArrayLength;
+
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 
 public class JBillingObjectMapperTest {
 
@@ -30,8 +35,7 @@ public class JBillingObjectMapperTest {
 			UpdateOrderRequest.class,
 			UpdateOrderResponse.class,
 	};
-
-
+	
 	@Test
 	public void test() throws JsonGenerationException, JsonMappingException, IOException, InstantiationException, IllegalAccessException {
 		ObjectMapper jbillingMapper = new JBillingObjectMapper();
@@ -39,8 +43,14 @@ public class JBillingObjectMapperTest {
 		for (Class<?> messageClass : testData) {
 			System.out.println("===> Serializing " + messageClass.getName()
 					+ "...");
-			String jsonStr = jbillingMapper.writeValueAsString(messageClass
-					.newInstance());
+			Object o = messageClass.newInstance();
+			// Test why quantity is not de-serialised 
+			if (o instanceof ValidateUserAndPurchaseResponse) {
+				ValidateUserAndPurchaseWS validateUserAndPurchaseWS = new ValidateUserAndPurchaseWS();
+				validateUserAndPurchaseWS.setQuantity("23978");
+				((ValidateUserAndPurchaseResponse) o).setValidateUserAndPurchaseWS(validateUserAndPurchaseWS);
+			}
+			String jsonStr = jbillingMapper.writeValueAsString(o);
 			assertNotNull("Could not serialize " + messageClass.getName(), jsonStr);
 
 			System.out.println("<=== deserializing " + messageClass.getName()
@@ -49,6 +59,11 @@ public class JBillingObjectMapperTest {
 					messageClass);
 			assertNotNull("Could not deserialize " + messageClass.getName() + ", jsonString='" + jsonStr + "'", deserializedObj);
 			assertEquals(messageClass, deserializedObj.getClass());
+			if (o instanceof ValidateUserAndPurchaseResponse) {
+				assertEquals(o.getClass() + "::quantity", 
+						((ValidateUserAndPurchaseResponse) o).getValidateUserAndPurchaseWS().getQuantityAsDecimal(), 
+						((ValidateUserAndPurchaseResponse) deserializedObj).getValidateUserAndPurchaseWS().getQuantityAsDecimal()); 
+			}
 		}
 	}
 	

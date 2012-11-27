@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonMethod;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -15,7 +17,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 
 /**
  * Object mapper for handling the overriden methods in JBilling DTO's
@@ -29,7 +31,7 @@ public class JBillingObjectMapper extends ObjectMapper {
 		super();
 
 		this.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-		this.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		this.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 		// Set the mixin configurations
 		this.getDeserializationConfig().addMixInAnnotations(UserWS.class, UserWSMixIn.class);
 		this.getDeserializationConfig().addMixInAnnotations(OrderWS.class, OrderWSMixIn.class);
@@ -38,7 +40,7 @@ public class JBillingObjectMapper extends ObjectMapper {
 		this.getDeserializationConfig().addMixInAnnotations(PriceModelWS.class, PriceModelWSMixIn.class);
 		this.getDeserializationConfig().addMixInAnnotations(InvoiceWS.class, InvoiceWSMixIn.class);
 		this.getDeserializationConfig().addMixInAnnotations(InvoiceLineDTO.class, InvoiceLineDTOMixIn.class);
-		this.getDeserializationConfig().addMixInAnnotations(ValidatePurchaseWS.class, ValidatePurchaseWSMixIn.class);
+		this.getDeserializationConfig().addMixInAnnotations(ValidateUserAndPurchaseWS.class, ValidateUserAndPurchaseWSMixIn.class);
 	}
 }
 
@@ -82,6 +84,13 @@ abstract class InvoiceLineDTOMixIn {
 	@JsonIgnore public abstract void setQuantity(BigDecimal value);
 }
 
-abstract class ValidatePurchaseWSMixIn {
+abstract class ValidateUserAndPurchaseWSMixIn {
+    @JsonProperty public abstract Boolean getSuccess();
+    @JsonProperty public abstract String[] getMessage();
+    @JsonProperty public abstract Boolean getAuthorised();
+    @JsonProperty public abstract String getQuantity();
+    
+	@JsonIgnore public abstract BigDecimal getQuantityAsDecimal();
 	@JsonIgnore public abstract void setQuantity(BigDecimal value);
+	@JsonIgnore public abstract void setQuantity(Double value);
 }

@@ -121,6 +121,6 @@ grails.project.dependency.resolution = {
 		compile 'org.springframework.integration:spring-integration-core:2.1.3.RELEASE'
 		compile 'org.springframework.integration:spring-integration-amqp:2.1.3.RELEASE'
 		compile 'org.springframework.amqp:spring-rabbit:1.1.2.RELEASE'
-
+		test 'uk.co.jemos.podam:podam:3.0.2.RELEASE'
     }
 }

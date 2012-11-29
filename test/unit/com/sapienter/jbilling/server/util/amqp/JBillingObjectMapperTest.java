@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.StaleObjectStateException;
 import org.junit.Test;
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -25,7 +27,7 @@ public class JBillingObjectMapperTest {
 	PodamFactory factory = new PodamFactoryImpl(new JBillingDataStrategy());
 	ObjectMapper jbillingMapper = new JBillingObjectMapper();
 
-	private Class<?>[] testData = new Class<?>[] { GetUserRequest.class,
+	private Class<?>[] requestResponses = new Class<?>[] { GetUserRequest.class,
 			GetUserResponse.class, GetOrderRequest.class,
 			GetOrderResponse.class, GetOrderByStringMetaDataRequest.class,
 			GetOrderByStringMetaDataResponse.class,
@@ -33,8 +35,8 @@ public class JBillingObjectMapperTest {
 			ValidateUserAndPurchaseResponse.class, CreateOrderRequest.class,
 			CreateOrderResponse.class, DeleteOrderRequest.class,
 			DeleteOrderResponse.class, UpdateOrderRequest.class,
-			UpdateOrderResponse.class, };
-
+			UpdateOrderResponse.class,};
+	
 	private <T> void test(Class<T> clazz) throws Exception {
 		T o = factory.manufacturePojo(clazz);
 
@@ -55,7 +57,7 @@ public class JBillingObjectMapperTest {
 
 	@Test
 	public void test() throws Exception {
-		for (Class<?> messageClass : testData) {
+		for (Class<?> messageClass : requestResponses) {
 			test(messageClass);
 		}
 	}
@@ -66,7 +68,7 @@ public class JBillingObjectMapperTest {
 		int correlationId = 0;
 		RequestResponseMap requestResponseMap = new RequestResponseMap();
 
-		Iterator<Class<?>> iter = Arrays.asList(testData).iterator();
+		Iterator<Class<?>> iter = Arrays.asList(requestResponses).iterator();
 		while (iter.hasNext()) {
 			@SuppressWarnings("unchecked")
 			Class<? extends RequestBase> reqClazz = (Class<? extends RequestBase>) iter

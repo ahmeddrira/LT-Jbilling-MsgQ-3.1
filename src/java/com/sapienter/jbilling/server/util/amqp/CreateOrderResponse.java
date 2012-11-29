@@ -18,7 +18,8 @@ public class CreateOrderResponse extends ResponseBase {
 				.append(", getCorrelationId()=").append(getCorrelationId())
 				.append(", getIsSuccess()=").append(getIsSuccess())
 				.append(", getErrorMessage()=").append(getErrorMessage())
-				.append(", getCause()=").append(getCause()).append("]");
+				.append(", getExceptionClass()=").append(getExceptionClass())
+				.append("]");
 		return builder.toString();
 	}
 }

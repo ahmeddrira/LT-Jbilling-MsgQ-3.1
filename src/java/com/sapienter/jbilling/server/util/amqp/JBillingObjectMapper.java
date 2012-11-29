@@ -4,12 +4,15 @@ import java.math.BigDecimal;
 
 import org.codehaus.jackson.annotate.JsonAnySetter;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.StaleObjectStateException;
+import org.hibernate.exception.NestableDelegate;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -65,11 +68,27 @@ public class JBillingObjectMapper extends ObjectMapper {
 
 		this.getDeserializationConfig().addMixInAnnotations(StackTraceElement.class, StackTraceElementMixIn.class);
 		this.getSerializationConfig().addMixInAnnotations(StackTraceElement.class, StackTraceElementMixIn.class);
+
+		this.getDeserializationConfig().addMixInAnnotations(NestableDelegate.class, NestableDelegateMixIn.class);
+		this.getSerializationConfig().addMixInAnnotations(NestableDelegate.class, NestableDelegateMixIn.class);
+
+		this.getDeserializationConfig().addMixInAnnotations(StaleObjectStateException.class, StaleObjectStateExceptionMixIn.class);
+		this.getSerializationConfig().addMixInAnnotations(StaleObjectStateException.class, StaleObjectStateExceptionMixIn.class);
 	}
 
 	@JsonAnySetter
 	public void handleUnknown(String key, Object value) {
 		// Ignore
+	}
+
+	@JsonCreator
+	public static StaleObjectStateException createStaleObjectStateException(String s) {
+		return new StaleObjectStateException(s, "");
+	}
+
+	@JsonCreator
+	public static Throwable createThrowable() {
+		return new Throwable();
 	}
 
 }
@@ -154,3 +173,13 @@ abstract class MetaFieldValueWSMixIn {
 @JsonIgnoreProperties("declaringClass")
 abstract class StackTraceElementMixIn {
 }
+
+@JsonIgnoreProperties( {"nestable", "delegate", "throwables" } )
+abstract class NestableDelegateMixIn {
+}
+
+@JsonIgnoreProperties("throwables")
+abstract class StaleObjectStateExceptionMixIn {
+}
+
+

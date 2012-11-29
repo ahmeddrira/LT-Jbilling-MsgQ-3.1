@@ -8,8 +8,8 @@ public class DeleteOrderResponse extends ResponseBase {
 		builder.append("DeleteOrderResponse [getCorrelationId()=")
 				.append(getCorrelationId()).append(", getIsSuccess()=")
 				.append(getIsSuccess()).append(", getErrorMessage()=")
-				.append(getErrorMessage()).append(", getCause()=")
-				.append(getCause()).append("]");
+				.append(getErrorMessage()).append(", getExceptionClass()=")
+				.append(getExceptionClass()).append("]");
 		return builder.toString();
 	}
 

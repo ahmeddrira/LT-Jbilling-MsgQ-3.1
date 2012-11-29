@@ -5,7 +5,7 @@ public class ResponseBase {
 	private int correlationId;
 	private Boolean isSuccess;
 	private String errorMessage;
-	private Exception cause;
+	private Class<?> exceptionClass;
 	
 	public int getCorrelationId() {
 		return correlationId;
@@ -31,11 +31,11 @@ public class ResponseBase {
 		this.errorMessage = errorMessage;
 	}
 	
-	public void setCause(Exception sie) {
-		cause = sie;
-	}	
-	
-	public Exception getCause() {
-		return cause;
+	public Class<?> getExceptionClass() {
+		return exceptionClass;
+	}
+
+	public void setExceptionClass(Class<?> exceptionClass) {
+		this.exceptionClass = exceptionClass;
 	}
 }

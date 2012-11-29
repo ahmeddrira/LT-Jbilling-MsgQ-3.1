@@ -1,12 +1,9 @@
 package com.sapienter.jbilling.server.util.amqp;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.integration.Message;
 import org.springframework.integration.MessagingException;
-import org.springframework.integration.message.ErrorMessage;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.util.Assert;
 
@@ -46,7 +43,7 @@ public class MessageHandlingExceptionHandler {
 
 		response.setCorrelationId(request.getCorrelationId());
 		response.setIsSuccess(false);
-		response.setCause(exception);
+		response.setExceptionClass(exception.getClass());
 		response.setErrorMessage(exception.getMessage());
 
 		return response;
@@ -76,6 +73,8 @@ public class MessageHandlingExceptionHandler {
 
 		ResponseBase response = makeResponse(exception);
 		if (response != null) {
+			LOG.info("Made response for exception. response=" + response.toString());
+
 			return MessageBuilder.withPayload(response)
 					.copyHeaders(exception.getFailedMessage().getHeaders())
 					.build();

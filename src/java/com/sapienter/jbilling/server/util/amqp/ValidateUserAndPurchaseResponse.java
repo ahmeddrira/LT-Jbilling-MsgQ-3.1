@@ -16,12 +16,14 @@ public class ValidateUserAndPurchaseResponse extends ResponseBase {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ValidateUserAndPurchaseResponse [validateUserAndPurchaseWS=")
-				.append(validateUserAndPurchaseWS).append(", getCorrelationId()=")
-				.append(getCorrelationId()).append(", getIsSuccess()=")
-				.append(getIsSuccess()).append(", getErrorMessage()=")
-				.append(getErrorMessage()).append(", getCause()=")
-				.append(getCause()).append("]");
+		builder.append(
+				"ValidateUserAndPurchaseResponse [validateUserAndPurchaseWS=")
+				.append(validateUserAndPurchaseWS)
+				.append(", getCorrelationId()=").append(getCorrelationId())
+				.append(", getIsSuccess()=").append(getIsSuccess())
+				.append(", getErrorMessage()=").append(getErrorMessage())
+				.append(", getExceptionClass()=").append(getExceptionClass())
+				.append("]");
 		return builder.toString();
 	}
 }

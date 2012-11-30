@@ -98,6 +98,7 @@ abstract class UserWSMixIn {
 
 	@JsonIgnore public abstract void setOwingBalance(BigDecimal value);
 	@JsonIgnore public abstract BigDecimal getOwingBalanceAsDecimal();
+	@JsonProperty public abstract void setDynamicBalance(String value);
 	@JsonIgnore public abstract void setDynamicBalance(BigDecimal value);
 	@JsonIgnore public abstract BigDecimal getDynamicBalanceAsDecimal();
 	@JsonIgnore public abstract void setAutoRecharge(BigDecimal value);

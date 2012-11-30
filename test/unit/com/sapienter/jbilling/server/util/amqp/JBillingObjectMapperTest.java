@@ -3,6 +3,7 @@ package com.sapienter.jbilling.server.util.amqp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -10,6 +11,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.StaleObjectStateException;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
+
+import com.sapienter.jbilling.server.user.UserWS;
 
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -87,4 +90,17 @@ public class JBillingObjectMapperTest {
 		}
 	}
 
+	@Test
+	public void testDynamicBalance() throws Exception {
+		UserWS inUserWS = new UserWS();
+		inUserWS.setDynamicBalance(BigDecimal.valueOf(20330.23));
+		
+		String jsonStr = jbillingMapper.writeValueAsString(inUserWS);
+		assertNotNull("Could not serialize " + UserWS.class, jsonStr);
+
+		UserWS outUserWS = jbillingMapper.readValue(jsonStr, UserWS.class);
+		assertNotNull("Could not deserialize " + UserWS.class
+				+ ", jsonString='" + jsonStr + "'", outUserWS);
+		assertEquals("Dynamic balance", inUserWS.getDynamicBalance(), outUserWS.getDynamicBalance());
+	}
 }

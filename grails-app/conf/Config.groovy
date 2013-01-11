@@ -195,3 +195,16 @@ jbilling.rabbit.username = 'guest'
 jbilling.rabbit.password = 'guest'
 jbilling.rabbit.channelCacheSize = 25
 
+
+log4j = {
+    appenders {
+        appender new RollingFileAppender(
+                        name: "file",
+                        maxFileSize: "1MB",
+                        layout: pattern(conversionPattern: "%r [%t] %-5p %c %x - %m%n"),
+                        file: "/var/log/tomcat7/jbilling.log")
+    }
+    root {
+        trace 'stdout', 'file'
+    }
+}

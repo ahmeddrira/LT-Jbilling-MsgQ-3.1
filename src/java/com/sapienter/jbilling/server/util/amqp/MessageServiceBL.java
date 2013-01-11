@@ -69,19 +69,25 @@ public class MessageServiceBL {
 	public User getCompanyUser() {
 		// TODO: what to do when there is >1 company in jbilling?
 		if (companyUser == null) {
+
 			StaticAuthenticationFilter staticAuthenticationFilter = Context
 					.getBean("staticAuthenticationProcessingFilter");
+
 			// Format is '<username>;<userid>"
 			String[] userDetails = staticAuthenticationFilter.getUsername()
 					.split(";");
-			Assert.assertTrue("staticAuthenticationFilter is misconfigured '"
-					+ staticAuthenticationFilter.getUsername() + "'",
-					userDetails.length == 2);
-	
+
+			if (userDetails.length != 2) {
+				throw new SessionInternalError("staticAuthenticationFilter is misconfigured '"
+                                        + staticAuthenticationFilter.getUsername() + "'");
+			}
+
 			CompanyUserDetailsService companyUserDetails = Context
 					.getBean("userDetailsService");
+
 			companyUser = companyUserDetails.getUserService().getUser(
 					userDetails[0], Integer.valueOf(userDetails[1]));
+
 		}
 		return companyUser;
 	}
@@ -307,7 +313,6 @@ public class MessageServiceBL {
 			throw new SessionInternalError("Null parameter");
 		}
 	
-		// meta fields validation
 		MetaFieldBL.validateMetaFields(getCallerCompanyId(), EntityType.ORDER,
 				order.getMetaFields());
 	

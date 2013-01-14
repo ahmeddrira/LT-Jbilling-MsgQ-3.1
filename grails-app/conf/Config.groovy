@@ -198,13 +198,13 @@ jbilling.rabbit.channelCacheSize = 25
 
 log4j = {
     appenders {
-        appender new RollingFileAppender(
+        appender new DailyRollingFileAppender(
                         name: "file",
-                        maxFileSize: "1MB",
                         layout: pattern(conversionPattern: "%r [%t] %-5p %c %x - %m%n"),
+						datePattern: "yyyy-MM-dd",
                         file: "/var/log/tomcat7/jbilling.log")
     }
     root {
-        trace 'stdout', 'file'
+        info 'stdout', 'file'
     }
 }

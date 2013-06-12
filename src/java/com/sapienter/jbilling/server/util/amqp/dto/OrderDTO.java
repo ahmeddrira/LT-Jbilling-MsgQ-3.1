@@ -6,14 +6,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sapienter.jbilling.server.util.amqp.types.OrderBillingType;
+import com.sapienter.jbilling.server.util.amqp.types.OrderPeriodType;
+
 public class OrderDTO {
 	private Integer id;
 	private Integer userId;
-	private Integer period;
+	private Integer createdById;
+	private OrderPeriodType period;
 	private Integer currencyId;
-	private Date activeDate;
-	private boolean isCurrent;
-	private Integer billingTypeId;
+	private Date activeSince;
+	private Date activeUntil;
+	private Integer isCurrent;
+	private OrderBillingType billingType;
 	private Collection<OrderLineDTO> orderLines;
 	private Map<String, String> metaFields;
 
@@ -33,11 +38,11 @@ public class OrderDTO {
 		this.userId = userId;
 	}
 
-	public Integer getPeriod() {
+	public OrderPeriodType getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Integer period) {
+	public void setPeriod(OrderPeriodType period) {
 		this.period = period;
 	}
 
@@ -49,28 +54,28 @@ public class OrderDTO {
 		this.currencyId = currencyId;
 	}
 
-	public Date getActiveDate() {
-		return activeDate;
+	public Date getActiveUntil() {
+		return activeUntil;
 	}
 
-	public void setActiveDate(Date activeDate) {
-		this.activeDate = activeDate;
+	public void setActiveUntil(Date activeUntil) {
+		this.activeUntil = activeUntil;
 	}
 
-	public boolean isCurrent() {
-		return isCurrent;
+	public Date getActiveSince() {
+		return activeSince;
 	}
 
-	public void setCurrent(boolean isCurrent) {
-		this.isCurrent = isCurrent;
+	public void setActiveSince(Date date) {
+		this.activeSince = date;
 	}
 
-	public Integer getBillingTypeId() {
-		return billingTypeId;
+	public OrderBillingType getBillingType() {
+		return billingType;
 	}
 
-	public void setBillingTypeId(Integer billingTypeId) {
-		this.billingTypeId = billingTypeId;
+	public void setBillingType(OrderBillingType billingType) {
+		this.billingType = billingType;
 	}
 
 	public Collection<OrderLineDTO> getOrderLines() {
@@ -95,15 +100,32 @@ public class OrderDTO {
 		this.metaFields = metaFields;
 	}
 
+	public Integer getCreatedById() {
+		return createdById;
+	}
+
+	public void setCreatedById(Integer createdById) {
+		this.createdById = createdById;
+	}
+
+	public Integer getIsCurrent() {
+		return isCurrent;
+	}
+
+	public void setIsCurrent(Integer isCurrent) {
+		this.isCurrent = isCurrent;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("OrderDTO [id=").append(id).append(", userId=")
-				.append(userId).append(", period=").append(period)
-				.append(", currencyId=").append(currencyId)
-				.append(", activeDate=").append(activeDate)
-				.append(", isCurrent=").append(isCurrent)
-				.append(", billingTypeId=").append(billingTypeId)
+				.append(userId).append(", createdById=").append(createdById)
+				.append(", period=").append(period).append(", currencyId=")
+				.append(currencyId).append(", activeSince=")
+				.append(activeSince).append(", activeUntil=")
+				.append(activeUntil).append(", isCurrent=").append(isCurrent)
+				.append(", billingType=").append(billingType)
 				.append(", orderLines=").append(orderLines)
 				.append(", metaFields=").append(metaFields).append("]");
 		return builder.toString();

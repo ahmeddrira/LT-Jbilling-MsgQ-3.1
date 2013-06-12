@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
@@ -16,6 +17,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
+import com.sapienter.jbilling.server.util.amqp.dto.TransformUtil;
 import com.sapienter.jbilling.server.util.amqp.dto.ProductSubscriptionDTO;
 import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderRequest;
 import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderResponse;
@@ -115,7 +117,7 @@ public class MessageServiceAPI {
 			response.setErrorMessage("Cannot find order for orderId="
 					+ request.getOrderId());
 		} else {
-			response.setOrderWS(orderWS);
+			response.setOrder(TransformUtil.transform(orderWS));
 			response.setIsSuccess(true);
 		}
 
@@ -131,18 +133,22 @@ public class MessageServiceAPI {
 
 		OrderBL bl = new OrderBL();
 		// get the order
-		Integer id = bl.getIdByStringMetaData(request.getMetaFieldValueWS());
+		MetaFieldValueWS metaField = new MetaFieldValueWS();
+		metaField.setFieldName(request.getMetaFieldName());
+		metaField.setStringValue(request.getMetaFieldValue());
+		
+		Integer id = bl.getIdByStringMetaData(metaField);
 		if (id == null) {
 			response.setIsSuccess(false);
 			response.setErrorMessage("Cannot find order for metaFieldValue="
-					+ request.getMetaFieldValueWS());
+					+ metaField);
 		} else {
 			OrderWS orderWS = getOrder(id);
 			if (orderWS == null) {
 				response.setIsSuccess(false);
 				response.setErrorMessage("Cannot find order for orderId=" + id);
 			} else {
-				response.setOrderWS(orderWS);
+				response.setOrder(TransformUtil.transform(orderWS));
 				response.setIsSuccess(true);
 			}
 		}
@@ -172,7 +178,7 @@ public class MessageServiceAPI {
 
 		CreateOrderResponse response = requestResponseMap.makeResponse(request);
 
-		OrderWS orderWS = messageServiceBL.doCreateOrder(request.getOrderWS(), true);
+		OrderWS orderWS = messageServiceBL.doCreateOrder(TransformUtil.transform(request.getOrder()), true);
 		if (orderWS == null) {
 			response.setIsSuccess(false);
 			response.setErrorMessage("Failed to created order for request "

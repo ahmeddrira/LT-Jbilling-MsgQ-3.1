@@ -1,10 +1,14 @@
 package com.sapienter.jbilling.server.util.amqp;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
@@ -12,6 +16,23 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
+import com.sapienter.jbilling.server.util.amqp.dto.ProductSubscriptionDTO;
+import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.DeleteOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.DeleteOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderByStringMetaDataRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderByStringMetaDataResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetProductSubscriptionsRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetProductSubscriptionsResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetUserRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetUserResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.UpdateOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.UpdateOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.ValidateUserAndPurchaseRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.ValidateUserAndPurchaseResponse;
 
 @Transactional(propagation = Propagation.REQUIRED)
 public class MessageServiceAPI {
@@ -189,6 +210,33 @@ public class MessageServiceAPI {
 
 		LOG.info("Request response " + response);
 		return response;
+	}
+	
+	public GetProductSubscriptionsResponse process(GetProductSubscriptionsRequest request) {
+		LOG.info("Process request " + request);
+
+		GetProductSubscriptionsResponse response = requestResponseMap.makeResponse(request);
+
+		Collection<ProductSubscriptionDTO> subscriptions = new ArrayList<ProductSubscriptionDTO>();
+		for (ItemDTOEx item : messageServiceBL.getSubscribedItems(request.getUserId())) {
+			ProductSubscriptionDTO prodSub = new ProductSubscriptionDTO();
+			prodSub.setItemId(item.getId());
+			prodSub.setCurrencyId(item.getCurrencyId());
+			prodSub.setDeleted(item.getDeleted());
+			prodSub.setDescription(item.getDescription());
+			prodSub.setEntityId(item.getEntityId());
+			prodSub.setGlCode(item.getGlCode());
+			prodSub.setNumber(item.getNumber());
+			prodSub.setPromoCode(item.getPromoCode());
+			
+			subscriptions.add(prodSub);
+		}
+		
+		response.setSubscriptions(subscriptions);		
+		response.setIsSuccess(true);
+
+		LOG.info("Request response " + response);
+		return response;		
 	}
 
 }

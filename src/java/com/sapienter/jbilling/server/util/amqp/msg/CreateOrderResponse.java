@@ -1,4 +1,4 @@
-package com.sapienter.jbilling.server.util.amqp;
+package com.sapienter.jbilling.server.util.amqp.msg;
 
 public class CreateOrderResponse extends ResponseBase {
 	private Integer orderId;

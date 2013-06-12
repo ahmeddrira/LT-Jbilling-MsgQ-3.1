@@ -1,8 +1,8 @@
-package com.sapienter.jbilling.server.util.amqp;
+package com.sapienter.jbilling.server.util.amqp.msg;
 
 import com.sapienter.jbilling.server.order.OrderWS;
 
-public class UpdateOrderResponse extends ResponseBase {
+public class CreateOrderRequest extends RequestBase {
 	private OrderWS orderWS;
 
 	public OrderWS getOrderWS() {
@@ -16,11 +16,8 @@ public class UpdateOrderResponse extends ResponseBase {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("UpdateOrderResponse [orderWS=").append(orderWS)
+		builder.append("CreateOrderRequest [orderWS=").append(orderWS)
 				.append(", getCorrelationId()=").append(getCorrelationId())
-				.append(", getIsSuccess()=").append(getIsSuccess())
-				.append(", getErrorMessage()=").append(getErrorMessage())
-				.append(", getExceptionClass()=").append(getExceptionClass())
 				.append("]");
 		return builder.toString();
 	}

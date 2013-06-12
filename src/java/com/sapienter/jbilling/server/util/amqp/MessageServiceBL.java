@@ -6,13 +6,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +21,12 @@ import com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter;
 import com.sapienter.jbilling.client.authentication.model.User;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PlanItemBL;
+import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
@@ -36,12 +40,18 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
+import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
+import com.sapienter.jbilling.server.util.db.JbillingTable;
+import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
 
 /**
  * Helper functions used by the Message Service API.<br>
@@ -514,6 +524,63 @@ public class MessageServiceBL {
 	
 		// update
 		oldOrder.update(executorId, dto);
+	}
+	
+    private List<InternationalDescriptionWS> getAllItemDescriptions(int itemId) {
+        JbillingTableDAS tableDas = Context.getBean(Context.Name.JBILLING_TABLE_DAS);
+        JbillingTable table = tableDas.findByName(Constants.TABLE_ITEM);
+
+        InternationalDescriptionDAS descriptionDas = (InternationalDescriptionDAS) Context
+                .getBean(Context.Name.DESCRIPTION_DAS);
+        Collection<InternationalDescriptionDTO> descriptionsDTO = descriptionDas.findAll(table.getId(), itemId,
+                "description");
+
+        List<InternationalDescriptionWS> descriptionsWS = new ArrayList<InternationalDescriptionWS>();
+        for (InternationalDescriptionDTO descriptionDTO : descriptionsDTO) {
+            descriptionsWS.add(new InternationalDescriptionWS(descriptionDTO));
+        }
+        return descriptionsWS;
+    }
+
+	public ItemDTOEx getItem(Integer userId, Integer itemId) {
+        ItemBL helper = new ItemBL(itemId);
+        List<PricingField> f = new ArrayList<PricingField>();
+        helper.setPricingFields(f);
+
+        Integer callerId = getCallerId(); 
+        Integer entityId = getCallerCompanyId(); 
+        Integer languageId = getCallerLanguageId(); 
+
+        // use the currency of the given user if provided, otherwise
+        // default to the currency of the caller (admin user)
+        Integer currencyId = (userId != null
+                              ? new UserBL(userId).getCurrencyId()
+                              : getCallerCurrencyId());
+
+        ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
+        // get descriptions
+        retValue.setDescriptions(getAllItemDescriptions(retValue.getId()));
+        return retValue;
+	}
+	
+	public Collection<ItemDTOEx> getSubscribedItems(Integer userId) {
+		Collection<ItemDTOEx> items = new ArrayList<ItemDTOEx>();
+
+		List<PlanItemDTO> prices = new CustomerPriceBL(userId).getCustomerPrices();
+		if (prices == null) {
+			return items;
+		}
+		
+        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
+        if (ws == null) {
+        	return items;
+        }
+
+		for (PlanItemWS subPlan : ws) {
+			items.add(getItem(userId, subPlan.getItemId()));
+		}
+		
+		return items;
 	}
 
 }

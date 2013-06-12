@@ -1,4 +1,4 @@
-package com.sapienter.jbilling.server.util.amqp;
+package com.sapienter.jbilling.server.util.amqp.msg;
 
 public class GetUserRequest extends RequestBase {
 	private int userId;

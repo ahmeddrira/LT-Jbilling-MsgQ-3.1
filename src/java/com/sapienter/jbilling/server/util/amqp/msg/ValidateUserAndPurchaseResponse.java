@@ -1,4 +1,4 @@
-package com.sapienter.jbilling.server.util.amqp;
+package com.sapienter.jbilling.server.util.amqp.msg;
 
 import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 

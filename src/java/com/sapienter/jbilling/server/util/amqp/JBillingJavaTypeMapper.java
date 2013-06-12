@@ -6,6 +6,9 @@ import java.util.Map.Entry;
 
 import org.springframework.amqp.support.converter.DefaultJavaTypeMapper;
 
+import com.sapienter.jbilling.server.util.amqp.msg.RequestBase;
+import com.sapienter.jbilling.server.util.amqp.msg.ResponseBase;
+
 
 /**
  * Extended Java Type Mapper which is configured to map the request and response classes.

@@ -13,6 +13,22 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.DeleteOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.DeleteOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderByStringMetaDataRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderByStringMetaDataResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.GetUserRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.GetUserResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.RequestBase;
+import com.sapienter.jbilling.server.util.amqp.msg.ResponseBase;
+import com.sapienter.jbilling.server.util.amqp.msg.UpdateOrderRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.UpdateOrderResponse;
+import com.sapienter.jbilling.server.util.amqp.msg.ValidateUserAndPurchaseRequest;
+import com.sapienter.jbilling.server.util.amqp.msg.ValidateUserAndPurchaseResponse;
 
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;

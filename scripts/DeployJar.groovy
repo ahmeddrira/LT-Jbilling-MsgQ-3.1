@@ -22,13 +22,13 @@ includeTargets << grailsScript("Jar")
 
 final targetDir = "${basedir}/target"
 
-def repositoryHost = "217.74.234.9"
-def repositoryPort = "8081"
+def repositoryHost = "buildserver.tpspay.com"
+//def repositoryPort = "8081"
 def repositoryId = "thirdparty"
-def repositoryURL = "http://${repositoryHost}:${repositoryPort}/nexus/content/repositories/${repositoryId}"
+def repositoryURL = "http://${repositoryHost}/nexus/content/repositories/${repositoryId}"
 
 // The maven artifact version needs to be updated here
-def mvnJarVersion = "3.1.0.RC8"
+def mvnJarVersion = "3.1.0.RC10"
 
 def deployArgs = "deploy:deploy-file -DgroupId=com.sapienter \
   -DartifactId=${grailsAppName} \
@@ -36,7 +36,7 @@ def deployArgs = "deploy:deploy-file -DgroupId=com.sapienter \
   -Dpackaging=jar \
   -Dfile=${targetDir}/${grailsAppName}.jar \
   -DrepositoryId=${repositoryId} \
-  -Durl=http://${repositoryHost}:${repositoryPort}/nexus/content/repositories/${repositoryId}"
+  -Durl=${repositoryURL}"
 
 target(install: "Deploys the jbilling jar to a maven repo") {
 	depends(jar)
@@ -47,7 +47,7 @@ target(install: "Deploys the jbilling jar to a maven repo") {
 	System.out.println("   ${targetDir}/${grailsAppName}.jar");
 	System.out.println("   Version ${mvnJarVersion}");
 	System.out.println("To mvn Repository:");
-	System.out.println("   ${repositoryId} [${repositoryHost}:${repositoryPort}]");
+	System.out.println("   ${repositoryId} [${repositoryHost}]");
 	System.out.println(" ");
 	System.out.println("**** Make sure ${repositoryId}'s username and password");
 	System.out.println("**** is added to your .m2/settings.xml file");

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.sapienter.jbilling.server.util.amqp.types.OrderBillingType;
 import com.sapienter.jbilling.server.util.amqp.types.OrderPeriodType;
+import com.sapienter.jbilling.server.util.amqp.types.OrderStatusType;
 
 public class OrderDTO {
 	private Integer id;
@@ -19,6 +20,7 @@ public class OrderDTO {
 	private Date activeUntil;
 	private Integer isCurrent;
 	private OrderBillingType billingType;
+	private OrderStatusType status;
 	private Collection<OrderLineDTO> orderLines;
 	private Map<String, String> metaFields;
 
@@ -78,6 +80,14 @@ public class OrderDTO {
 		this.billingType = billingType;
 	}
 
+	public OrderStatusType getStatus() {
+		return status;
+	}
+
+	public void setStatus(OrderStatusType status) {
+		this.status = status;
+	}
+
 	public Collection<OrderLineDTO> getOrderLines() {
 		if (orderLines == null) {
 			orderLines = new ArrayList<OrderLineDTO>();
@@ -126,8 +136,9 @@ public class OrderDTO {
 				.append(activeSince).append(", activeUntil=")
 				.append(activeUntil).append(", isCurrent=").append(isCurrent)
 				.append(", billingType=").append(billingType)
-				.append(", orderLines=").append(orderLines)
-				.append(", metaFields=").append(metaFields).append("]");
+				.append(", status=").append(status).append(", orderLines=")
+				.append(orderLines).append(", metaFields=").append(metaFields)
+				.append("]");
 		return builder.toString();
 	}
 

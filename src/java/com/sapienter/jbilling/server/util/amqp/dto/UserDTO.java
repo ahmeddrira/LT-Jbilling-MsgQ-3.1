@@ -2,14 +2,14 @@ package com.sapienter.jbilling.server.util.amqp.dto;
 
 import java.math.BigDecimal;
 
-import com.sapienter.jbilling.server.util.amqp.types.AccountStatus;
+import com.sapienter.jbilling.server.util.amqp.types.AccountStatusType;
 import com.sapienter.jbilling.server.util.amqp.types.BalanceType;
 
 public class UserDTO {
 	private Integer id;
 	private String userName;
 	private String companyName;
-	private AccountStatus accountStatus;
+	private AccountStatusType accountStatus;
 	private Integer currencyId;
 	private BalanceType balanceType;
 	private BigDecimal balance;
@@ -41,11 +41,11 @@ public class UserDTO {
 		this.companyName = companyName;
 	}
 
-	public AccountStatus getAccountStatus() {
+	public AccountStatusType getAccountStatus() {
 		return accountStatus;
 	}
 
-	public void setAccountStatus(AccountStatus accountStatus) {
+	public void setAccountStatus(AccountStatusType accountStatus) {
 		this.accountStatus = accountStatus;
 	}
 

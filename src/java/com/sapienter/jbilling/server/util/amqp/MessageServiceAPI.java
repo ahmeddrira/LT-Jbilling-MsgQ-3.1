@@ -17,7 +17,6 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
-import com.sapienter.jbilling.server.util.amqp.dto.TransformUtil;
 import com.sapienter.jbilling.server.util.amqp.dto.ProductSubscriptionDTO;
 import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderRequest;
 import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderResponse;
@@ -35,6 +34,7 @@ import com.sapienter.jbilling.server.util.amqp.msg.UpdateOrderRequest;
 import com.sapienter.jbilling.server.util.amqp.msg.UpdateOrderResponse;
 import com.sapienter.jbilling.server.util.amqp.msg.ValidateUserAndPurchaseRequest;
 import com.sapienter.jbilling.server.util.amqp.msg.ValidateUserAndPurchaseResponse;
+import com.sapienter.jbilling.server.util.amqp.util.TransformUtil;
 
 @Transactional(propagation = Propagation.REQUIRED)
 public class MessageServiceAPI {

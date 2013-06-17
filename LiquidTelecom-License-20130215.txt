@@ -1,0 +1,9 @@
+Company Name: Liquid Telecom
+Company Address: 9 Kingsway, London, WC2B6XF, UK
+Start Date (format: yyyyMMdd) : 20130215
+Days Of License: 365
+Active Customers: 10000
+License Type: Production
+
+Key (no whitespace in the key!):
+kkg0R4blvdRA91WBAUpndB3+sCV+es4CSQB/xbBKqwRaZJrz1R/fnHkmkfjNnNe3YFvjOCFaz450/odUXBsNzje7tI8NTf32X/ZWf9nwiUA=

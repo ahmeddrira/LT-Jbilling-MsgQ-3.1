@@ -38,42 +38,42 @@ public class JBillingObjectMapper extends ObjectMapper {
 
 		this.setVisibility(JsonMethod.FIELD, Visibility.ANY);
 		this.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-		// Set the mixin configurations
-		this.getDeserializationConfig().addMixInAnnotations(UserWS.class, UserWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(UserWS.class, UserWSMixIn.class);
-
-		this.getDeserializationConfig().addMixInAnnotations(OrderWS.class, OrderWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(OrderWS.class, OrderWSMixIn.class);
-
-		this.getDeserializationConfig().addMixInAnnotations(OrderLineWS.class, OrderLineWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(OrderLineWS.class, OrderLineWSMixIn.class);
-
-		this.getDeserializationConfig().addMixInAnnotations(ItemDTOEx.class, ItemDTOExMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(ItemDTOEx.class, ItemDTOExMixIn.class);
-		
-		this.getDeserializationConfig().addMixInAnnotations(PriceModelWS.class, PriceModelWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(PriceModelWS.class, PriceModelWSMixIn.class);
-		
-		this.getDeserializationConfig().addMixInAnnotations(InvoiceWS.class, InvoiceWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(InvoiceWS.class, InvoiceWSMixIn.class);
-		
-		this.getDeserializationConfig().addMixInAnnotations(InvoiceLineDTO.class, InvoiceLineDTOMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(InvoiceLineDTO.class, InvoiceLineDTOMixIn.class);
-		
-		this.getDeserializationConfig().addMixInAnnotations(ValidateUserAndPurchaseWS.class, ValidateUserAndPurchaseWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(ValidateUserAndPurchaseWS.class, ValidateUserAndPurchaseWSMixIn.class);
-		
-		this.getDeserializationConfig().addMixInAnnotations(MetaFieldValueWS.class, MetaFieldValueWSMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(MetaFieldValueWS.class, MetaFieldValueWSMixIn.class);
-
-		this.getDeserializationConfig().addMixInAnnotations(StackTraceElement.class, StackTraceElementMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(StackTraceElement.class, StackTraceElementMixIn.class);
-
-		this.getDeserializationConfig().addMixInAnnotations(NestableDelegate.class, NestableDelegateMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(NestableDelegate.class, NestableDelegateMixIn.class);
-
-		this.getDeserializationConfig().addMixInAnnotations(StaleObjectStateException.class, StaleObjectStateExceptionMixIn.class);
-		this.getSerializationConfig().addMixInAnnotations(StaleObjectStateException.class, StaleObjectStateExceptionMixIn.class);
+//		// Set the mixin configurations
+//		this.getDeserializationConfig().addMixInAnnotations(UserWS.class, UserWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(UserWS.class, UserWSMixIn.class);
+//
+//		this.getDeserializationConfig().addMixInAnnotations(OrderWS.class, OrderWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(OrderWS.class, OrderWSMixIn.class);
+//
+//		this.getDeserializationConfig().addMixInAnnotations(OrderLineWS.class, OrderLineWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(OrderLineWS.class, OrderLineWSMixIn.class);
+//
+//		this.getDeserializationConfig().addMixInAnnotations(ItemDTOEx.class, ItemDTOExMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(ItemDTOEx.class, ItemDTOExMixIn.class);
+//		
+//		this.getDeserializationConfig().addMixInAnnotations(PriceModelWS.class, PriceModelWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(PriceModelWS.class, PriceModelWSMixIn.class);
+//		
+//		this.getDeserializationConfig().addMixInAnnotations(InvoiceWS.class, InvoiceWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(InvoiceWS.class, InvoiceWSMixIn.class);
+//		
+//		this.getDeserializationConfig().addMixInAnnotations(InvoiceLineDTO.class, InvoiceLineDTOMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(InvoiceLineDTO.class, InvoiceLineDTOMixIn.class);
+//		
+//		this.getDeserializationConfig().addMixInAnnotations(ValidateUserAndPurchaseWS.class, ValidateUserAndPurchaseWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(ValidateUserAndPurchaseWS.class, ValidateUserAndPurchaseWSMixIn.class);
+//		
+//		this.getDeserializationConfig().addMixInAnnotations(MetaFieldValueWS.class, MetaFieldValueWSMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(MetaFieldValueWS.class, MetaFieldValueWSMixIn.class);
+//
+//		this.getDeserializationConfig().addMixInAnnotations(StackTraceElement.class, StackTraceElementMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(StackTraceElement.class, StackTraceElementMixIn.class);
+//
+//		this.getDeserializationConfig().addMixInAnnotations(NestableDelegate.class, NestableDelegateMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(NestableDelegate.class, NestableDelegateMixIn.class);
+//
+//		this.getDeserializationConfig().addMixInAnnotations(StaleObjectStateException.class, StaleObjectStateExceptionMixIn.class);
+//		this.getSerializationConfig().addMixInAnnotations(StaleObjectStateException.class, StaleObjectStateExceptionMixIn.class);
 	}
 
 	@JsonAnySetter

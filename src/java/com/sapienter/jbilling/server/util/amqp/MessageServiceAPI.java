@@ -16,7 +16,6 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.ValidateUserAndPurchaseWS;
 import com.sapienter.jbilling.server.util.amqp.dto.ProductSubscriptionDTO;
 import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderRequest;
 import com.sapienter.jbilling.server.util.amqp.msg.CreateOrderResponse;
@@ -66,21 +65,13 @@ public class MessageServiceAPI {
 			response.setIsSuccess(false);
 			response.setErrorMessage("Failed to validate purchase");
 		} else {
-			ValidateUserAndPurchaseWS validateUserAndPurchaseWS = new ValidateUserAndPurchaseWS();
-			validateUserAndPurchaseWS.setAccountStatus(userBL.getDto()
-					.getStatus().getId());
-			validateUserAndPurchaseWS.setDynamicBalance(userBL.getDto()
-					.getCustomer().getDynamicBalance());
-			validateUserAndPurchaseWS.setSuccess(validatePurchaseWS
-					.getSuccess());
-			validateUserAndPurchaseWS.setMessage(validatePurchaseWS
-					.getMessage());
-			validateUserAndPurchaseWS.setAuthorized(validatePurchaseWS
-					.getAuthorized());
-			validateUserAndPurchaseWS.setQuantity(validatePurchaseWS
-					.getQuantity());
+			response.setAccountStatus(TransformUtil.toAccountStatus((userBL.getDto().getStatus().getId())));
+			response.setDynamicBalance(userBL.getDto().getCustomer().getDynamicBalance());
+			response.setValidated(validatePurchaseWS.getSuccess());
+			response.setValidationMessages(validatePurchaseWS.getMessage());
+			response.setAuthorised(validatePurchaseWS.getAuthorized());
+			response.setQuantity(validatePurchaseWS.getQuantityAsDecimal());
 
-			response.setValidateUserAndPurchaseWS(validateUserAndPurchaseWS);
 			response.setIsSuccess(true);
 		}
 
@@ -198,8 +189,10 @@ public class MessageServiceAPI {
 		GetUserResponse response = requestResponseMap.makeResponse(request);
 
 		UserBL bl = new UserBL(request.getUserId());
-		response.setUserWS(bl.getUserWS());
-		response.setIsSuccess(true);
+		if (bl != null) {
+			response.setUser(TransformUtil.transform(bl.getUserWS()));
+			response.setIsSuccess(true);
+		}
 
 		LOG.info("Request response " + response);
 		return response;
@@ -210,7 +203,7 @@ public class MessageServiceAPI {
 
 		UpdateOrderResponse response = requestResponseMap.makeResponse(request);
 
-		messageServiceBL.doUpdateOrder(request.getOrderWS());
+		messageServiceBL.doUpdateOrder(TransformUtil.transform(request.getOrder()));
 
 		response.setIsSuccess(true);
 

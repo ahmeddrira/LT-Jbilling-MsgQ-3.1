@@ -1,5 +1,6 @@
 package com.sapienter.jbilling.server.util.amqp.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +10,13 @@ import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.amqp.dto.ContactDTO;
 import com.sapienter.jbilling.server.util.amqp.dto.OrderDTO;
 import com.sapienter.jbilling.server.util.amqp.dto.OrderLineDTO;
+import com.sapienter.jbilling.server.util.amqp.dto.UserDTO;
 import com.sapienter.jbilling.server.util.amqp.types.AccountStatusType;
 import com.sapienter.jbilling.server.util.amqp.types.BalanceType;
 import com.sapienter.jbilling.server.util.amqp.types.OrderBillingType;
@@ -129,6 +134,14 @@ public class TransformUtil {
 		return getKey(orderStatusTypeMap, fromValue);
 	}
 
+	public static BalanceType toBalanceType(Integer fromValue) {
+		return balanceTypeMap.get(fromValue);
+	}
+
+	public static Integer transform(BalanceType fromValue) {
+		return getKey(balanceTypeMap, fromValue);
+	}
+
 	public static OrderDTO transform(OrderWS fromValue) {
 		OrderDTO toValue = new OrderDTO();
 
@@ -198,7 +211,53 @@ public class TransformUtil {
 		toValue.setOrderLines(TransformUtil.transform(fromValue.getOrderLines()));
 		toValue.setMetaFields(TransformUtil.transform(fromValue.getMetaFields()));
 
-		return null;
+		return toValue;
+	}
+
+	public static OrderDTO transformFromWS(OrderWS fromValue) {
+		OrderDTO toValue = new OrderDTO();
+
+		toValue.setActiveSince(fromValue.getActiveSince());
+		toValue.setActiveUntil(fromValue.getActiveUntil());
+		toValue.setBillingType(TransformUtil.toOrderBillingType(fromValue
+				.getBillingTypeId()));
+		toValue.setCreatedById(fromValue.getCreatedBy());
+		toValue.setCurrencyId(fromValue.getCurrencyId());
+		toValue.setId(fromValue.getId());
+		toValue.setIsCurrent(fromValue.getIsCurrent());
+		toValue.setStatus(TransformUtil.toOrderStatusType(fromValue
+				.getStatusId()));
+
+		toValue.setOrderLines(TransformUtil.transform(fromValue.getOrderLines()));
+		toValue.setMetaFields(TransformUtil.transform(fromValue.getMetaFields()));
+
+		return toValue;
+	}
+
+	private static Map<String, String> transform(MetaFieldValueWS[] fromValue) {
+		if (fromValue == null) {
+			return null;
+		}
+
+		Map<String, String> toValue = new HashMap<String, String>();
+		for (MetaFieldValueWS fromMF : fromValue) {
+			toValue.put(fromMF.getFieldName(), fromMF.getStringValue());
+		}
+
+		return toValue;
+	}
+
+	private static Collection<OrderLineDTO> transform(OrderLineWS[] fromValue) {
+		if (fromValue == null) {
+			return null;
+		}
+
+		Collection<OrderLineDTO> toValue = new ArrayList<OrderLineDTO>();
+		for (OrderLineWS fromOrder : fromValue) {
+			toValue.add(TransformUtil.transform(fromOrder));
+		}
+
+		return toValue;
 	}
 
 	public static MetaFieldValueWS[] transform(Map<String, String> fromValue) {
@@ -237,11 +296,69 @@ public class TransformUtil {
 	private static OrderLineWS transform(OrderLineDTO fromValue) {
 		OrderLineWS toValue = new OrderLineWS();
 
-		toValue.setId(fromValue.getId());
+		toValue.setId(fromValue.getId() != null ? fromValue.getId() : 0);
 		toValue.setItemId(fromValue.getItemId());
 		toValue.setTypeId(TransformUtil.transform(fromValue.getLineType()));
 		toValue.setQuantity(fromValue.getQuantity());
 		toValue.setUseItem(fromValue.isUseItem());
+
+		return toValue;
+	}
+
+	public static UserDTO transform(UserWS fromValue) {
+		if (fromValue == null) {
+			return null;
+		}
+
+		UserDTO toValue = new UserDTO();
+
+		toValue.setAccountStatus(TransformUtil.toAccountStatus(fromValue
+				.getStatusId()));
+		toValue.setBalanceType(TransformUtil.toBalanceType(fromValue
+				.getBalanceType()));
+		toValue.setCompanyName(fromValue.getCompanyName());
+		toValue.setCreditLimit(fromValue.getCreditLimitAsDecimal());
+		toValue.setCurrencyId(fromValue.getCurrencyId());
+		toValue.setDynamicBalance(fromValue.getDynamicBalanceAsDecimal());
+		toValue.setUserName(fromValue.getUserName());
+		toValue.setId(fromValue.getUserId());
+		toValue.setContact(TransformUtil.transform(fromValue.getContact()));
+
+		return toValue;
+	}
+
+	private static ContactDTO transform(ContactWS fromValue) {
+		if (fromValue == null) {
+			return null;
+		}
+
+		ContactDTO toValue = new ContactDTO();
+
+		toValue.setAddress1(fromValue.getAddress1());
+		toValue.setAddress2(toValue.getAddress2());
+		toValue.setCity(fromValue.getCity());
+		toValue.setContactTypeDescr(fromValue.getContactTypeDescr());
+		toValue.setContactTypeId(fromValue.getContactTypeId());
+		toValue.setCountryCode(fromValue.getCountryCode());
+		toValue.setCreateDate(fromValue.getCreateDate());
+		toValue.setDeleted(fromValue.getDeleted());
+		toValue.setEmail(fromValue.getEmail());
+		toValue.setFaxAreaCode(fromValue.getFaxAreaCode());
+		toValue.setFaxCountryCode(fromValue.getFaxCountryCode());
+		toValue.setFaxNumber(fromValue.getFaxNumber());
+		toValue.setFirstName(fromValue.getFirstName());
+		toValue.setId(fromValue.getId());
+		toValue.setInclude(fromValue.getInclude());
+		toValue.setInitial(fromValue.getInitial());
+		toValue.setLastName(fromValue.getLastName());
+		toValue.setOrganizationName(fromValue.getOrganizationName());
+		toValue.setPhoneAreaCode(fromValue.getPhoneAreaCode());
+		toValue.setPhoneCountryCode(fromValue.getPhoneCountryCode());
+		toValue.setPhoneNumber(fromValue.getPhoneNumber());
+		toValue.setPostalCode(fromValue.getPostalCode());
+		toValue.setStateProvince(fromValue.getStateProvince());
+		toValue.setTitle(fromValue.getTitle());
+		toValue.setType(fromValue.getType());
 
 		return toValue;
 	}

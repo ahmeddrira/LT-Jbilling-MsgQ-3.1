@@ -6,6 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.liquidtelecom.jbilling.api.dto.ContactDTO;
+import com.liquidtelecom.jbilling.api.dto.OrderDTO;
+import com.liquidtelecom.jbilling.api.dto.OrderLineDTO;
+import com.liquidtelecom.jbilling.api.dto.UserDTO;
+import com.liquidtelecom.jbilling.api.types.AccountStatusType;
+import com.liquidtelecom.jbilling.api.types.BalanceType;
+import com.liquidtelecom.jbilling.api.types.OrderBillingType;
+import com.liquidtelecom.jbilling.api.types.OrderLineType;
+import com.liquidtelecom.jbilling.api.types.OrderPeriodType;
+import com.liquidtelecom.jbilling.api.types.OrderStatusType;
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -13,16 +23,6 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.amqp.dto.ContactDTO;
-import com.sapienter.jbilling.server.util.amqp.dto.OrderDTO;
-import com.sapienter.jbilling.server.util.amqp.dto.OrderLineDTO;
-import com.sapienter.jbilling.server.util.amqp.dto.UserDTO;
-import com.sapienter.jbilling.server.util.amqp.types.AccountStatusType;
-import com.sapienter.jbilling.server.util.amqp.types.BalanceType;
-import com.sapienter.jbilling.server.util.amqp.types.OrderBillingType;
-import com.sapienter.jbilling.server.util.amqp.types.OrderLineType;
-import com.sapienter.jbilling.server.util.amqp.types.OrderPeriodType;
-import com.sapienter.jbilling.server.util.amqp.types.OrderStatusType;
 
 public class TransformUtil {
 	private TransformUtil() {
@@ -194,8 +194,7 @@ public class TransformUtil {
 		return toValue;
 	}
 
-	public static OrderWS transform(
-			com.sapienter.jbilling.server.util.amqp.dto.OrderDTO fromValue) {
+	public static OrderWS transform(OrderDTO fromValue) {
 		OrderWS toValue = new OrderWS();
 
 		toValue.setUserId(fromValue.getUserId());

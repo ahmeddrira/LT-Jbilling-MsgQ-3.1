@@ -8,8 +8,8 @@
 	xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
 	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
 	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
 		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
@@ -42,40 +42,26 @@
 
 	<!-- Queue for requests -->
 	<rabbit:queue id="jbillingRequestQueue"
-		name="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).requestQueueName}"
+		name="#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).requestQueueName}"
 		durable="false" auto-delete="true">
 	</rabbit:queue>
 
 	<rabbit:direct-exchange id="jbAmqpExchange"
-		name="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).exchangeName }"
+		name="#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).exchangeName }"
 		durable="false" auto-delete="true">
 		<rabbit:bindings>
 			<rabbit:binding queue="jbillingRequestQueue"
-				key="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).requestRoutingKey }" />
+				key="#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).requestRoutingKey }" />
 		</rabbit:bindings>
 	</rabbit:direct-exchange>
 
 	<!-- Bean contains mapping of requests to responses, used to initalise the 
 		Jbilling Object mapper and the Jbilling Java Type mapper -->
-	<bean id="jbMessageRequestResponseMap" class="com.sapienter.jbilling.server.util.amqp.RequestResponseMap"/>
+	<bean id="jbMessageRequestResponseMap" class="com.liquidtelecom.jbilling.api.util.RequestResponseMap"/>
 
 	<!-- Bean used for formatting messages for the AMQP queues -->
 	<bean id="jbJsonMessageConverter"
-		class="org.springframework.amqp.support.converter.JsonMessageConverter">
-		<!-- This object mapper is configured to deal the overloaded methods in 
-			the JBilling DTO/WS classes -->
-		<property name="jsonObjectMapper">
-			<bean class="com.sapienter.jbilling.server.util.amqp.JBillingObjectMapper" />
-		</property>
-		<!-- The Message classes are not found by the GrailsClassLoader, so need 
-			to instantiate a map of class ids to classes for each request/response -->
-		<property name="javaTypeMapper">
-			<bean
-				class="com.sapienter.jbilling.server.util.amqp.JBillingJavaTypeMapper">
-				<constructor-arg index="0" ref="jbMessageRequestResponseMap" />
-			</bean>
-		</property>
-	</bean>
+		class="org.springframework.amqp.support.converter.JsonMessageConverter" />
 
 	<!-- ## -->
 	<!-- ## Jbilling message queue entry and exit points -->
@@ -84,10 +70,10 @@
 	<!-- Inbound channel adapter -->
 	<int-amqp:inbound-channel-adapter id="amqpJBillingRequestAdapter"
 		channel="jbRequestChannel" error-channel="jbAmqpMessagingExceptionChannel"
-		queue-names="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).requestQueueName}"
+		queue-names="#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).requestQueueName}"
 		connection-factory="jbConnectionFactory" concurrent-consumers="10"
 		acknowledge-mode="NONE" message-converter="jbJsonMessageConverter"
-		mapped-request-headers="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).mappedHeaders }" />
+		mapped-request-headers="#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).mappedHeaders }" />
 
 	<int:channel id="jbRequestChannel">
 		<int:interceptors>
@@ -122,9 +108,9 @@
 	<int-amqp:outbound-channel-adapter
 		id="jbAmqpResponseAdapter" channel="jbAmqpOutboundChannel"
 		amqp-template="jbResponseAMQPTemplate"
-		exchange-name-expression="headers.get('#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).responseExchangeHeader}')"
-		routing-key-expression="headers.get('#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).responseQueueHeader}')"
-		mapped-request-headers="#{ T(com.sapienter.jbilling.server.util.amqp.MessageServiceConstants).mappedHeaders }" />
+		exchange-name-expression="headers.get('#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).responseExchangeHeader}')"
+		routing-key-expression="headers.get('#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).responseQueueHeader}')"
+		mapped-request-headers="#{ T(com.liquidtelecom.jbilling.api.MessageServiceConstants).mappedHeaders }" />
 
 	<int:channel id="jbAmqpMessagingExceptionChannel">
 		<int:interceptors>

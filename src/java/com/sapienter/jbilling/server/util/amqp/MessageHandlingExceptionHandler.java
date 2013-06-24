@@ -7,8 +7,10 @@ import org.springframework.integration.MessagingException;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.util.Assert;
 
-import com.sapienter.jbilling.server.util.amqp.msg.RequestBase;
-import com.sapienter.jbilling.server.util.amqp.msg.ResponseBase;
+import com.liquidtelecom.jbilling.api.util.RequestResponseMap;
+import com.liquidtelecom.jbilling.api.msg.RequestBase;
+import com.liquidtelecom.jbilling.api.msg.ResponseBase;
+
 
 /**
  * Class handles any message handling exceptions thrown and converts them to the

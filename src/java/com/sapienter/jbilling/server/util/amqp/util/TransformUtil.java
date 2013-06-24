@@ -157,7 +157,8 @@ public class TransformUtil {
 		toValue.setUserId(fromValue.getUserId());
 		toValue.setStatus(TransformUtil.toOrderStatusType(fromValue
 				.getStatusId()));
-
+		toValue.setNotes(fromValue.getNotes());
+		
 		if (fromValue.getMetaFields() != null) {
 			for (MetaFieldValueWS mf : fromValue.getMetaFields()) {
 				toValue.getMetaFields().put(mf.getFieldName(),
@@ -184,6 +185,7 @@ public class TransformUtil {
 		toValue.setLineType(TransformUtil.toOrderLineType(fromValue.getTypeId()));
 		toValue.setUseItem(fromValue.getUseItem());
 		toValue.setProductDescription(fromValue.getDescription());
+		
 		if (fromValue.getItemDto() != null) {
 			toValue.setProductDescription(fromValue.getItemDto()
 					.getDescription());
@@ -206,6 +208,7 @@ public class TransformUtil {
 		toValue.setBillingTypeId(TransformUtil.transform(fromValue
 				.getBillingType()));
 		toValue.setStatusId(TransformUtil.transform(fromValue.getStatus()));
+		toValue.setNotes(fromValue.getNotes());
 
 		toValue.setOrderLines(TransformUtil.transform(fromValue.getOrderLines()));
 		toValue.setMetaFields(TransformUtil.transform(fromValue.getMetaFields()));

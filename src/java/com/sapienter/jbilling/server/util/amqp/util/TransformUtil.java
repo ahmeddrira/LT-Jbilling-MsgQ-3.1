@@ -1,5 +1,10 @@
 package com.sapienter.jbilling.server.util.amqp.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,6 +22,7 @@ import com.liquidtelecom.jbilling.api.types.OrderLineType;
 import com.liquidtelecom.jbilling.api.types.OrderPeriodType;
 import com.liquidtelecom.jbilling.api.types.OrderStatusType;
 import com.sapienter.jbilling.common.CommonConstants;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -202,6 +208,7 @@ public class TransformUtil {
 		toValue.setUserId(fromValue.getUserId());
 		toValue.setPeriod(TransformUtil.transform(fromValue.getPeriod()));
 		toValue.setCurrencyId(fromValue.getCurrencyId());
+		toValue.setCreatedBy(fromValue.getCreatedById());
 		toValue.setActiveSince(fromValue.getActiveSince());
 		toValue.setActiveUntil(fromValue.getActiveUntil());
 		toValue.setIsCurrent(fromValue.getIsCurrent());
@@ -322,6 +329,7 @@ public class TransformUtil {
 		toValue.setCreditLimit(fromValue.getCreditLimitAsDecimal());
 		toValue.setCurrencyId(fromValue.getCurrencyId());
 		toValue.setDynamicBalance(fromValue.getDynamicBalanceAsDecimal());
+		toValue.setBalance(fromValue.getOwingBalanceAsDecimal());
 		toValue.setUserName(fromValue.getUserName());
 		toValue.setId(fromValue.getUserId());
 		toValue.setContact(TransformUtil.transform(fromValue.getContact()));
@@ -365,4 +373,66 @@ public class TransformUtil {
 		return toValue;
 	}
 
+	public static OrderWS merge(
+			com.liquidtelecom.jbilling.api.dto.OrderDTO fromValue,
+			OrderWS toValue) {
+
+		try {
+			// The enumerated types can't call copyIfNotNull() as they have to transform the value first.
+			
+			copyIfNotNull(fromValue, "id", toValue, "id");
+			if (fromValue.getPeriod() != null) {
+				toValue.setPeriod(TransformUtil.transform(fromValue.getPeriod()));				
+			}
+			copyIfNotNull(fromValue, "createdById", toValue, "createdBy");
+			copyIfNotNull(fromValue, "currencyId", toValue, "currencyId");
+			copyIfNotNull(fromValue, "activeSince", toValue, "activeSince");
+			copyIfNotNull(fromValue, "activeUntil", toValue, "activeUntil");
+			copyIfNotNull(fromValue, "isCurrent", toValue, "isCurrent");
+			if (fromValue.getBillingType() != null) {
+				toValue.setBillingTypeId(TransformUtil.transform(fromValue.getBillingType()));
+			}
+			if (fromValue.getStatus() != null) {
+				toValue.setStatusId(TransformUtil.transform(fromValue.getStatus()));
+			}
+			copyIfNotNull(fromValue, "notes", toValue, "notes");
+			
+			// TODO: For now not supporting subsclasses such as orderLines or metaDataFields
+
+		} catch (IllegalArgumentException e) {
+			throw new SessionInternalError(e);
+		} catch (IntrospectionException e) {
+			throw new SessionInternalError(e);
+		} catch (IllegalAccessException e) {
+			throw new SessionInternalError(e);
+		} catch (InvocationTargetException e) {
+			throw new SessionInternalError(e);
+		}
+
+		
+		return toValue;
+	}
+
+	private static void copyIfNotNull(Object fromBean, String fromPropName, Object toBean, String toPropName) throws IntrospectionException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		Object valueToCopy = null;
+		for (PropertyDescriptor pd : Introspector.getBeanInfo(fromBean.getClass()).getPropertyDescriptors()) {
+			if (pd.getName().equals(fromPropName)) {
+				valueToCopy = pd.getReadMethod().invoke(fromBean, new Object[] {});
+				break;
+			}
+		}
+		
+		if (valueToCopy == null) {
+			return;
+		}
+		
+		for (PropertyDescriptor pd : Introspector.getBeanInfo(toBean.getClass()).getPropertyDescriptors()) {
+			if (pd.getName().equals(toPropName)) {
+				valueToCopy = pd.getWriteMethod().invoke(toBean, valueToCopy);
+				return;
+			}
+		}
+		
+		throw new IllegalArgumentException("No such property '" + toPropName + "' in class '" + toBean.getClass().getName() + "'");
+	}
 }

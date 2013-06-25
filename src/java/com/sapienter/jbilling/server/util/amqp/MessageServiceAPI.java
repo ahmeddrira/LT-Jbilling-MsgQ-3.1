@@ -203,10 +203,15 @@ public class MessageServiceAPI {
 		LOG.info("Process request " + request);
 
 		UpdateOrderResponse response = requestResponseMap.makeResponse(request);
+		OrderWS currentOrderWS = getOrder(request.getOrder().getId());
+		if (currentOrderWS != null) {		
+			messageServiceBL.doUpdateOrder(TransformUtil.merge(request.getOrder(), currentOrderWS));
 
-		messageServiceBL.doUpdateOrder(TransformUtil.transform(request.getOrder()));
-
-		response.setIsSuccess(true);
+			response.setIsSuccess(true);
+		} else {
+			response.setIsSuccess(false);
+			response.setErrorMessage("No such order [id=" + request.getOrder().getId() + "]");
+		}
 
 		LOG.info("Request response " + response);
 		return response;
